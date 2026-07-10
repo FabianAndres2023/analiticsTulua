@@ -1,0 +1,108 @@
+<section class="dashboard-content">
+
+  <section class="welcome-card">
+
+    <h2>
+      Bienvenido,
+      {{
+        loadingUser()
+          ? 'Cargando...'
+          : userName()
+      }}
+    </h2>
+
+    <p>
+      Resumen general de indicadores del territorio.
+    </p>
+
+  </section>
+
+  <section class="section-title">
+    <h2>Indicadores Clave del Territorio</h2>
+  </section>
+
+  <section class="indicators-grid">
+
+    <article class="indicator-card">
+
+      <div class="indicator-header">
+        <svg lucideShield></svg>
+
+        <h3>Índice de Seguridad</h3>
+
+        <strong>
+          0%
+          <svg lucideArrowUp></svg>
+        </strong>
+      </div>
+
+      <p>Reportes por fecha</p>
+
+      <div class="mini-chart"></div>
+
+    </article>
+
+    <article class="indicator-card">
+
+      <div class="indicator-header">
+        <svg lucideCar></svg>
+
+        <h3>Índice de Congestión</h3>
+
+        <strong>
+          0%
+          <svg lucideArrowRight></svg>
+        </strong>
+      </div>
+
+      <div class="circle-chart">
+        <span>0%</span>
+        <small>Baja</small>
+      </div>
+
+    </article>
+
+    <article class="indicator-card">
+
+      <div class="indicator-header">
+        <svg lucideWind></svg>
+
+        <h3>Índice de Calidad del Aire</h3>
+
+        <strong>
+          0%
+          <svg lucideArrowUp></svg>
+        </strong>
+      </div>
+
+      <div class="air-box">
+        <span></span>
+        <em>--</em>
+      </div>
+
+    </article>
+
+    <article class="indicator-card">
+
+      <div class="indicator-header">
+        <svg lucideFileText></svg>
+
+        <h3>Reportes Registrados</h3>
+
+        <strong>
+          0%
+          <svg lucideArrowUp></svg>
+        </strong>
+      </div>
+
+      <p>Reportes por fecha</p>
+
+      <div class="total">
+        Total: 0
+      </div>
+
+    </article>
+
+  </section>
+
+</section>

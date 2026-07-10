@@ -1,0 +1,130 @@
+<section class="private-layout">
+
+  <aside class="sidebar">
+
+    <div class="brand-card">
+      <img
+        src="/logo.png"
+        alt="Analytics Tuluá">
+    </div>
+
+    <nav class="menu">
+
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+
+        <svg lucideHouse></svg>
+        <span>Inicio</span>
+
+      </a>
+
+      <a
+        routerLink="/ambiente"
+        routerLinkActive="active">
+
+        <svg lucideLeaf></svg>
+        <span>Ambiente</span>
+
+      </a>
+
+      <a
+        routerLink="/movilidad"
+        routerLinkActive="active">
+
+        <svg lucideCar></svg>
+        <span>Movilidad</span>
+
+      </a>
+
+      <a
+        routerLink="/ocio-turismo"
+        routerLinkActive="active">
+
+        <svg lucideTrees></svg>
+        <span>Ocio y Turismo</span>
+
+      </a>
+
+      <a
+        routerLink="/configuracion"
+        routerLinkActive="active">
+
+        <svg lucideSettings></svg>
+        <span>Configuración</span>
+
+      </a>
+
+    </nav>
+
+  </aside>
+
+  <main class="main-content">
+
+    <header class="topbar">
+
+      <div class="topbar-title">
+
+        <h1>
+          Analytics Tuluá
+        </h1>
+
+        <p>
+          Plataforma de Inteligencia Territorial
+        </p>
+
+      </div>
+
+      <div class="user-area">
+
+        <div class="user-box">
+
+          <div class="avatar">
+            {{ initials() }}
+          </div>
+
+          <div class="user-information">
+
+            <strong>
+              {{
+                loadingUser()
+                  ? 'Cargando...'
+                  : userName()
+              }}
+            </strong>
+
+            <span>
+              {{
+                loadingUser()
+                  ? 'Consultando perfil'
+                  : userEmail()
+              }}
+            </span>
+
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          class="logout-button"
+          title="Cerrar sesión"
+          aria-label="Cerrar sesión"
+          (click)="logout()">
+
+          <svg lucideLogOut></svg>
+
+        </button>
+
+      </div>
+
+    </header>
+
+    <section class="page-content">
+      <router-outlet></router-outlet>
+    </section>
+
+  </main>
+
+</section>

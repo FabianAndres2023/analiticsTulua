@@ -1,0 +1,64 @@
+<section class="login-page">
+
+  <div class="login-card">
+
+    <img
+      src="/logo.png"
+      alt="Analytics Tuluá"
+      class="logo">
+
+    <h2>Iniciar sesión</h2>
+
+    <p class="subtitle">
+      Plataforma de Inteligencia Territorial
+    </p>
+
+    <form (ngSubmit)="login()">
+
+      <div class="form-group">
+
+        <label>Correo electrónico</label>
+
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="Ingrese su correo"
+          required>
+
+      </div>
+
+      <div class="form-group">
+
+        <label>Contraseña</label>
+
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          placeholder="Ingrese su contraseña"
+          required>
+
+      </div>
+
+      <div
+        class="error-message"
+        *ngIf="errorMessage">
+
+        {{ errorMessage }}
+
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="loading">
+
+        {{ loading ? 'Ingresando...' : 'Ingresar' }}
+
+      </button>
+
+    </form>
+
+  </div>
+
+</section>
