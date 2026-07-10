@@ -1,1 +1,100 @@
-<p>configuracion works!</p>
+<section class="configuration-page">
+
+  <header class="configuration-header">
+
+    <div class="header-icon">
+      <svg lucideSettings></svg>
+    </div>
+
+    <div>
+      <h1>Configuración</h1>
+
+      <p>
+        Administra usuarios, roles, permisos y parámetros generales
+        de Analytics Tuluá.
+      </p>
+    </div>
+
+  </header>
+
+  <nav class="configuration-navigation">
+
+    <a
+      routerLink="/configuracion/usuarios"
+      routerLinkActive="active">
+
+      <svg lucideUsers></svg>
+
+      <span>
+        Usuarios
+      </span>
+
+    </a>
+
+    <a
+      routerLink="/configuracion/roles"
+      routerLinkActive="active">
+
+      <svg lucideShieldCheck></svg>
+
+      <span>
+        Roles
+      </span>
+
+    </a>
+
+    <a
+      routerLink="/configuracion/permisos"
+      routerLinkActive="active">
+
+      <svg lucideKeyRound></svg>
+
+      <span>
+        Permisos
+      </span>
+
+    </a>
+
+    <a
+      routerLink="/configuracion/dependencias"
+      routerLinkActive="active">
+
+      <svg lucideBuilding2></svg>
+
+      <span>
+        Dependencias
+      </span>
+
+    </a>
+
+    <a
+      routerLink="/configuracion/parametros"
+      routerLinkActive="active">
+
+      <svg lucideSlidersHorizontal></svg>
+
+      <span>
+        Parámetros
+      </span>
+
+    </a>
+
+    <a
+      routerLink="/configuracion/carga-masiva"
+      routerLinkActive="active">
+
+      <svg lucideFileSpreadsheet></svg>
+
+      <span>
+        Carga masiva
+      </span>
+
+    </a>
+
+  </nav>
+
+  <section class="configuration-content">
+    <router-outlet></router-outlet>
+  </section>
+
+</section>

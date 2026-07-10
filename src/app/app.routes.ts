@@ -10,7 +10,10 @@ import { OcioTurismo } from './pages/ocio-turismo/ocio-turismo';
 import { Configuracion } from './pages/configuracion/configuracion';
 import { Usuarios } from './pages/configuracion/usuarios/usuarios';
 import { Roles } from './pages/configuracion/roles/roles';
+import { Permisos } from './pages/configuracion/permisos/permisos';
 import { Dependencias } from './pages/configuracion/dependencias/dependencias';
+import { Parametros } from './pages/configuracion/parametros/parametros';
+import { CargaMasiva } from './pages/configuracion/carga-masiva/carga-masiva';
 
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
@@ -18,7 +21,6 @@ import { guestGuard } from './core/guards/guest.guard';
 import { PrivateLayout } from './layout/private-layout/private-layout';
 
 export const routes: Routes = [
-
   {
     path: 'login',
     component: Login,
@@ -31,7 +33,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
 
     children: [
-
       {
         path: '',
         redirectTo: 'dashboard',
@@ -60,31 +61,51 @@ export const routes: Routes = [
 
       {
         path: 'configuracion',
-        component: Configuracion
-      },
+        component: Configuracion,
 
-      {
-        path: 'configuracion/usuarios',
-        component: Usuarios
-      },
+        children: [
+          {
+            path: '',
+            redirectTo: 'usuarios',
+            pathMatch: 'full'
+          },
 
-      {
-        path: 'configuracion/roles',
-        component: Roles
-      },
+          {
+            path: 'usuarios',
+            component: Usuarios
+          },
 
-      {
-        path: 'configuracion/dependencias',
-        component: Dependencias
+          {
+            path: 'roles',
+            component: Roles
+          },
+
+          {
+            path: 'permisos',
+            component: Permisos
+          },
+
+          {
+            path: 'dependencias',
+            component: Dependencias
+          },
+
+          {
+            path: 'parametros',
+            component: Parametros
+          },
+
+          {
+            path: 'carga-masiva',
+            component: CargaMasiva
+          }
+        ]
       }
-
     ]
-
   },
 
   {
     path: '**',
     redirectTo: ''
   }
-
 ];
