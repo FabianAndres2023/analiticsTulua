@@ -1,1 +1,993 @@
-<p>usuarios works!</p>
+<section class="usuarios-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">
+        Configuración
+      </span>
+
+      <h2>
+        Gestión de usuarios
+      </h2>
+
+      <p>
+        Administra usuarios, roles, dependencias,
+        acceso y credenciales de la plataforma.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn-primary"
+      (click)="nuevoUsuario()"
+    >
+      <span class="plus-icon">+</span>
+      Nuevo usuario
+    </button>
+  </header>
+
+  @if (errorMessage()) {
+    <div
+      class="alert-error"
+      role="alert"
+    >
+      <div>
+        <strong>Ocurrió un error</strong>
+        <p>{{ errorMessage() }}</p>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Cerrar mensaje"
+        (click)="errorMessage.set('')"
+      >
+        ×
+      </button>
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div
+      class="alert-success"
+      role="status"
+    >
+      <div>
+        <strong>Operación completada</strong>
+        <p>{{ successMessage() }}</p>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Cerrar mensaje"
+        (click)="successMessage.set('')"
+      >
+        ×
+      </button>
+    </div>
+  }
+
+  <section class="filters-card">
+    <div class="search-field">
+      <span class="search-icon">⌕</span>
+
+      <input
+        type="search"
+        placeholder="Buscar por nombre, correo, rol o dependencia"
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+      />
+    </div>
+
+    <div class="filter-field">
+      <label for="filtro-estado">
+        Estado
+      </label>
+
+      <select
+        id="filtro-estado"
+        [ngModel]="filtroEstado()"
+        (ngModelChange)="filtroEstado.set($event)"
+      >
+        <option value="todos">
+          Todos
+        </option>
+
+        <option value="activos">
+          Activos
+        </option>
+
+        <option value="inactivos">
+          Inactivos
+        </option>
+      </select>
+    </div>
+
+    <button
+      type="button"
+      class="btn-secondary"
+      (click)="limpiarFiltros()"
+    >
+      Limpiar filtros
+    </button>
+  </section>
+
+  <section class="table-card">
+    <header class="table-card-header">
+      <div>
+        <h3>Usuarios registrados</h3>
+
+        <p>
+          {{ usuariosFiltrados().length }}
+          de
+          {{ usuarios().length }}
+          usuario(s)
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn-refresh"
+        [disabled]="cargando()"
+        (click)="cargarUsuarios()"
+      >
+        {{
+          cargando()
+            ? 'Actualizando...'
+            : 'Actualizar'
+        }}
+      </button>
+    </header>
+
+    @if (cargando()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+
+        <strong>Cargando usuarios</strong>
+
+        <p>
+          Consultando perfiles y datos de Authentication...
+        </p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Rol</th>
+              <th>Dependencia</th>
+              <th>Estado</th>
+              <th>Último acceso</th>
+
+              <th class="actions-heading">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (
+              usuario of usuariosFiltrados();
+              track usuario.id
+            ) {
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar">
+                      {{
+                        obtenerIniciales(
+                          usuario.full_name
+                        )
+                      }}
+                    </div>
+
+                    <div class="user-data">
+                      <strong>
+                        {{
+                          usuario.full_name ||
+                          'Usuario sin nombre'
+                        }}
+                      </strong>
+
+                      <span>
+                        {{ usuario.email }}
+                      </span>
+
+                      <small class="created-date">
+                        Creado:
+                        {{
+                          formatearFecha(
+                            usuario.auth_created_at
+                          )
+                        }}
+                      </small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <span class="data-badge">
+                    {{
+                      usuario.role?.name ??
+                      'Sin rol'
+                    }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="dependency-text">
+                    {{
+                      usuario.dependency?.name ??
+                      'Sin dependencia'
+                    }}
+                  </span>
+                </td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.active]="usuario.active"
+                    [class.inactive]="!usuario.active"
+                  >
+                    <span class="status-dot"></span>
+
+                    {{
+                      usuario.active
+                        ? 'Activo'
+                        : 'Inactivo'
+                    }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="auth-date">
+                    {{
+                      formatearFecha(
+                        usuario.last_sign_in_at
+                      )
+                    }}
+                  </span>
+                </td>
+
+                <td class="actions-cell">
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="btn-edit"
+                      (click)="editarUsuario(usuario)"
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-password"
+                      (click)="
+                        abrirRestablecerPassword(usuario)
+                      "
+                    >
+                      Contraseña
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-status"
+                      [class.deactivate]="usuario.active"
+                      [class.activate]="!usuario.active"
+                      [disabled]="
+                        cambiandoEstadoId() === usuario.id
+                      "
+                      (click)="cambiarEstado(usuario)"
+                    >
+                      @if (
+                        cambiandoEstadoId() === usuario.id
+                      ) {
+                        Guardando...
+                      } @else {
+                        {{
+                          usuario.active
+                            ? 'Desactivar'
+                            : 'Activar'
+                        }}
+                      }
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-delete"
+                      (click)="
+                        abrirEliminarUsuario(usuario)
+                      "
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <div class="empty-icon">⌕</div>
+
+                    <strong>
+                      No se encontraron usuarios
+                    </strong>
+
+                    <p>
+                      Cambia el texto de búsqueda o
+                      modifica los filtros seleccionados.
+                    </p>
+
+                    <button
+                      type="button"
+                      class="btn-secondary"
+                      (click)="limpiarFiltros()"
+                    >
+                      Limpiar filtros
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</section>
+
+<!-- MODAL EDITAR -->
+
+@if (modalEditarAbierto()) {
+  <div
+    class="modal-backdrop"
+    (click)="cerrarModalEditar()"
+  >
+    <section
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-editar-usuario"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header">
+        <div>
+          <span class="modal-eyebrow">
+            Administración
+          </span>
+
+          <h3 id="titulo-editar-usuario">
+            Editar usuario
+          </h3>
+
+          <p>
+            Actualiza el perfil, correo, rol,
+            dependencia y estado.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar modal"
+          [disabled]="guardando()"
+          (click)="cerrarModalEditar()"
+        >
+          ×
+        </button>
+      </header>
+
+      <form
+        class="modal-form"
+        (ngSubmit)="guardarEdicion()"
+      >
+        <div class="form-group full-width">
+          <label for="edit-full-name">
+            Nombre completo
+          </label>
+
+          <input
+            id="edit-full-name"
+            type="text"
+            name="full_name"
+            maxlength="120"
+            required
+            [(ngModel)]="
+              formularioEdicion.full_name
+            "
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="edit-email">
+            Correo electrónico
+          </label>
+
+          <input
+            id="edit-email"
+            type="email"
+            name="email"
+            autocomplete="email"
+            required
+            [(ngModel)]="
+              formularioEdicion.email
+            "
+          />
+
+          <small>
+            El correo se actualizará tanto en
+            Authentication como en profiles.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-role">
+            Rol
+          </label>
+
+          <select
+            id="edit-role"
+            name="role_id"
+            required
+            [(ngModel)]="
+              formularioEdicion.role_id
+            "
+          >
+            <option [ngValue]="null">
+              Selecciona un rol
+            </option>
+
+            @for (rol of roles(); track rol.id) {
+              <option [ngValue]="rol.id">
+                {{ rol.name }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-dependency">
+            Dependencia
+          </label>
+
+          <select
+            id="edit-dependency"
+            name="dependency_id"
+            required
+            [(ngModel)]="
+              formularioEdicion.dependency_id
+            "
+          >
+            <option [ngValue]="null">
+              Selecciona una dependencia
+            </option>
+
+            @for (
+              dependencia of dependencias();
+              track dependencia.id
+            ) {
+              <option [ngValue]="dependencia.id">
+                {{ dependencia.name }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <label class="status-control">
+          <input
+            type="checkbox"
+            name="active"
+            [(ngModel)]="
+              formularioEdicion.active
+            "
+          />
+
+          <span class="status-switch"></span>
+
+          <span>
+            <strong>Usuario activo</strong>
+
+            <small>
+              Determina si el usuario tiene
+              acceso habilitado.
+            </small>
+          </span>
+        </label>
+
+        <footer class="modal-actions">
+          <button
+            type="button"
+            class="btn-cancel"
+            [disabled]="guardando()"
+            (click)="cerrarModalEditar()"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn-save"
+            [disabled]="guardando()"
+          >
+            {{
+              guardando()
+                ? 'Guardando...'
+                : 'Guardar cambios'
+            }}
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}
+
+<!-- MODAL CREAR -->
+
+@if (modalCrearAbierto()) {
+  <div
+    class="modal-backdrop"
+    (click)="cerrarModalCrear()"
+  >
+    <section
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-crear-usuario"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header">
+        <div>
+          <span class="modal-eyebrow">
+            Administración
+          </span>
+
+          <h3 id="titulo-crear-usuario">
+            Nuevo usuario
+          </h3>
+
+          <p>
+            Crea una cuenta de acceso y asigna
+            su rol y dependencia.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar modal"
+          [disabled]="creando()"
+          (click)="cerrarModalCrear()"
+        >
+          ×
+        </button>
+      </header>
+
+      <form
+        class="modal-form"
+        (ngSubmit)="crearUsuario()"
+      >
+        <div class="form-group full-width">
+          <label for="create-full-name">
+            Nombre completo
+          </label>
+
+          <input
+            id="create-full-name"
+            type="text"
+            name="create_full_name"
+            maxlength="120"
+            autocomplete="name"
+            required
+            [(ngModel)]="
+              formularioCreacion.full_name
+            "
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="create-email">
+            Correo electrónico
+          </label>
+
+          <input
+            id="create-email"
+            type="email"
+            name="create_email"
+            autocomplete="email"
+            required
+            [(ngModel)]="
+              formularioCreacion.email
+            "
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="create-password">
+            Contraseña temporal
+          </label>
+
+          <input
+            id="create-password"
+            [type]="
+              mostrarPasswordCreacion()
+                ? 'text'
+                : 'password'
+            "
+            name="create_password"
+            minlength="8"
+            autocomplete="new-password"
+            required
+            [(ngModel)]="
+              formularioCreacion.password
+            "
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="create-confirm-password">
+            Confirmar contraseña
+          </label>
+
+          <input
+            id="create-confirm-password"
+            [type]="
+              mostrarPasswordCreacion()
+                ? 'text'
+                : 'password'
+            "
+            name="create_confirm_password"
+            minlength="8"
+            autocomplete="new-password"
+            required
+            [(ngModel)]="
+              formularioCreacion.confirm_password
+            "
+          />
+        </div>
+
+        <label class="password-visibility full-width">
+          <input
+            type="checkbox"
+            [checked]="mostrarPasswordCreacion()"
+            (change)="
+              mostrarPasswordCreacion.set(
+                $any($event.target).checked
+              )
+            "
+          />
+
+          Mostrar contraseñas
+        </label>
+
+        <div class="form-group">
+          <label for="create-role">
+            Rol
+          </label>
+
+          <select
+            id="create-role"
+            name="create_role_id"
+            required
+            [(ngModel)]="
+              formularioCreacion.role_id
+            "
+          >
+            <option [ngValue]="null">
+              Selecciona un rol
+            </option>
+
+            @for (rol of roles(); track rol.id) {
+              <option [ngValue]="rol.id">
+                {{ rol.name }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="create-dependency">
+            Dependencia
+          </label>
+
+          <select
+            id="create-dependency"
+            name="create_dependency_id"
+            required
+            [(ngModel)]="
+              formularioCreacion.dependency_id
+            "
+          >
+            <option [ngValue]="null">
+              Selecciona una dependencia
+            </option>
+
+            @for (
+              dependencia of dependencias();
+              track dependencia.id
+            ) {
+              <option [ngValue]="dependencia.id">
+                {{ dependencia.name }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <label class="status-control">
+          <input
+            type="checkbox"
+            name="create_active"
+            [(ngModel)]="
+              formularioCreacion.active
+            "
+          />
+
+          <span class="status-switch"></span>
+
+          <span>
+            <strong>Usuario activo</strong>
+
+            <small>
+              El usuario quedará habilitado para
+              acceder a la plataforma.
+            </small>
+          </span>
+        </label>
+
+        <footer class="modal-actions">
+          <button
+            type="button"
+            class="btn-cancel"
+            [disabled]="creando()"
+            (click)="cerrarModalCrear()"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn-save"
+            [disabled]="creando()"
+          >
+            {{
+              creando()
+                ? 'Creando usuario...'
+                : 'Crear usuario'
+            }}
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}
+
+<!-- MODAL CONTRASEÑA -->
+
+@if (modalPasswordAbierto()) {
+  <div
+    class="modal-backdrop"
+    (click)="cerrarModalPassword()"
+  >
+    <section
+      class="modal-card modal-card-small"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-password"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header">
+        <div>
+          <span class="modal-eyebrow">
+            Seguridad
+          </span>
+
+          <h3 id="titulo-password">
+            Restablecer contraseña
+          </h3>
+
+          <p>
+            Usuario:
+            <strong>
+              {{ usuarioSeleccionado()?.full_name }}
+            </strong>
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar modal"
+          [disabled]="restableciendoPassword()"
+          (click)="cerrarModalPassword()"
+        >
+          ×
+        </button>
+      </header>
+
+      <form
+        class="modal-form"
+        (ngSubmit)="restablecerPassword()"
+      >
+        <div class="form-group full-width">
+          <label for="new-password">
+            Nueva contraseña
+          </label>
+
+          <input
+            id="new-password"
+            [type]="
+              mostrarPasswordNueva()
+                ? 'text'
+                : 'password'
+            "
+            name="new_password"
+            minlength="8"
+            autocomplete="new-password"
+            required
+            [(ngModel)]="
+              formularioPassword.password
+            "
+          />
+
+          <small>
+            Debe tener al menos 8 caracteres.
+          </small>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="confirm-new-password">
+            Confirmar contraseña
+          </label>
+
+          <input
+            id="confirm-new-password"
+            [type]="
+              mostrarPasswordNueva()
+                ? 'text'
+                : 'password'
+            "
+            name="confirm_new_password"
+            minlength="8"
+            autocomplete="new-password"
+            required
+            [(ngModel)]="
+              formularioPassword.confirm_password
+            "
+          />
+        </div>
+
+        <label class="password-visibility full-width">
+          <input
+            type="checkbox"
+            [checked]="mostrarPasswordNueva()"
+            (change)="
+              mostrarPasswordNueva.set(
+                $any($event.target).checked
+              )
+            "
+          />
+
+          Mostrar contraseñas
+        </label>
+
+        <footer class="modal-actions">
+          <button
+            type="button"
+            class="btn-cancel"
+            [disabled]="restableciendoPassword()"
+            (click)="cerrarModalPassword()"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn-save"
+            [disabled]="restableciendoPassword()"
+          >
+            {{
+              restableciendoPassword()
+                ? 'Restableciendo...'
+                : 'Guardar contraseña'
+            }}
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}
+
+<!-- MODAL ELIMINAR -->
+
+@if (modalEliminarAbierto()) {
+  <div
+    class="modal-backdrop"
+    (click)="cerrarModalEliminar()"
+  >
+    <section
+      class="modal-card modal-card-small"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="titulo-eliminar"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header danger-header">
+        <div>
+          <span class="modal-eyebrow danger-text">
+            Zona peligrosa
+          </span>
+
+          <h3 id="titulo-eliminar">
+            Eliminar usuario
+          </h3>
+
+          <p>
+            Esta acción eliminará la cuenta de
+            Authentication y su perfil.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar modal"
+          [disabled]="eliminando()"
+          (click)="cerrarModalEliminar()"
+        >
+          ×
+        </button>
+      </header>
+
+      <div class="delete-content">
+        <p>
+          ¿Confirmas que deseas eliminar a
+          <strong>
+            {{ usuarioSeleccionado()?.full_name }}
+          </strong>?
+        </p>
+
+        <div class="delete-user-summary">
+          <span>
+            {{ usuarioSeleccionado()?.email }}
+          </span>
+
+          <span>
+            {{
+              usuarioSeleccionado()?.role?.name ??
+              'Sin rol'
+            }}
+          </span>
+        </div>
+
+        <p class="delete-warning">
+          Esta operación no puede deshacerse desde
+          la plataforma. Para conservar historial,
+          utiliza “Desactivar” en lugar de eliminar.
+        </p>
+      </div>
+
+      <footer class="modal-actions delete-actions">
+        <button
+          type="button"
+          class="btn-cancel"
+          [disabled]="eliminando()"
+          (click)="cerrarModalEliminar()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn-confirm-delete"
+          [disabled]="eliminando()"
+          (click)="eliminarUsuario()"
+        >
+          {{
+            eliminando()
+              ? 'Eliminando...'
+              : 'Eliminar definitivamente'
+          }}
+        </button>
+      </footer>
+    </section>
+  </div>
+}

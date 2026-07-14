@@ -1,1 +1,590 @@
-<p>roles works!</p>
+<section class="roles-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">
+        Configuración
+      </span>
+
+      <h2>
+        Gestión de roles
+      </h2>
+
+      <p>
+        Administra los roles disponibles, su estado
+        y la cantidad de usuarios asignados.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn-primary"
+      (click)="nuevoRol()"
+    >
+      <span class="plus-icon">+</span>
+      Nuevo rol
+    </button>
+  </header>
+
+  @if (errorMessage()) {
+    <div
+      class="alert-error"
+      role="alert"
+    >
+      <div>
+        <strong>Ocurrió un error</strong>
+        <p>{{ errorMessage() }}</p>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Cerrar mensaje"
+        (click)="errorMessage.set('')"
+      >
+        ×
+      </button>
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div
+      class="alert-success"
+      role="status"
+    >
+      <div>
+        <strong>Operación completada</strong>
+        <p>{{ successMessage() }}</p>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Cerrar mensaje"
+        (click)="successMessage.set('')"
+      >
+        ×
+      </button>
+    </div>
+  }
+
+  <section class="filters-card">
+    <div class="search-field">
+      <span class="search-icon">⌕</span>
+
+      <input
+        type="search"
+        placeholder="Buscar por nombre o descripción"
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+      />
+    </div>
+
+    <div class="filter-field">
+      <label for="filtro-estado-rol">
+        Estado
+      </label>
+
+      <select
+        id="filtro-estado-rol"
+        [ngModel]="filtroEstado()"
+        (ngModelChange)="filtroEstado.set($event)"
+      >
+        <option value="todos">
+          Todos
+        </option>
+
+        <option value="activos">
+          Activos
+        </option>
+
+        <option value="inactivos">
+          Inactivos
+        </option>
+      </select>
+    </div>
+
+    <button
+      type="button"
+      class="btn-secondary"
+      (click)="limpiarFiltros()"
+    >
+      Limpiar filtros
+    </button>
+  </section>
+
+  <section class="table-card">
+    <header class="table-card-header">
+      <div>
+        <h3>
+          Roles registrados
+        </h3>
+
+        <p>
+          {{ rolesFiltrados().length }}
+          de
+          {{ roles().length }}
+          rol(es)
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn-refresh"
+        [disabled]="cargando()"
+        (click)="cargarRoles()"
+      >
+        {{
+          cargando()
+            ? 'Actualizando...'
+            : 'Actualizar'
+        }}
+      </button>
+    </header>
+
+    @if (cargando()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+
+        <strong>
+          Cargando roles
+        </strong>
+
+        <p>
+          Consultando información en Supabase...
+        </p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Rol</th>
+              <th>Usuarios asignados</th>
+              <th>Estado</th>
+              <th>Última actualización</th>
+
+              <th class="actions-heading">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (
+              rol of rolesFiltrados();
+              track rol.id
+            ) {
+              <tr>
+                <td>
+                  <div class="role-cell">
+                    <div
+                      class="role-icon"
+                      [class.admin]="rol.id === 1"
+                    >
+                      {{
+                        rol.name
+                          .charAt(0)
+                          .toUpperCase()
+                      }}
+                    </div>
+
+                    <div class="role-data">
+                      <div class="role-name-line">
+                        <strong>
+                          {{ rol.name }}
+                        </strong>
+
+                        @if (rol.id === 1) {
+                          <span class="protected-badge">
+                            Protegido
+                          </span>
+                        }
+                      </div>
+
+                      <span>
+                        {{
+                          rol.description ||
+                          'Sin descripción'
+                        }}
+                      </span>
+
+                      <small>
+                        ID: {{ rol.id }}
+                      </small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="users-count">
+                    <strong>
+                      {{ rol.users_count ?? 0 }}
+                    </strong>
+
+                    <span>
+                      usuario(s)
+                    </span>
+                  </div>
+                </td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.active]="rol.active"
+                    [class.inactive]="!rol.active"
+                  >
+                    <span class="status-dot"></span>
+
+                    {{
+                      rol.active
+                        ? 'Activo'
+                        : 'Inactivo'
+                    }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="date-text">
+                    {{
+                      formatearFecha(
+                        rol.updated_at
+                      )
+                    }}
+                  </span>
+                </td>
+
+                <td class="actions-cell">
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="btn-edit"
+                      (click)="editarRol(rol)"
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-status"
+                      [class.deactivate]="rol.active"
+                      [class.activate]="!rol.active"
+                      [disabled]="
+                        rol.id === 1 ||
+                        cambiandoEstadoId() === rol.id
+                      "
+                      (click)="cambiarEstado(rol)"
+                    >
+                      @if (
+                        cambiandoEstadoId() === rol.id
+                      ) {
+                        Guardando...
+                      } @else {
+                        {{
+                          rol.active
+                            ? 'Desactivar'
+                            : 'Activar'
+                        }}
+                      }
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-delete"
+                      [disabled]="
+                        rol.id === 1 ||
+                        (rol.users_count ?? 0) > 0
+                      "
+                      [title]="
+                        rol.id === 1
+                          ? 'El rol Administrador está protegido'
+                          : (rol.users_count ?? 0) > 0
+                            ? 'El rol tiene usuarios asignados'
+                            : 'Eliminar rol'
+                      "
+                      (click)="abrirEliminarRol(rol)"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">
+                  <div class="empty-state">
+                    <div class="empty-icon">
+                      ⌕
+                    </div>
+
+                    <strong>
+                      No se encontraron roles
+                    </strong>
+
+                    <p>
+                      Cambia el texto de búsqueda o
+                      modifica el filtro seleccionado.
+                    </p>
+
+                    <button
+                      type="button"
+                      class="btn-secondary"
+                      (click)="limpiarFiltros()"
+                    >
+                      Limpiar filtros
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</section>
+
+@if (modalFormularioAbierto()) {
+  <div
+    class="modal-backdrop"
+    (click)="cerrarModalFormulario()"
+  >
+    <section
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-formulario-rol"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header">
+        <div>
+          <span class="modal-eyebrow">
+            Administración
+          </span>
+
+          <h3 id="titulo-formulario-rol">
+            {{
+              esModoEdicion()
+                ? 'Editar rol'
+                : 'Nuevo rol'
+            }}
+          </h3>
+
+          <p>
+            {{
+              esModoEdicion()
+                ? 'Actualiza la información y el estado del rol.'
+                : 'Registra un nuevo rol para la plataforma.'
+            }}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar modal"
+          [disabled]="guardando()"
+          (click)="cerrarModalFormulario()"
+        >
+          ×
+        </button>
+      </header>
+
+      <form
+        class="modal-form"
+        (ngSubmit)="guardarRol()"
+      >
+        <div class="form-group full-width">
+          <label for="role-name">
+            Nombre del rol
+          </label>
+
+          <input
+            id="role-name"
+            type="text"
+            name="role_name"
+            maxlength="80"
+            required
+            [disabled]="
+              rolSeleccionado()?.id === 1
+            "
+            [(ngModel)]="formulario.name"
+          />
+
+          @if (rolSeleccionado()?.id === 1) {
+            <small>
+              El nombre del rol Administrador
+              no puede modificarse.
+            </small>
+          }
+        </div>
+
+        <div class="form-group full-width">
+          <label for="role-description">
+            Descripción
+          </label>
+
+          <textarea
+            id="role-description"
+            name="role_description"
+            rows="4"
+            maxlength="300"
+            placeholder="Describe las funciones generales del rol"
+            [(ngModel)]="formulario.description"
+          ></textarea>
+
+          <small>
+            Máximo 300 caracteres.
+          </small>
+        </div>
+
+        <label
+          class="status-control"
+          [class.disabled]="
+            rolSeleccionado()?.id === 1
+          "
+        >
+          <input
+            type="checkbox"
+            name="role_active"
+            [disabled]="
+              rolSeleccionado()?.id === 1
+            "
+            [(ngModel)]="formulario.active"
+          />
+
+          <span class="status-switch"></span>
+
+          <span>
+            <strong>
+              Rol activo
+            </strong>
+
+            <small>
+              Los roles inactivos no deben asignarse
+              a nuevos usuarios.
+            </small>
+          </span>
+        </label>
+
+        <footer class="modal-actions">
+          <button
+            type="button"
+            class="btn-cancel"
+            [disabled]="guardando()"
+            (click)="cerrarModalFormulario()"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn-save"
+            [disabled]="guardando()"
+          >
+            {{
+              guardando()
+                ? 'Guardando...'
+                : esModoEdicion()
+                  ? 'Guardar cambios'
+                  : 'Crear rol'
+            }}
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}
+
+@if (modalEliminarAbierto()) {
+  <div
+    class="modal-backdrop"
+    (click)="cerrarModalEliminar()"
+  >
+    <section
+      class="modal-card modal-card-small"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="titulo-eliminar-rol"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header danger-header">
+        <div>
+          <span class="modal-eyebrow danger-text">
+            Zona peligrosa
+          </span>
+
+          <h3 id="titulo-eliminar-rol">
+            Eliminar rol
+          </h3>
+
+          <p>
+            Esta acción eliminará definitivamente
+            el rol seleccionado.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar modal"
+          [disabled]="eliminando()"
+          (click)="cerrarModalEliminar()"
+        >
+          ×
+        </button>
+      </header>
+
+      <div class="delete-content">
+        <p>
+          ¿Confirmas que deseas eliminar el rol
+          <strong>
+            {{ rolSeleccionado()?.name }}
+          </strong>?
+        </p>
+
+        <div class="delete-role-summary">
+          <span>
+            {{
+              rolSeleccionado()?.description ||
+              'Sin descripción'
+            }}
+          </span>
+
+          <span>
+            Usuarios asignados:
+            {{
+              rolSeleccionado()?.users_count ?? 0
+            }}
+          </span>
+        </div>
+
+        <p class="delete-warning">
+          Para conservar trazabilidad, puedes
+          desactivar el rol en lugar de eliminarlo.
+        </p>
+      </div>
+
+      <footer class="modal-actions delete-actions">
+        <button
+          type="button"
+          class="btn-cancel"
+          [disabled]="eliminando()"
+          (click)="cerrarModalEliminar()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn-confirm-delete"
+          [disabled]="eliminando()"
+          (click)="eliminarRol()"
+        >
+          {{
+            eliminando()
+              ? 'Eliminando...'
+              : 'Eliminar definitivamente'
+          }}
+        </button>
+      </footer>
+    </section>
+  </div>
+}

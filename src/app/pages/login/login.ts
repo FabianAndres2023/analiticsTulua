@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
@@ -21,11 +21,14 @@ export class Login {
     private router: Router
   ) {}
 
-  async login() {
+  async login(): Promise<void> {
     this.loading = true;
     this.errorMessage = '';
 
-    const { error } = await this.authService.login(this.email, this.password);
+    const { error } = await this.authService.login(
+      this.email,
+      this.password
+    );
 
     this.loading = false;
 
@@ -34,6 +37,6 @@ export class Login {
       return;
     }
 
-    this.router.navigate(['/dashboard']);
+    await this.router.navigate(['/dashboard']);
   }
 }
