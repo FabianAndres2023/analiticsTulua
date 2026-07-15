@@ -6,12 +6,12 @@
       </span>
 
       <h2>
-        Gestión de roles
+        Gestión de roles y permisos
       </h2>
 
       <p>
-        Administra los roles disponibles, su estado
-        y la cantidad de usuarios asignados.
+        Administra los roles disponibles y define qué acciones
+        puede realizar cada uno dentro de Analytics Tuluá.
       </p>
     </div>
 
@@ -67,7 +67,9 @@
 
   <section class="filters-card">
     <div class="search-field">
-      <span class="search-icon">⌕</span>
+      <span class="search-icon">
+        ⌕
+      </span>
 
       <input
         type="search"
@@ -110,234 +112,459 @@
     </button>
   </section>
 
-  <section class="table-card">
-    <header class="table-card-header">
-      <div>
-        <h3>
-          Roles registrados
-        </h3>
+  <section class="roles-permissions-layout">
 
-        <p>
-          {{ rolesFiltrados().length }}
-          de
-          {{ roles().length }}
-          rol(es)
-        </p>
-      </div>
+    <aside class="roles-panel">
+      <header class="panel-header">
+        <div>
+          <h3>
+            Roles registrados
+          </h3>
 
-      <button
-        type="button"
-        class="btn-refresh"
-        [disabled]="cargando()"
-        (click)="cargarRoles()"
-      >
-        {{
-          cargando()
-            ? 'Actualizando...'
-            : 'Actualizar'
-        }}
-      </button>
-    </header>
+          <p>
+            {{ rolesFiltrados().length }}
+            de
+            {{ roles().length }}
+            rol(es)
+          </p>
+        </div>
 
-    @if (cargando()) {
-      <div class="loading-state">
-        <div class="spinner"></div>
+        <button
+          type="button"
+          class="btn-refresh"
+          [disabled]="cargando()"
+          (click)="cargarRoles()"
+        >
+          {{
+            cargando()
+              ? 'Actualizando...'
+              : 'Actualizar'
+          }}
+        </button>
+      </header>
 
-        <strong>
-          Cargando roles
-        </strong>
+      @if (cargando()) {
+        <div class="loading-state compact">
+          <div class="spinner"></div>
 
-        <p>
-          Consultando información en Supabase...
-        </p>
-      </div>
-    } @else {
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Rol</th>
-              <th>Usuarios asignados</th>
-              <th>Estado</th>
-              <th>Última actualización</th>
+          <strong>
+            Cargando roles
+          </strong>
 
-              <th class="actions-heading">
-                Acciones
-              </th>
-            </tr>
-          </thead>
+          <p>
+            Consultando información en Supabase...
+          </p>
+        </div>
+      } @else {
+        <div class="roles-list">
+          @for (
+            rol of rolesFiltrados();
+            track rol.id
+          ) {
+            <article
+              class="role-item"
+              [class.selected]="
+                rolPermisosSeleccionado()?.id === rol.id
+              "
+              [class.inactive]="!rol.active"
+              (click)="seleccionarRolPermisos(rol)"
+            >
+              <div class="role-item-main">
+                <div
+                  class="role-icon"
+                  [class.admin]="rol.id === 1"
+                >
+                  {{
+                    rol.name
+                      .charAt(0)
+                      .toUpperCase()
+                  }}
+                </div>
 
-          <tbody>
-            @for (
-              rol of rolesFiltrados();
-              track rol.id
-            ) {
-              <tr>
-                <td>
-                  <div class="role-cell">
-                    <div
-                      class="role-icon"
-                      [class.admin]="rol.id === 1"
-                    >
-                      {{
-                        rol.name
-                          .charAt(0)
-                          .toUpperCase()
-                      }}
-                    </div>
+                <div class="role-data">
+                  <div class="role-name-line">
+                    <strong>
+                      {{ rol.name }}
+                    </strong>
 
-                    <div class="role-data">
-                      <div class="role-name-line">
-                        <strong>
-                          {{ rol.name }}
-                        </strong>
+                    @if (rol.id === 1) {
+                      <span class="protected-badge">
+                        Protegido
+                      </span>
+                    }
+                  </div>
 
-                        @if (rol.id === 1) {
-                          <span class="protected-badge">
-                            Protegido
-                          </span>
-                        }
-                      </div>
+                  <span>
+                    {{
+                      rol.description ||
+                      'Sin descripción'
+                    }}
+                  </span>
+
+                  <small>
+                    {{ rol.users_count ?? 0 }}
+                    usuario(s) asignado(s)
+                  </small>
+                </div>
+              </div>
+
+              <div class="role-item-status">
+                <span
+                  class="status-badge"
+                  [class.active]="rol.active"
+                  [class.inactive]="!rol.active"
+                >
+                  <span class="status-dot"></span>
+
+                  {{
+                    rol.active
+                      ? 'Activo'
+                      : 'Inactivo'
+                  }}
+                </span>
+              </div>
+
+              <div
+                class="role-actions"
+                (click)="$event.stopPropagation()"
+              >
+                <button
+                  type="button"
+                  class="btn-edit"
+                  (click)="editarRol(rol)"
+                >
+                  Editar
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-status"
+                  [class.deactivate]="rol.active"
+                  [class.activate]="!rol.active"
+                  [disabled]="
+                    rol.id === 1 ||
+                    cambiandoEstadoId() === rol.id
+                  "
+                  (click)="cambiarEstado(rol)"
+                >
+                  @if (
+                    cambiandoEstadoId() === rol.id
+                  ) {
+                    Guardando...
+                  } @else {
+                    {{
+                      rol.active
+                        ? 'Desactivar'
+                        : 'Activar'
+                    }}
+                  }
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-delete"
+                  [disabled]="
+                    rol.id === 1 ||
+                    (rol.users_count ?? 0) > 0
+                  "
+                  [title]="
+                    rol.id === 1
+                      ? 'El rol Administrador está protegido'
+                      : (rol.users_count ?? 0) > 0
+                        ? 'El rol tiene usuarios asignados'
+                        : 'Eliminar rol'
+                  "
+                  (click)="abrirEliminarRol(rol)"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </article>
+          } @empty {
+            <div class="empty-state compact">
+              <div class="empty-icon">
+                ⌕
+              </div>
+
+              <strong>
+                No se encontraron roles
+              </strong>
+
+              <p>
+                Cambia el texto de búsqueda o
+                modifica el filtro seleccionado.
+              </p>
+
+              <button
+                type="button"
+                class="btn-secondary"
+                (click)="limpiarFiltros()"
+              >
+                Limpiar filtros
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </aside>
+
+    <section class="permissions-panel">
+      <header class="permissions-header">
+        <div>
+          <span class="panel-eyebrow">
+            Permisos del rol
+          </span>
+
+          <h3>
+            {{
+              rolPermisosSeleccionado()?.name ||
+              'Selecciona un rol'
+            }}
+          </h3>
+
+          <p>
+            @if (rolPermisosSeleccionado()) {
+              {{
+                cantidadPermisosSeleccionados()
+              }}
+              de
+              {{ permisos().length }}
+              permiso(s) asignado(s)
+            } @else {
+              Selecciona un rol para administrar sus permisos.
+            }
+          </p>
+        </div>
+
+        @if (rolPermisosSeleccionado()) {
+          <span
+            class="selected-role-badge"
+            [class.admin]="
+              rolPermisosSeleccionado()?.id === 1
+            "
+          >
+            {{
+              rolPermisosSeleccionado()?.id === 1
+                ? 'Acceso total'
+                : 'Personalizable'
+            }}
+          </span>
+        }
+      </header>
+
+      @if (!rolPermisosSeleccionado()) {
+        <div class="permission-empty-state">
+          <div class="permission-empty-icon">
+            ✓
+          </div>
+
+          <strong>
+            Selecciona un rol
+          </strong>
+
+          <p>
+            Haz clic en un rol de la lista para consultar
+            o modificar sus permisos.
+          </p>
+        </div>
+      } @else if (cargandoPermisos()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+
+          <strong>
+            Cargando permisos
+          </strong>
+
+          <p>
+            Consultando los permisos asignados al rol...
+          </p>
+        </div>
+      } @else {
+        <div class="permissions-toolbar">
+          <div>
+            <strong>
+              Permisos disponibles
+            </strong>
+
+            <span>
+              Organizados por módulo de la plataforma.
+            </span>
+          </div>
+
+          <div class="permissions-toolbar-actions">
+            <button
+              type="button"
+              class="btn-secondary btn-small"
+              [disabled]="
+                rolPermisosSeleccionado()?.id === 1
+              "
+              (click)="seleccionarTodosLosPermisos()"
+            >
+              Seleccionar todos
+            </button>
+
+            <button
+              type="button"
+              class="btn-secondary btn-small"
+              [disabled]="
+                rolPermisosSeleccionado()?.id === 1
+              "
+              (click)="limpiarTodosLosPermisos()"
+            >
+              Limpiar
+            </button>
+          </div>
+        </div>
+
+        @if (
+          rolPermisosSeleccionado()?.id === 1
+        ) {
+          <div class="admin-info">
+            <strong>
+              Rol Administrador
+            </strong>
+
+            <p>
+              Este rol conserva todos los permisos del sistema
+              y no puede personalizarse.
+            </p>
+          </div>
+        }
+
+        <div class="permission-groups">
+          @for (
+            grupo of gruposPermisos();
+            track grupo.module
+          ) {
+            <article class="permission-group">
+              <header class="permission-group-header">
+                <div>
+                  <h4>
+                    {{ grupo.module }}
+                  </h4>
+
+                  <span>
+                    {{ grupo.permissions.length }}
+                    permiso(s)
+                  </span>
+                </div>
+
+                <label
+                  class="module-toggle"
+                  [class.disabled]="
+                    rolPermisosSeleccionado()?.id === 1
+                  "
+                >
+                  <input
+                    type="checkbox"
+                    [checked]="moduloCompleto(grupo)"
+                    [disabled]="
+                      rolPermisosSeleccionado()?.id === 1
+                    "
+                    (change)="alternarModulo(grupo)"
+                  />
+
+                  <span>
+                    Seleccionar módulo
+                  </span>
+                </label>
+              </header>
+
+              <div class="permission-options">
+                @for (
+                  permiso of grupo.permissions;
+                  track permiso.id
+                ) {
+                  <label
+                    class="permission-option"
+                    [class.checked]="
+                      tienePermiso(permiso.id)
+                    "
+                    [class.disabled]="
+                      rolPermisosSeleccionado()?.id === 1
+                    "
+                  >
+                    <input
+                      type="checkbox"
+                      [checked]="
+                        tienePermiso(permiso.id)
+                      "
+                      [disabled]="
+                        rolPermisosSeleccionado()?.id === 1
+                      "
+                      (change)="
+                        alternarPermiso(permiso.id)
+                      "
+                    />
+
+                    <span class="permission-check">
+                      ✓
+                    </span>
+
+                    <span class="permission-info">
+                      <strong>
+                        {{ permiso.action }}
+                      </strong>
 
                       <span>
-                        {{
-                          rol.description ||
-                          'Sin descripción'
-                        }}
+                        {{ permiso.description }}
                       </span>
 
                       <small>
-                        ID: {{ rol.id }}
+                        {{ permiso.code }}
                       </small>
-                    </div>
-                  </div>
-                </td>
-
-                <td>
-                  <div class="users-count">
-                    <strong>
-                      {{ rol.users_count ?? 0 }}
-                    </strong>
-
-                    <span>
-                      usuario(s)
                     </span>
-                  </div>
-                </td>
+                  </label>
+                }
+              </div>
+            </article>
+          } @empty {
+            <div class="permission-empty-state">
+              <strong>
+                No hay permisos disponibles
+              </strong>
 
-                <td>
-                  <span
-                    class="status-badge"
-                    [class.active]="rol.active"
-                    [class.inactive]="!rol.active"
-                  >
-                    <span class="status-dot"></span>
+              <p>
+                Verifica que existan permisos activos
+                en la tabla permissions.
+              </p>
+            </div>
+          }
+        </div>
 
-                    {{
-                      rol.active
-                        ? 'Activo'
-                        : 'Inactivo'
-                    }}
-                  </span>
-                </td>
+        <footer class="permissions-footer">
+          <div>
+            <strong>
+              {{
+                cantidadPermisosSeleccionados()
+              }}
+              permiso(s) seleccionado(s)
+            </strong>
 
-                <td>
-                  <span class="date-text">
-                    {{
-                      formatearFecha(
-                        rol.updated_at
-                      )
-                    }}
-                  </span>
-                </td>
+            <span>
+              Los cambios se aplicarán a todos los usuarios
+              que tengan este rol.
+            </span>
+          </div>
 
-                <td class="actions-cell">
-                  <div class="action-buttons">
-                    <button
-                      type="button"
-                      class="btn-edit"
-                      (click)="editarRol(rol)"
-                    >
-                      Editar
-                    </button>
-
-                    <button
-                      type="button"
-                      class="btn-status"
-                      [class.deactivate]="rol.active"
-                      [class.activate]="!rol.active"
-                      [disabled]="
-                        rol.id === 1 ||
-                        cambiandoEstadoId() === rol.id
-                      "
-                      (click)="cambiarEstado(rol)"
-                    >
-                      @if (
-                        cambiandoEstadoId() === rol.id
-                      ) {
-                        Guardando...
-                      } @else {
-                        {{
-                          rol.active
-                            ? 'Desactivar'
-                            : 'Activar'
-                        }}
-                      }
-                    </button>
-
-                    <button
-                      type="button"
-                      class="btn-delete"
-                      [disabled]="
-                        rol.id === 1 ||
-                        (rol.users_count ?? 0) > 0
-                      "
-                      [title]="
-                        rol.id === 1
-                          ? 'El rol Administrador está protegido'
-                          : (rol.users_count ?? 0) > 0
-                            ? 'El rol tiene usuarios asignados'
-                            : 'Eliminar rol'
-                      "
-                      (click)="abrirEliminarRol(rol)"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="5">
-                  <div class="empty-state">
-                    <div class="empty-icon">
-                      ⌕
-                    </div>
-
-                    <strong>
-                      No se encontraron roles
-                    </strong>
-
-                    <p>
-                      Cambia el texto de búsqueda o
-                      modifica el filtro seleccionado.
-                    </p>
-
-                    <button
-                      type="button"
-                      class="btn-secondary"
-                      (click)="limpiarFiltros()"
-                    >
-                      Limpiar filtros
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
+          <button
+            type="button"
+            class="btn-save"
+            [disabled]="
+              guardandoPermisos() ||
+              rolPermisosSeleccionado()?.id === 1
+            "
+            (click)="guardarPermisosRol()"
+          >
+            {{
+              guardandoPermisos()
+                ? 'Guardando permisos...'
+                : 'Guardar permisos'
+            }}
+          </button>
+        </footer>
+      }
+    </section>
   </section>
 </section>
 

@@ -13,6 +13,12 @@ import {
   RolesService
 } from '../../../core/services/roles.service';
 
+import {
+  PermissionGroup,
+  PermissionItem,
+  PermissionsService
+} from '../../../core/services/permissions.service';
+
 interface RoleForm {
   name: string;
   description: string;
@@ -27,9 +33,13 @@ interface RoleForm {
 })
 export class Roles implements OnInit {
   readonly roles = signal<RoleItem[]>([]);
+  readonly permisos = signal<PermissionItem[]>([]);
+  readonly gruposPermisos = signal<PermissionGroup[]>([]);
 
   readonly cargando = signal(false);
+  readonly cargandoPermisos = signal(false);
   readonly guardando = signal(false);
+  readonly guardandoPermisos = signal(false);
   readonly cambiandoEstadoId = signal<number | null>(null);
   readonly eliminando = signal(false);
 
@@ -49,15 +59,15 @@ export class Roles implements OnInit {
   readonly rolSeleccionado =
     signal<RoleItem | null>(null);
 
+  readonly rolPermisosSeleccionado =
+    signal<RoleItem | null>(null);
+
+  readonly permisosSeleccionados =
+    signal<Set<number>>(new Set<number>());
+
   readonly esModoEdicion = computed(
     () => this.rolSeleccionado() !== null
   );
-
-  formulario: RoleForm = {
-    name: '',
-    description: '',
-    active: true
-  };
 
   readonly rolesFiltrados = computed(() => {
     const texto = this.busqueda()
@@ -92,12 +102,34 @@ export class Roles implements OnInit {
     });
   });
 
+  readonly cantidadPermisosSeleccionados = computed(
+    () => this.permisosSeleccionados().size
+  );
+
+  formulario: RoleForm = {
+    name: '',
+    description: '',
+    active: true
+  };
+
   constructor(
-    private readonly rolesService: RolesService
+    private readonly rolesService: RolesService,
+    private readonly permissionsService: PermissionsService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.cargarRoles();
+    await Promise.all([
+      this.cargarRoles(),
+      this.cargarPermisos()
+    ]);
+
+    const primerRol = this.roles()[0];
+
+    if (primerRol) {
+      await this.seleccionarRolPermisos(
+        primerRol
+      );
+    }
   }
 
   async cargarRoles(): Promise<void> {
@@ -109,6 +141,20 @@ export class Roles implements OnInit {
         await this.rolesService.getRoles();
 
       this.roles.set(roles);
+
+      const rolActual =
+        this.rolPermisosSeleccionado();
+
+      if (rolActual) {
+        const actualizado =
+          roles.find(
+            (rol) => rol.id === rolActual.id
+          ) ?? null;
+
+        this.rolPermisosSeleccionado.set(
+          actualizado
+        );
+      }
     } catch (error) {
       console.error(
         'Error cargando roles:',
@@ -126,6 +172,247 @@ export class Roles implements OnInit {
     }
   }
 
+  async cargarPermisos(): Promise<void> {
+    this.cargandoPermisos.set(true);
+
+    try {
+      const permisos =
+        await this.permissionsService.getPermissions();
+
+      this.permisos.set(permisos);
+
+      this.gruposPermisos.set(
+        this.permissionsService.groupByModule(
+          permisos
+        )
+      );
+    } catch (error) {
+      console.error(
+        'Error cargando permisos:',
+        error
+      );
+
+      this.errorMessage.set(
+        this.obtenerMensajeError(
+          error,
+          'No fue posible cargar los permisos.'
+        )
+      );
+    } finally {
+      this.cargandoPermisos.set(false);
+    }
+  }
+
+  async seleccionarRolPermisos(
+    rol: RoleItem
+  ): Promise<void> {
+    if (this.guardandoPermisos()) {
+      return;
+    }
+
+    this.limpiarMensajes();
+    this.rolPermisosSeleccionado.set(rol);
+    this.cargandoPermisos.set(true);
+
+    try {
+      if (rol.id === 1) {
+        this.permisosSeleccionados.set(
+          new Set(
+            this.permisos().map(
+              (permiso) => permiso.id
+            )
+          )
+        );
+
+        return;
+      }
+
+      const ids =
+        await this.permissionsService
+          .getRolePermissionIds(rol.id);
+
+      this.permisosSeleccionados.set(
+        new Set(ids)
+      );
+    } catch (error) {
+      console.error(
+        'Error cargando permisos del rol:',
+        error
+      );
+
+      this.errorMessage.set(
+        this.obtenerMensajeError(
+          error,
+          'No fue posible cargar los permisos del rol.'
+        )
+      );
+    } finally {
+      this.cargandoPermisos.set(false);
+    }
+  }
+
+  tienePermiso(
+    permissionId: number
+  ): boolean {
+    return this.permisosSeleccionados()
+      .has(permissionId);
+  }
+
+  alternarPermiso(
+    permissionId: number
+  ): void {
+    const rol =
+      this.rolPermisosSeleccionado();
+
+    if (!rol || rol.id === 1) {
+      return;
+    }
+
+    const seleccionados =
+      new Set(
+        this.permisosSeleccionados()
+      );
+
+    if (seleccionados.has(permissionId)) {
+      seleccionados.delete(permissionId);
+    } else {
+      seleccionados.add(permissionId);
+    }
+
+    this.permisosSeleccionados.set(
+      seleccionados
+    );
+  }
+
+  moduloCompleto(
+    grupo: PermissionGroup
+  ): boolean {
+    return grupo.permissions.every(
+      (permiso) =>
+        this.permisosSeleccionados()
+          .has(permiso.id)
+    );
+  }
+
+  alternarModulo(
+    grupo: PermissionGroup
+  ): void {
+    const rol =
+      this.rolPermisosSeleccionado();
+
+    if (!rol || rol.id === 1) {
+      return;
+    }
+
+    const seleccionados =
+      new Set(
+        this.permisosSeleccionados()
+      );
+
+    const todosMarcados =
+      this.moduloCompleto(grupo);
+
+    for (
+      const permiso of grupo.permissions
+    ) {
+      if (todosMarcados) {
+        seleccionados.delete(
+          permiso.id
+        );
+      } else {
+        seleccionados.add(
+          permiso.id
+        );
+      }
+    }
+
+    this.permisosSeleccionados.set(
+      seleccionados
+    );
+  }
+
+  seleccionarTodosLosPermisos(): void {
+    const rol =
+      this.rolPermisosSeleccionado();
+
+    if (!rol || rol.id === 1) {
+      return;
+    }
+
+    this.permisosSeleccionados.set(
+      new Set(
+        this.permisos().map(
+          (permiso) => permiso.id
+        )
+      )
+    );
+  }
+
+  limpiarTodosLosPermisos(): void {
+    const rol =
+      this.rolPermisosSeleccionado();
+
+    if (!rol || rol.id === 1) {
+      return;
+    }
+
+    this.permisosSeleccionados.set(
+      new Set<number>()
+    );
+  }
+
+  async guardarPermisosRol(): Promise<void> {
+    const rol =
+      this.rolPermisosSeleccionado();
+
+    if (!rol) {
+      this.errorMessage.set(
+        'Selecciona un rol.'
+      );
+
+      return;
+    }
+
+    if (rol.id === 1) {
+      this.errorMessage.set(
+        'El rol Administrador conserva todos los permisos.'
+      );
+
+      return;
+    }
+
+    this.guardandoPermisos.set(true);
+    this.limpiarMensajes();
+
+    try {
+      await this.permissionsService
+        .saveRolePermissions(
+          rol.id,
+          Array.from(
+            this.permisosSeleccionados()
+          )
+        );
+
+      this.successMessage.set(
+        `Los permisos del rol ${rol.name} fueron actualizados correctamente.`
+      );
+    } catch (error) {
+      console.error(
+        'Error guardando permisos:',
+        error
+      );
+
+      this.errorMessage.set(
+        this.obtenerMensajeError(
+          error,
+          'No fue posible guardar los permisos.'
+        )
+      );
+    } finally {
+      this.guardandoPermisos.set(false);
+    }
+  }
+
   nuevoRol(): void {
     this.limpiarMensajes();
 
@@ -140,14 +427,17 @@ export class Roles implements OnInit {
     this.modalFormularioAbierto.set(true);
   }
 
-  editarRol(rol: RoleItem): void {
+  editarRol(
+    rol: RoleItem
+  ): void {
     this.limpiarMensajes();
 
     this.rolSeleccionado.set(rol);
 
     this.formulario = {
       name: rol.name,
-      description: rol.description ?? '',
+      description:
+        rol.description ?? '',
       active: rol.active
     };
 
@@ -223,7 +513,8 @@ export class Roles implements OnInit {
               name: nombre,
               description:
                 descripcion || null,
-              active: this.formulario.active
+              active:
+                this.formulario.active
             }
           );
 
@@ -248,7 +539,8 @@ export class Roles implements OnInit {
           name: nombre,
           description:
             descripcion || null,
-          active: this.formulario.active
+          active:
+            this.formulario.active
         };
 
         const creado =
@@ -264,6 +556,10 @@ export class Roles implements OnInit {
 
         this.successMessage.set(
           'El rol fue creado correctamente.'
+        );
+
+        await this.seleccionarRolPermisos(
+          creado
         );
       }
 
@@ -354,7 +650,9 @@ export class Roles implements OnInit {
       return;
     }
 
-    if ((rol.users_count ?? 0) > 0) {
+    if (
+      (rol.users_count ?? 0) > 0
+    ) {
       this.errorMessage.set(
         'No puedes eliminar este rol porque tiene usuarios asignados.'
       );
@@ -396,6 +694,28 @@ export class Roles implements OnInit {
           (item) => item.id !== rol.id
         )
       );
+
+      if (
+        this.rolPermisosSeleccionado()?.id ===
+        rol.id
+      ) {
+        const primerRol =
+          this.roles()[0] ?? null;
+
+        this.rolPermisosSeleccionado.set(
+          primerRol
+        );
+
+        if (primerRol) {
+          await this.seleccionarRolPermisos(
+            primerRol
+          );
+        } else {
+          this.permisosSeleccionados.set(
+            new Set<number>()
+          );
+        }
+      }
 
       this.modalEliminarAbierto.set(false);
       this.rolSeleccionado.set(null);

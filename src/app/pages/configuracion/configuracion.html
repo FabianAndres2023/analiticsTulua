@@ -7,7 +7,9 @@
     </div>
 
     <div>
-      <h1>Configuración</h1>
+      <h1>
+        Configuración
+      </h1>
 
       <p>
         Administra usuarios, roles, permisos y parámetros generales
@@ -19,77 +21,80 @@
 
   <nav class="configuration-navigation">
 
-    <a
-      routerLink="/configuracion/usuarios"
-      routerLinkActive="active">
+    @if (
+      authService.hasPermission('usuarios.ver')
+    ) {
+      <a
+        routerLink="/configuracion/usuarios"
+        routerLinkActive="active"
+      >
+        <svg lucideUsers></svg>
 
-      <svg lucideUsers></svg>
+        <span>
+          Usuarios
+        </span>
+      </a>
+    }
 
-      <span>
-        Usuarios
-      </span>
+    @if (
+      authService.hasPermission('roles.ver')
+    ) {
+      <a
+        routerLink="/configuracion/roles"
+        routerLinkActive="active"
+      >
+        <svg lucideShieldCheck></svg>
 
-    </a>
+        <span>
+          Roles y permisos
+        </span>
+      </a>
+    }
 
-    <a
-      routerLink="/configuracion/roles"
-      routerLinkActive="active">
+    @if (
+      authService.hasPermission('dependencias.ver')
+    ) {
+      <a
+        routerLink="/configuracion/dependencias"
+        routerLinkActive="active"
+      >
+        <svg lucideBuilding2></svg>
 
-      <svg lucideShieldCheck></svg>
+        <span>
+          Dependencias
+        </span>
+      </a>
+    }
 
-      <span>
-        Roles
-      </span>
+    @if (
+      authService.hasPermission('parametros.ver')
+    ) {
+      <a
+        routerLink="/configuracion/parametros"
+        routerLinkActive="active"
+      >
+        <svg lucideSlidersHorizontal></svg>
 
-    </a>
+        <span>
+          Parámetros
+        </span>
+      </a>
+    }
 
-    <a
-      routerLink="/configuracion/permisos"
-      routerLinkActive="active">
+    @if (
+      authService.hasPermission('carga_masiva.ver')
+    ) {
+      <a
+        routerLink="/configuracion/carga-masiva"
+        routerLinkActive="active"
+      >
+        <svg lucideFileSpreadsheet></svg>
 
-      <svg lucideKeyRound></svg>
-
-      <span>
-        Permisos
-      </span>
-
-    </a>
-
-    <a
-      routerLink="/configuracion/dependencias"
-      routerLinkActive="active">
-
-      <svg lucideBuilding2></svg>
-
-      <span>
-        Dependencias
-      </span>
-
-    </a>
-
-    <a
-      routerLink="/configuracion/parametros"
-      routerLinkActive="active">
-
-      <svg lucideSlidersHorizontal></svg>
-
-      <span>
-        Parámetros
-      </span>
-
-    </a>
-
-    <a
-      routerLink="/configuracion/carga-masiva"
-      routerLinkActive="active">
-
-      <svg lucideFileSpreadsheet></svg>
-
-      <span>
-        Carga masiva
-      </span>
-
-    </a>
+        <span>
+          Carga masiva
+        </span>
+      </a>
+    }
 
   </nav>
 

@@ -15,14 +15,16 @@
       </p>
     </div>
 
-    <button
-      type="button"
-      class="btn-primary"
-      (click)="nuevoUsuario()"
-    >
-      <span class="plus-icon">+</span>
-      Nuevo usuario
-    </button>
+    @if (puedeCrearUsuarios()) {
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="nuevoUsuario()"
+      >
+        <span class="plus-icon">+</span>
+        Nuevo usuario
+      </button>
+    }
   </header>
 
   @if (errorMessage()) {
@@ -32,7 +34,10 @@
     >
       <div>
         <strong>Ocurrió un error</strong>
-        <p>{{ errorMessage() }}</p>
+
+        <p>
+          {{ errorMessage() }}
+        </p>
       </div>
 
       <button
@@ -52,7 +57,10 @@
     >
       <div>
         <strong>Operación completada</strong>
-        <p>{{ successMessage() }}</p>
+
+        <p>
+          {{ successMessage() }}
+        </p>
       </div>
 
       <button
@@ -65,280 +73,344 @@
     </div>
   }
 
-  <section class="filters-card">
-    <div class="search-field">
-      <span class="search-icon">⌕</span>
+  @if (puedeVerUsuarios()) {
+    <section class="filters-card">
+      <div class="search-field">
+        <span class="search-icon">
+          ⌕
+        </span>
 
-      <input
-        type="search"
-        placeholder="Buscar por nombre, correo, rol o dependencia"
-        [ngModel]="busqueda()"
-        (ngModelChange)="busqueda.set($event)"
-      />
-    </div>
+        <input
+          type="search"
+          placeholder="Buscar por nombre, correo, rol o dependencia"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+        />
+      </div>
 
-    <div class="filter-field">
-      <label for="filtro-estado">
-        Estado
-      </label>
+      <div class="filter-field">
+        <label for="filtro-estado">
+          Estado
+        </label>
 
-      <select
-        id="filtro-estado"
-        [ngModel]="filtroEstado()"
-        (ngModelChange)="filtroEstado.set($event)"
-      >
-        <option value="todos">
-          Todos
-        </option>
+        <select
+          id="filtro-estado"
+          [ngModel]="filtroEstado()"
+          (ngModelChange)="filtroEstado.set($event)"
+        >
+          <option value="todos">
+            Todos
+          </option>
 
-        <option value="activos">
-          Activos
-        </option>
+          <option value="activos">
+            Activos
+          </option>
 
-        <option value="inactivos">
-          Inactivos
-        </option>
-      </select>
-    </div>
-
-    <button
-      type="button"
-      class="btn-secondary"
-      (click)="limpiarFiltros()"
-    >
-      Limpiar filtros
-    </button>
-  </section>
-
-  <section class="table-card">
-    <header class="table-card-header">
-      <div>
-        <h3>Usuarios registrados</h3>
-
-        <p>
-          {{ usuariosFiltrados().length }}
-          de
-          {{ usuarios().length }}
-          usuario(s)
-        </p>
+          <option value="inactivos">
+            Inactivos
+          </option>
+        </select>
       </div>
 
       <button
         type="button"
-        class="btn-refresh"
-        [disabled]="cargando()"
-        (click)="cargarUsuarios()"
+        class="btn-secondary"
+        (click)="limpiarFiltros()"
       >
-        {{
-          cargando()
-            ? 'Actualizando...'
-            : 'Actualizar'
-        }}
+        Limpiar filtros
       </button>
-    </header>
+    </section>
 
-    @if (cargando()) {
-      <div class="loading-state">
-        <div class="spinner"></div>
+    <section class="table-card">
+      <header class="table-card-header">
+        <div>
+          <h3>
+            Usuarios registrados
+          </h3>
 
-        <strong>Cargando usuarios</strong>
+          <p>
+            {{ usuariosFiltrados().length }}
+            de
+            {{ usuarios().length }}
+            usuario(s)
+          </p>
+        </div>
 
-        <p>
-          Consultando perfiles y datos de Authentication...
-        </p>
-      </div>
-    } @else {
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Usuario</th>
-              <th>Rol</th>
-              <th>Dependencia</th>
-              <th>Estado</th>
-              <th>Último acceso</th>
+        <button
+          type="button"
+          class="btn-refresh"
+          [disabled]="cargando()"
+          (click)="cargarUsuarios()"
+        >
+          {{
+            cargando()
+              ? 'Actualizando...'
+              : 'Actualizar'
+          }}
+        </button>
+      </header>
 
-              <th class="actions-heading">
-                Acciones
-              </th>
-            </tr>
-          </thead>
+      @if (cargando()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
 
-          <tbody>
-            @for (
-              usuario of usuariosFiltrados();
-              track usuario.id
-            ) {
+          <strong>
+            Cargando usuarios
+          </strong>
+
+          <p>
+            Consultando perfiles y datos de Authentication...
+          </p>
+        </div>
+      } @else {
+        <div class="table-wrapper">
+          <table>
+            <thead>
               <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="avatar">
-                      {{
-                        obtenerIniciales(
-                          usuario.full_name
-                        )
-                      }}
-                    </div>
+                <th>
+                  Usuario
+                </th>
 
-                    <div class="user-data">
-                      <strong>
+                <th>
+                  Rol
+                </th>
+
+                <th>
+                  Dependencia
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th>
+                  Último acceso
+                </th>
+
+                <th class="actions-heading">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (
+                usuario of usuariosFiltrados();
+                track usuario.id
+              ) {
+                <tr>
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar">
                         {{
-                          usuario.full_name ||
-                          'Usuario sin nombre'
-                        }}
-                      </strong>
-
-                      <span>
-                        {{ usuario.email }}
-                      </span>
-
-                      <small class="created-date">
-                        Creado:
-                        {{
-                          formatearFecha(
-                            usuario.auth_created_at
+                          obtenerIniciales(
+                            usuario.full_name
                           )
                         }}
-                      </small>
+                      </div>
+
+                      <div class="user-data">
+                        <strong>
+                          {{
+                            usuario.full_name ||
+                            'Usuario sin nombre'
+                          }}
+                        </strong>
+
+                        <span>
+                          {{ usuario.email }}
+                        </span>
+
+                        <small class="created-date">
+                          Creado:
+                          {{
+                            formatearFecha(
+                              usuario.auth_created_at
+                            )
+                          }}
+                        </small>
+                      </div>
                     </div>
-                  </div>
-                </td>
+                  </td>
 
-                <td>
-                  <span class="data-badge">
-                    {{
-                      usuario.role?.name ??
-                      'Sin rol'
-                    }}
-                  </span>
-                </td>
+                  <td>
+                    <span class="data-badge">
+                      {{
+                        usuario.role?.name ??
+                        'Sin rol'
+                      }}
+                    </span>
+                  </td>
 
-                <td>
-                  <span class="dependency-text">
-                    {{
-                      usuario.dependency?.name ??
-                      'Sin dependencia'
-                    }}
-                  </span>
-                </td>
+                  <td>
+                    <span class="dependency-text">
+                      {{
+                        usuario.dependency?.name ??
+                        'Sin dependencia'
+                      }}
+                    </span>
+                  </td>
 
-                <td>
-                  <span
-                    class="status-badge"
-                    [class.active]="usuario.active"
-                    [class.inactive]="!usuario.active"
-                  >
-                    <span class="status-dot"></span>
-
-                    {{
-                      usuario.active
-                        ? 'Activo'
-                        : 'Inactivo'
-                    }}
-                  </span>
-                </td>
-
-                <td>
-                  <span class="auth-date">
-                    {{
-                      formatearFecha(
-                        usuario.last_sign_in_at
-                      )
-                    }}
-                  </span>
-                </td>
-
-                <td class="actions-cell">
-                  <div class="action-buttons">
-                    <button
-                      type="button"
-                      class="btn-edit"
-                      (click)="editarUsuario(usuario)"
+                  <td>
+                    <span
+                      class="status-badge"
+                      [class.active]="usuario.active"
+                      [class.inactive]="!usuario.active"
                     >
-                      Editar
-                    </button>
+                      <span class="status-dot"></span>
 
-                    <button
-                      type="button"
-                      class="btn-password"
-                      (click)="
-                        abrirRestablecerPassword(usuario)
-                      "
-                    >
-                      Contraseña
-                    </button>
+                      {{
+                        usuario.active
+                          ? 'Activo'
+                          : 'Inactivo'
+                      }}
+                    </span>
+                  </td>
 
-                    <button
-                      type="button"
-                      class="btn-status"
-                      [class.deactivate]="usuario.active"
-                      [class.activate]="!usuario.active"
-                      [disabled]="
-                        cambiandoEstadoId() === usuario.id
-                      "
-                      (click)="cambiarEstado(usuario)"
-                    >
-                      @if (
-                        cambiandoEstadoId() === usuario.id
-                      ) {
-                        Guardando...
-                      } @else {
-                        {{
-                          usuario.active
-                            ? 'Desactivar'
-                            : 'Activar'
-                        }}
+                  <td>
+                    <span class="auth-date">
+                      {{
+                        formatearFecha(
+                          usuario.last_sign_in_at
+                        )
+                      }}
+                    </span>
+                  </td>
+
+                  <td class="actions-cell">
+                    <div class="action-buttons">
+                      @if (puedeEditarUsuarios()) {
+                        <button
+                          type="button"
+                          class="btn-edit"
+                          (click)="editarUsuario(usuario)"
+                        >
+                          Editar
+                        </button>
                       }
-                    </button>
 
-                    <button
-                      type="button"
-                      class="btn-delete"
-                      (click)="
-                        abrirEliminarUsuario(usuario)
-                      "
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="6">
-                  <div class="empty-state">
-                    <div class="empty-icon">⌕</div>
+                      @if (puedeRestablecerPassword()) {
+                        <button
+                          type="button"
+                          class="btn-password"
+                          (click)="
+                            abrirRestablecerPassword(usuario)
+                          "
+                        >
+                          Contraseña
+                        </button>
+                      }
 
-                    <strong>
-                      No se encontraron usuarios
-                    </strong>
+                      @if (puedeCambiarEstado()) {
+                        <button
+                          type="button"
+                          class="btn-status"
+                          [class.deactivate]="usuario.active"
+                          [class.activate]="!usuario.active"
+                          [disabled]="
+                            cambiandoEstadoId() === usuario.id
+                          "
+                          (click)="cambiarEstado(usuario)"
+                        >
+                          @if (
+                            cambiandoEstadoId() === usuario.id
+                          ) {
+                            Guardando...
+                          } @else {
+                            {{
+                              usuario.active
+                                ? 'Desactivar'
+                                : 'Activar'
+                            }}
+                          }
+                        </button>
+                      }
 
-                    <p>
-                      Cambia el texto de búsqueda o
-                      modifica los filtros seleccionados.
-                    </p>
+                      @if (puedeEliminarUsuarios()) {
+                        <button
+                          type="button"
+                          class="btn-delete"
+                          (click)="
+                            abrirEliminarUsuario(usuario)
+                          "
+                        >
+                          Eliminar
+                        </button>
+                      }
 
-                    <button
-                      type="button"
-                      class="btn-secondary"
-                      (click)="limpiarFiltros()"
-                    >
-                      Limpiar filtros
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+                      @if (
+                        !puedeEditarUsuarios() &&
+                        !puedeRestablecerPassword() &&
+                        !puedeCambiarEstado() &&
+                        !puedeEliminarUsuarios()
+                      ) {
+                        <span class="no-actions">
+                          Solo lectura
+                        </span>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6">
+                    <div class="empty-state">
+                      <div class="empty-icon">
+                        ⌕
+                      </div>
+
+                      <strong>
+                        No se encontraron usuarios
+                      </strong>
+
+                      <p>
+                        Cambia el texto de búsqueda o
+                        modifica los filtros seleccionados.
+                      </p>
+
+                      <button
+                        type="button"
+                        class="btn-secondary"
+                        (click)="limpiarFiltros()"
+                      >
+                        Limpiar filtros
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  } @else {
+    <section class="table-card">
+      <div class="empty-state">
+        <div class="empty-icon">
+          🔒
+        </div>
+
+        <strong>
+          Acceso restringido
+        </strong>
+
+        <p>
+          Tu rol no tiene el permiso
+          <code>usuarios.ver</code>
+          para consultar este módulo.
+        </p>
       </div>
-    }
-  </section>
+    </section>
+  }
 </section>
 
 <!-- MODAL EDITAR -->
 
-@if (modalEditarAbierto()) {
+@if (
+  modalEditarAbierto() &&
+  puedeEditarUsuarios()
+) {
   <div
     class="modal-backdrop"
     (click)="cerrarModalEditar()"
@@ -485,7 +557,9 @@
           <span class="status-switch"></span>
 
           <span>
-            <strong>Usuario activo</strong>
+            <strong>
+              Usuario activo
+            </strong>
 
             <small>
               Determina si el usuario tiene
@@ -523,7 +597,10 @@
 
 <!-- MODAL CREAR -->
 
-@if (modalCrearAbierto()) {
+@if (
+  modalCrearAbierto() &&
+  puedeCrearUsuarios()
+) {
   <div
     class="modal-backdrop"
     (click)="cerrarModalCrear()"
@@ -724,7 +801,9 @@
           <span class="status-switch"></span>
 
           <span>
-            <strong>Usuario activo</strong>
+            <strong>
+              Usuario activo
+            </strong>
 
             <small>
               El usuario quedará habilitado para
@@ -762,7 +841,10 @@
 
 <!-- MODAL CONTRASEÑA -->
 
-@if (modalPasswordAbierto()) {
+@if (
+  modalPasswordAbierto() &&
+  puedeRestablecerPassword()
+) {
   <div
     class="modal-backdrop"
     (click)="cerrarModalPassword()"
@@ -898,7 +980,10 @@
 
 <!-- MODAL ELIMINAR -->
 
-@if (modalEliminarAbierto()) {
+@if (
+  modalEliminarAbierto() &&
+  puedeEliminarUsuarios()
+) {
   <div
     class="modal-backdrop"
     (click)="cerrarModalEliminar()"

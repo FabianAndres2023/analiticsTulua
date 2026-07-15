@@ -9,12 +9,13 @@ import {
 import {
   LucideBuilding2,
   LucideFileSpreadsheet,
-  LucideKeyRound,
   LucideSettings,
   LucideShieldCheck,
   LucideSlidersHorizontal,
   LucideUsers
 } from '@lucide/angular';
+
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-configuracion',
@@ -25,7 +26,6 @@ import {
     LucideSettings,
     LucideUsers,
     LucideShieldCheck,
-    LucideKeyRound,
     LucideBuilding2,
     LucideSlidersHorizontal,
     LucideFileSpreadsheet
@@ -33,4 +33,8 @@ import {
   templateUrl: './configuracion.html',
   styleUrl: './configuracion.scss'
 })
-export class Configuracion {}
+export class Configuracion {
+  constructor(
+    readonly authService: AuthService
+  ) {}
+}

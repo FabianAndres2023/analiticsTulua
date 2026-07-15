@@ -10,7 +10,6 @@ import { OcioTurismo } from './pages/ocio-turismo/ocio-turismo';
 import { Configuracion } from './pages/configuracion/configuracion';
 import { Usuarios } from './pages/configuracion/usuarios/usuarios';
 import { Roles } from './pages/configuracion/roles/roles';
-import { Permisos } from './pages/configuracion/permisos/permisos';
 import { Dependencias } from './pages/configuracion/dependencias/dependencias';
 import { Parametros } from './pages/configuracion/parametros/parametros';
 import { CargaMasiva } from './pages/configuracion/carga-masiva/carga-masiva';
@@ -78,11 +77,6 @@ export const routes: Routes = [
           {
             path: 'roles',
             component: Roles
-          },
-
-          {
-            path: 'permisos',
-            component: Permisos
           },
 
           {
