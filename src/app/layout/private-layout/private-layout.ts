@@ -39,11 +39,52 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './private-layout.scss'
 })
 export class PrivateLayout implements OnInit {
-  private readonly authService = inject(AuthService);
+  readonly authService = inject(AuthService);
 
-  readonly profile = this.authService.currentProfile;
-  readonly currentUser = this.authService.currentUser;
-  readonly loadingUser = this.authService.loadingProfile;
+  readonly profile =
+    this.authService.currentProfile;
+
+  readonly currentUser =
+    this.authService.currentUser;
+
+  readonly loadingUser =
+    this.authService.loadingProfile;
+
+  readonly loadingPermissions =
+    this.authService.loadingPermissions;
+
+  readonly puedeVerDashboard = computed(() =>
+    this.authService.hasPermission(
+      'dashboard.ver'
+    )
+  );
+
+  readonly puedeVerAmbiente = computed(() =>
+    this.authService.hasPermission(
+      'ambiente.ver'
+    )
+  );
+
+  readonly puedeVerMovilidad = computed(() =>
+    this.authService.hasPermission(
+      'movilidad.ver'
+    )
+  );
+
+  readonly puedeVerTurismo = computed(() =>
+    this.authService.hasPermission(
+      'turismo.ver'
+    )
+  );
+
+  readonly puedeVerConfiguracion = computed(() =>
+    this.authService.hasAnyPermission([
+      'usuarios.ver',
+      'roles.ver',
+      'dependencias.ver',
+      'carga_masiva.ver'
+    ])
+  );
 
   readonly userName = computed(() => {
     const profile = this.profile();
@@ -67,14 +108,23 @@ export class PrivateLayout implements OnInit {
   });
 
   readonly initials = computed(() => {
-    return this.createInitials(this.userName());
+    return this.createInitials(
+      this.userName()
+    );
   });
 
   async ngOnInit(): Promise<void> {
-    await this.authService.loadCurrentProfile();
+    /*
+     * Carga sesión, perfil y permisos.
+     * Esto también funciona cuando el navegador
+     * se recarga directamente sobre una ruta privada.
+     */
+    await this.authService.initializeSession();
   }
 
-  private createInitials(name: string): string {
+  private createInitials(
+    name: string
+  ): string {
     const words = name
       .trim()
       .split(/\s+/)

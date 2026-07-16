@@ -11,7 +11,6 @@ import {
   LucideFileSpreadsheet,
   LucideSettings,
   LucideShieldCheck,
-  LucideSlidersHorizontal,
   LucideUsers
 } from '@lucide/angular';
 
@@ -27,7 +26,6 @@ import { AuthService } from '../../core/services/auth.service';
     LucideUsers,
     LucideShieldCheck,
     LucideBuilding2,
-    LucideSlidersHorizontal,
     LucideFileSpreadsheet
   ],
   templateUrl: './configuracion.html',

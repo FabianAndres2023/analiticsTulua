@@ -1,1 +1,640 @@
-<p>dependencias works!</p>
+<section class="dependencies-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">
+        Configuración
+      </span>
+
+      <h2>
+        Gestión de dependencias
+      </h2>
+
+      <p>
+        Administra las secretarías y áreas institucionales
+        asociadas a los usuarios de la plataforma.
+      </p>
+    </div>
+
+    @if (puedeCrearDependencias()) {
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="nuevaDependencia()"
+      >
+        <span class="plus-icon">+</span>
+        Nueva dependencia
+      </button>
+    }
+  </header>
+
+  @if (errorMessage()) {
+    <div
+      class="alert-error"
+      role="alert"
+    >
+      <div>
+        <strong>
+          Ocurrió un error
+        </strong>
+
+        <p>
+          {{ errorMessage() }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Cerrar mensaje"
+        (click)="errorMessage.set('')"
+      >
+        ×
+      </button>
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div
+      class="alert-success"
+      role="status"
+    >
+      <div>
+        <strong>
+          Operación completada
+        </strong>
+
+        <p>
+          {{ successMessage() }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Cerrar mensaje"
+        (click)="successMessage.set('')"
+      >
+        ×
+      </button>
+    </div>
+  }
+
+  @if (puedeVerDependencias()) {
+    <section class="filters-card">
+      <div class="search-field">
+        <span class="search-icon">
+          ⌕
+        </span>
+
+        <input
+          type="search"
+          placeholder="Buscar por nombre o descripción"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+        />
+      </div>
+
+      <div class="filter-field">
+        <label for="filtro-estado-dependencia">
+          Estado
+        </label>
+
+        <select
+          id="filtro-estado-dependencia"
+          [ngModel]="filtroEstado()"
+          (ngModelChange)="filtroEstado.set($event)"
+        >
+          <option value="todos">
+            Todas
+          </option>
+
+          <option value="activos">
+            Activas
+          </option>
+
+          <option value="inactivos">
+            Inactivas
+          </option>
+        </select>
+      </div>
+
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar filtros
+      </button>
+    </section>
+
+    <section class="dependencies-card">
+      <header class="card-header">
+        <div>
+          <h3>
+            Dependencias registradas
+          </h3>
+
+          <p>
+            {{ dependenciasFiltradas().length }}
+            de
+            {{ dependencias().length }}
+            dependencia(s)
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-refresh"
+          [disabled]="cargando()"
+          (click)="cargarDependencias()"
+        >
+          {{
+            cargando()
+              ? 'Actualizando...'
+              : 'Actualizar'
+          }}
+        </button>
+      </header>
+
+      @if (cargando()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+
+          <strong>
+            Cargando dependencias
+          </strong>
+
+          <p>
+            Consultando información en Supabase...
+          </p>
+        </div>
+      } @else {
+        <div class="dependencies-grid">
+          @for (
+            dependencia of dependenciasFiltradas();
+            track dependencia.id
+          ) {
+            <article
+              class="dependency-card"
+              [class.inactive]="!dependencia.active"
+            >
+              <div class="dependency-main">
+                <div class="dependency-icon">
+                  {{
+                    obtenerInicial(
+                      dependencia.name
+                    )
+                  }}
+                </div>
+
+                <div class="dependency-data">
+                  <div class="dependency-title">
+                    <strong>
+                      {{ dependencia.name }}
+                    </strong>
+
+                    <span
+                      class="status-badge"
+                      [class.active]="dependencia.active"
+                      [class.inactive]="!dependencia.active"
+                    >
+                      <span class="status-dot"></span>
+
+                      {{
+                        dependencia.active
+                          ? 'Activa'
+                          : 'Inactiva'
+                      }}
+                    </span>
+                  </div>
+
+                  <p>
+                    {{
+                      dependencia.description ||
+                      'Sin descripción'
+                    }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="dependency-meta">
+                <div>
+                  <span>
+                    Usuarios asignados
+                  </span>
+
+                  <strong>
+                    {{ dependencia.users_count }}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Creada
+                  </span>
+
+                  <strong>
+                    {{
+                      formatearFecha(
+                        dependencia.created_at
+                      )
+                    }}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Actualizada
+                  </span>
+
+                  <strong>
+                    {{
+                      formatearFecha(
+                        dependencia.updated_at
+                      )
+                    }}
+                  </strong>
+                </div>
+              </div>
+
+              <footer class="dependency-actions">
+                @if (puedeEditarDependencias()) {
+                  <button
+                    type="button"
+                    class="btn-edit"
+                    (click)="
+                      editarDependencia(
+                        dependencia
+                      )
+                    "
+                  >
+                    Editar
+                  </button>
+                }
+
+                @if (puedeCambiarEstado()) {
+                  <button
+                    type="button"
+                    class="btn-status"
+                    [class.deactivate]="
+                      dependencia.active
+                    "
+                    [class.activate]="
+                      !dependencia.active
+                    "
+                    [disabled]="
+                      cambiandoEstadoId() ===
+                      dependencia.id
+                    "
+                    (click)="
+                      cambiarEstado(
+                        dependencia
+                      )
+                    "
+                  >
+                    @if (
+                      cambiandoEstadoId() ===
+                      dependencia.id
+                    ) {
+                      Guardando...
+                    } @else {
+                      {{
+                        dependencia.active
+                          ? 'Desactivar'
+                          : 'Activar'
+                      }}
+                    }
+                  </button>
+                }
+
+                @if (
+                  puedeEliminarDependencias()
+                ) {
+                  <button
+                    type="button"
+                    class="btn-delete"
+                    [disabled]="
+                      dependencia.users_count > 0
+                    "
+                    [title]="
+                      dependencia.users_count > 0
+                        ? 'No se puede eliminar porque tiene usuarios asignados'
+                        : 'Eliminar dependencia'
+                    "
+                    (click)="
+                      abrirEliminarDependencia(
+                        dependencia
+                      )
+                    "
+                  >
+                    Eliminar
+                  </button>
+                }
+
+                @if (
+                  !puedeEditarDependencias() &&
+                  !puedeCambiarEstado() &&
+                  !puedeEliminarDependencias()
+                ) {
+                  <span class="no-actions">
+                    Solo lectura
+                  </span>
+                }
+              </footer>
+            </article>
+          } @empty {
+            <div class="empty-state">
+              <div class="empty-icon">
+                ⌕
+              </div>
+
+              <strong>
+                No se encontraron dependencias
+              </strong>
+
+              <p>
+                Cambia el texto de búsqueda o
+                modifica los filtros seleccionados.
+              </p>
+
+              <button
+                type="button"
+                class="btn-secondary"
+                (click)="limpiarFiltros()"
+              >
+                Limpiar filtros
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  } @else {
+    <section class="dependencies-card">
+      <div class="empty-state">
+        <div class="empty-icon">
+          🔒
+        </div>
+
+        <strong>
+          Acceso restringido
+        </strong>
+
+        <p>
+          Tu rol no tiene permiso para consultar
+          las dependencias de la plataforma.
+        </p>
+      </div>
+    </section>
+  }
+</section>
+
+@if (
+  modalFormularioAbierto() &&
+  (
+    puedeCrearDependencias() ||
+    puedeEditarDependencias()
+  )
+) {
+  <div
+    class="modal-backdrop"
+    (click)="cerrarModalFormulario()"
+  >
+    <section
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-formulario-dependencia"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header">
+        <div>
+          <span class="modal-eyebrow">
+            Configuración
+          </span>
+
+          <h3 id="titulo-formulario-dependencia">
+            {{
+              esModoEdicion()
+                ? 'Editar dependencia'
+                : 'Nueva dependencia'
+            }}
+          </h3>
+
+          <p>
+            {{
+              esModoEdicion()
+                ? 'Actualiza los datos generales de la dependencia.'
+                : 'Registra una nueva secretaría o área institucional.'
+            }}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar modal"
+          [disabled]="guardando()"
+          (click)="cerrarModalFormulario()"
+        >
+          ×
+        </button>
+      </header>
+
+      <form
+        class="modal-form"
+        (ngSubmit)="guardarDependencia()"
+      >
+        <div class="form-group full-width">
+          <label for="dependency-name">
+            Nombre
+          </label>
+
+          <input
+            id="dependency-name"
+            type="text"
+            name="dependency_name"
+            maxlength="100"
+            autocomplete="organization"
+            required
+            [(ngModel)]="formulario.name"
+          />
+
+          <small>
+            Debe ser único dentro de la plataforma.
+          </small>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="dependency-description">
+            Descripción
+          </label>
+
+          <textarea
+            id="dependency-description"
+            name="dependency_description"
+            rows="4"
+            maxlength="300"
+            placeholder="Describe la función general de esta dependencia"
+            [(ngModel)]="
+              formulario.description
+            "
+          ></textarea>
+
+          <small>
+            Máximo 300 caracteres.
+          </small>
+        </div>
+
+        <label class="status-control">
+          <input
+            type="checkbox"
+            name="dependency_active"
+            [(ngModel)]="
+              formulario.active
+            "
+          />
+
+          <span class="status-switch"></span>
+
+          <span>
+            <strong>
+              Dependencia activa
+            </strong>
+
+            <small>
+              Las dependencias inactivas no deberían
+              asignarse a nuevos usuarios.
+            </small>
+          </span>
+        </label>
+
+        <footer class="modal-actions">
+          <button
+            type="button"
+            class="btn-cancel"
+            [disabled]="guardando()"
+            (click)="cerrarModalFormulario()"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn-save"
+            [disabled]="guardando()"
+          >
+            {{
+              guardando()
+                ? 'Guardando...'
+                : esModoEdicion()
+                  ? 'Guardar cambios'
+                  : 'Crear dependencia'
+            }}
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}
+
+@if (
+  modalEliminarAbierto() &&
+  puedeEliminarDependencias()
+) {
+  <div
+    class="modal-backdrop"
+    (click)="cerrarModalEliminar()"
+  >
+    <section
+      class="modal-card modal-card-small"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="titulo-eliminar-dependencia"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header danger-header">
+        <div>
+          <span class="modal-eyebrow danger-text">
+            Zona peligrosa
+          </span>
+
+          <h3 id="titulo-eliminar-dependencia">
+            Eliminar dependencia
+          </h3>
+
+          <p>
+            Esta acción eliminará definitivamente
+            la dependencia seleccionada.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar modal"
+          [disabled]="eliminando()"
+          (click)="cerrarModalEliminar()"
+        >
+          ×
+        </button>
+      </header>
+
+      <div class="delete-content">
+        <p>
+          ¿Confirmas que deseas eliminar
+          <strong>
+            {{
+              dependenciaSeleccionada()?.name
+            }}
+          </strong>?
+        </p>
+
+        <div class="delete-summary">
+          <span>
+            {{
+              dependenciaSeleccionada()
+                ?.description ||
+              'Sin descripción'
+            }}
+          </span>
+
+          <span>
+            Usuarios asignados:
+            {{
+              dependenciaSeleccionada()
+                ?.users_count ?? 0
+            }}
+          </span>
+        </div>
+
+        <p class="delete-warning">
+          Para conservar el historial, puedes
+          desactivar la dependencia en lugar de eliminarla.
+        </p>
+      </div>
+
+      <footer class="modal-actions delete-actions">
+        <button
+          type="button"
+          class="btn-cancel"
+          [disabled]="eliminando()"
+          (click)="cerrarModalEliminar()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn-confirm-delete"
+          [disabled]="eliminando()"
+          (click)="eliminarDependencia()"
+        >
+          {{
+            eliminando()
+              ? 'Eliminando...'
+              : 'Eliminar definitivamente'
+          }}
+        </button>
+      </footer>
+    </section>
+  </div>
+}

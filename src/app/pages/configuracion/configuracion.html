@@ -67,21 +67,6 @@
     }
 
     @if (
-      authService.hasPermission('parametros.ver')
-    ) {
-      <a
-        routerLink="/configuracion/parametros"
-        routerLinkActive="active"
-      >
-        <svg lucideSlidersHorizontal></svg>
-
-        <span>
-          Parámetros
-        </span>
-      </a>
-    }
-
-    @if (
       authService.hasPermission('carga_masiva.ver')
     ) {
       <a

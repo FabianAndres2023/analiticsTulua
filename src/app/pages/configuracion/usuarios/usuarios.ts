@@ -19,6 +19,10 @@ import {
   Role
 } from '../../../core/services/catalogs.service';
 
+import {
+  AuthService
+} from '../../../core/services/auth.service';
+
 interface UserEditForm {
   full_name: string;
   email: string;
@@ -44,44 +48,118 @@ interface PasswordForm {
 
 @Component({
   selector: 'app-usuarios',
-  imports: [FormsModule],
+  imports: [
+    FormsModule
+  ],
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.scss'
 })
 export class Usuarios implements OnInit {
-  readonly usuarios = signal<UserProfile[]>([]);
-  readonly roles = signal<Role[]>([]);
-  readonly dependencias = signal<Dependency[]>([]);
+  readonly usuarios =
+    signal<UserProfile[]>([]);
 
-  readonly cargando = signal(false);
-  readonly guardando = signal(false);
-  readonly creando = signal(false);
-  readonly restableciendoPassword = signal(false);
-  readonly eliminando = signal(false);
+  readonly roles =
+    signal<Role[]>([]);
+
+  readonly dependencias =
+    signal<Dependency[]>([]);
+
+  readonly cargando =
+    signal(false);
+
+  readonly guardando =
+    signal(false);
+
+  readonly creando =
+    signal(false);
+
+  readonly restableciendoPassword =
+    signal(false);
+
+  readonly eliminando =
+    signal(false);
 
   readonly cambiandoEstadoId =
     signal<string | null>(null);
 
-  readonly errorMessage = signal('');
-  readonly successMessage = signal('');
+  readonly errorMessage =
+    signal('');
 
-  readonly busqueda = signal('');
+  readonly successMessage =
+    signal('');
+
+  readonly busqueda =
+    signal('');
 
   readonly filtroEstado =
-    signal<'todos' | 'activos' | 'inactivos'>(
-      'todos'
-    );
+    signal<
+      'todos' |
+      'activos' |
+      'inactivos'
+    >('todos');
 
-  readonly modalEditarAbierto = signal(false);
-  readonly modalCrearAbierto = signal(false);
-  readonly modalPasswordAbierto = signal(false);
-  readonly modalEliminarAbierto = signal(false);
+  readonly modalEditarAbierto =
+    signal(false);
+
+  readonly modalCrearAbierto =
+    signal(false);
+
+  readonly modalPasswordAbierto =
+    signal(false);
+
+  readonly modalEliminarAbierto =
+    signal(false);
 
   readonly usuarioSeleccionado =
     signal<UserProfile | null>(null);
 
-  readonly mostrarPasswordCreacion = signal(false);
-  readonly mostrarPasswordNueva = signal(false);
+  readonly mostrarPasswordCreacion =
+    signal(false);
+
+  readonly mostrarPasswordNueva =
+    signal(false);
+
+  readonly puedeVerUsuarios =
+    computed(() =>
+      this.authService.hasPermission(
+        'usuarios.ver'
+      )
+    );
+
+  readonly puedeCrearUsuarios =
+    computed(() =>
+      this.authService.hasPermission(
+        'usuarios.crear'
+      )
+    );
+
+  readonly puedeEditarUsuarios =
+    computed(() =>
+      this.authService.hasPermission(
+        'usuarios.editar'
+      )
+    );
+
+  readonly puedeCambiarEstado =
+    computed(() =>
+      this.authService.hasPermission(
+        'usuarios.estado'
+      )
+    );
+
+  readonly puedeRestablecerPassword =
+    computed(() =>
+      this.authService.hasPermission(
+        'usuarios.password'
+      )
+    );
+
+  readonly puedeEliminarUsuarios =
+    computed(() =>
+      this.authService.hasPermission(
+        'usuarios.eliminar'
+      )
+    );
 
   formularioEdicion: UserEditForm = {
     full_name: '',
@@ -106,53 +184,79 @@ export class Usuarios implements OnInit {
     confirm_password: ''
   };
 
-  readonly usuariosFiltrados = computed(() => {
-    const texto = this.busqueda()
-      .trim()
-      .toLowerCase();
+  readonly usuariosFiltrados =
+    computed(() => {
+      const texto =
+        this.busqueda()
+          .trim()
+          .toLowerCase();
 
-    const estado = this.filtroEstado();
+      const estado =
+        this.filtroEstado();
 
-    return this.usuarios().filter((usuario) => {
-      const nombre =
-        usuario.full_name?.toLowerCase() ?? '';
+      return this.usuarios().filter(
+        (usuario) => {
+          const nombre =
+            usuario.full_name
+              ?.toLowerCase() ?? '';
 
-      const correo =
-        usuario.email?.toLowerCase() ?? '';
+          const correo =
+            usuario.email
+              ?.toLowerCase() ?? '';
 
-      const rol =
-        usuario.role?.name?.toLowerCase() ?? '';
+          const rol =
+            usuario.role?.name
+              ?.toLowerCase() ?? '';
 
-      const dependencia =
-        usuario.dependency?.name?.toLowerCase() ?? '';
+          const dependencia =
+            usuario.dependency?.name
+              ?.toLowerCase() ?? '';
 
-      const coincideBusqueda =
-        nombre.includes(texto) ||
-        correo.includes(texto) ||
-        rol.includes(texto) ||
-        dependencia.includes(texto);
+          const coincideBusqueda =
+            nombre.includes(texto) ||
+            correo.includes(texto) ||
+            rol.includes(texto) ||
+            dependencia.includes(texto);
 
-      const coincideEstado =
-        estado === 'todos' ||
-        (
-          estado === 'activos' &&
-          usuario.active
-        ) ||
-        (
-          estado === 'inactivos' &&
-          !usuario.active
-        );
+          const coincideEstado =
+            estado === 'todos' ||
+            (
+              estado === 'activos' &&
+              usuario.active
+            ) ||
+            (
+              estado === 'inactivos' &&
+              !usuario.active
+            );
 
-      return coincideBusqueda && coincideEstado;
+          return (
+            coincideBusqueda &&
+            coincideEstado
+          );
+        }
+      );
     });
-  });
 
   constructor(
-    private readonly usersService: UsersService,
-    private readonly catalogsService: CatalogsService
+    private readonly usersService:
+      UsersService,
+
+    private readonly catalogsService:
+      CatalogsService,
+
+    readonly authService:
+      AuthService
   ) {}
 
   async ngOnInit(): Promise<void> {
+    if (!this.puedeVerUsuarios()) {
+      this.errorMessage.set(
+        'No tienes permiso para consultar usuarios.'
+      );
+
+      return;
+    }
+
     await Promise.all([
       this.cargarUsuarios(),
       this.cargarCatalogos()
@@ -160,12 +264,22 @@ export class Usuarios implements OnInit {
   }
 
   async cargarUsuarios(): Promise<void> {
+    if (
+      !this.verificarPermiso(
+        'usuarios.ver',
+        'No tienes permiso para consultar usuarios.'
+      )
+    ) {
+      return;
+    }
+
     this.cargando.set(true);
     this.errorMessage.set('');
 
     try {
       const usuarios =
-        await this.usersService.getUsersWithAuthData();
+        await this.usersService
+          .getUsersWithAuthData();
 
       this.usuarios.set(usuarios);
     } catch (error) {
@@ -186,15 +300,26 @@ export class Usuarios implements OnInit {
   }
 
   async cargarCatalogos(): Promise<void> {
+    if (!this.puedeVerUsuarios()) {
+      return;
+    }
+
     try {
-      const [roles, dependencias] =
-        await Promise.all([
-          this.catalogsService.getRoles(),
-          this.catalogsService.getDependencies()
-        ]);
+      const [
+        roles,
+        dependencias
+      ] = await Promise.all([
+        this.catalogsService
+          .getRoles(),
+
+        this.catalogsService
+          .getDependencies()
+      ]);
 
       this.roles.set(roles);
-      this.dependencias.set(dependencias);
+      this.dependencias.set(
+        dependencias
+      );
     } catch (error) {
       console.error(
         'Error cargando catálogos:',
@@ -211,6 +336,15 @@ export class Usuarios implements OnInit {
   }
 
   nuevoUsuario(): void {
+    if (
+      !this.verificarPermiso(
+        'usuarios.crear',
+        'No tienes permiso para crear usuarios.'
+      )
+    ) {
+      return;
+    }
+
     this.limpiarMensajes();
 
     this.formularioCreacion = {
@@ -223,8 +357,11 @@ export class Usuarios implements OnInit {
       active: true
     };
 
-    this.mostrarPasswordCreacion.set(false);
-    this.modalCrearAbierto.set(true);
+    this.mostrarPasswordCreacion
+      .set(false);
+
+    this.modalCrearAbierto
+      .set(true);
   }
 
   cerrarModalCrear(): void {
@@ -232,32 +369,50 @@ export class Usuarios implements OnInit {
       return;
     }
 
-    this.modalCrearAbierto.set(false);
+    this.modalCrearAbierto
+      .set(false);
   }
 
   async crearUsuario(): Promise<void> {
+    if (
+      !this.verificarPermiso(
+        'usuarios.crear',
+        'No tienes permiso para crear usuarios.'
+      )
+    ) {
+      return;
+    }
+
     const fullName =
-      this.formularioCreacion.full_name.trim();
+      this.formularioCreacion
+        .full_name
+        .trim();
 
     const email =
-      this.formularioCreacion.email
+      this.formularioCreacion
+        .email
         .trim()
         .toLowerCase();
 
     const password =
-      this.formularioCreacion.password;
+      this.formularioCreacion
+        .password;
 
     if (!fullName) {
       this.errorMessage.set(
         'El nombre completo es obligatorio.'
       );
+
       return;
     }
 
-    if (!this.esCorreoValido(email)) {
+    if (
+      !this.esCorreoValido(email)
+    ) {
       this.errorMessage.set(
         'Ingresa un correo electrónico válido.'
       );
+
       return;
     }
 
@@ -265,34 +420,41 @@ export class Usuarios implements OnInit {
       this.errorMessage.set(
         'La contraseña debe tener al menos 8 caracteres.'
       );
+
       return;
     }
 
     if (
       password !==
-      this.formularioCreacion.confirm_password
+      this.formularioCreacion
+        .confirm_password
     ) {
       this.errorMessage.set(
         'Las contraseñas no coinciden.'
       );
+
       return;
     }
 
     if (
-      this.formularioCreacion.role_id === null
+      this.formularioCreacion
+        .role_id === null
     ) {
       this.errorMessage.set(
         'Debes seleccionar un rol.'
       );
+
       return;
     }
 
     if (
-      this.formularioCreacion.dependency_id === null
+      this.formularioCreacion
+        .dependency_id === null
     ) {
       this.errorMessage.set(
         'Debes seleccionar una dependencia.'
       );
+
       return;
     }
 
@@ -300,20 +462,28 @@ export class Usuarios implements OnInit {
       full_name: fullName,
       email,
       password,
-      role_id: this.formularioCreacion.role_id,
+      role_id:
+        this.formularioCreacion
+          .role_id,
       dependency_id:
-        this.formularioCreacion.dependency_id,
-      active: this.formularioCreacion.active
+        this.formularioCreacion
+          .dependency_id,
+      active:
+        this.formularioCreacion
+          .active
     };
 
     this.creando.set(true);
     this.limpiarMensajes();
 
     try {
-      await this.usersService.createUser(input);
+      await this.usersService
+        .createUser(input);
+
       await this.cargarUsuarios();
 
-      this.modalCrearAbierto.set(false);
+      this.modalCrearAbierto
+        .set(false);
 
       this.successMessage.set(
         'El usuario fue creado correctamente.'
@@ -335,20 +505,38 @@ export class Usuarios implements OnInit {
     }
   }
 
-  editarUsuario(usuario: UserProfile): void {
+  editarUsuario(
+    usuario: UserProfile
+  ): void {
+    if (
+      !this.verificarPermiso(
+        'usuarios.editar',
+        'No tienes permiso para editar usuarios.'
+      )
+    ) {
+      return;
+    }
+
     this.limpiarMensajes();
 
-    this.usuarioSeleccionado.set(usuario);
+    this.usuarioSeleccionado
+      .set(usuario);
 
     this.formularioEdicion = {
-      full_name: usuario.full_name ?? '',
-      email: usuario.email ?? '',
-      role_id: usuario.role_id,
-      dependency_id: usuario.dependency_id,
-      active: usuario.active
+      full_name:
+        usuario.full_name ?? '',
+      email:
+        usuario.email ?? '',
+      role_id:
+        usuario.role_id,
+      dependency_id:
+        usuario.dependency_id,
+      active:
+        usuario.active
     };
 
-    this.modalEditarAbierto.set(true);
+    this.modalEditarAbierto
+      .set(true);
   }
 
   cerrarModalEditar(): void {
@@ -356,22 +544,38 @@ export class Usuarios implements OnInit {
       return;
     }
 
-    this.modalEditarAbierto.set(false);
-    this.usuarioSeleccionado.set(null);
+    this.modalEditarAbierto
+      .set(false);
+
+    this.usuarioSeleccionado
+      .set(null);
   }
 
   async guardarEdicion(): Promise<void> {
-    const usuario = this.usuarioSeleccionado();
+    if (
+      !this.verificarPermiso(
+        'usuarios.editar',
+        'No tienes permiso para editar usuarios.'
+      )
+    ) {
+      return;
+    }
+
+    const usuario =
+      this.usuarioSeleccionado();
 
     if (!usuario) {
       return;
     }
 
     const nombre =
-      this.formularioEdicion.full_name.trim();
+      this.formularioEdicion
+        .full_name
+        .trim();
 
     const correo =
-      this.formularioEdicion.email
+      this.formularioEdicion
+        .email
         .trim()
         .toLowerCase();
 
@@ -379,29 +583,39 @@ export class Usuarios implements OnInit {
       this.errorMessage.set(
         'El nombre completo es obligatorio.'
       );
-      return;
-    }
 
-    if (!this.esCorreoValido(correo)) {
-      this.errorMessage.set(
-        'Ingresa un correo electrónico válido.'
-      );
-      return;
-    }
-
-    if (this.formularioEdicion.role_id === null) {
-      this.errorMessage.set(
-        'Debes seleccionar un rol.'
-      );
       return;
     }
 
     if (
-      this.formularioEdicion.dependency_id === null
+      !this.esCorreoValido(correo)
+    ) {
+      this.errorMessage.set(
+        'Ingresa un correo electrónico válido.'
+      );
+
+      return;
+    }
+
+    if (
+      this.formularioEdicion
+        .role_id === null
+    ) {
+      this.errorMessage.set(
+        'Debes seleccionar un rol.'
+      );
+
+      return;
+    }
+
+    if (
+      this.formularioEdicion
+        .dependency_id === null
     ) {
       this.errorMessage.set(
         'Debes seleccionar una dependencia.'
       );
+
       return;
     }
 
@@ -410,32 +624,41 @@ export class Usuarios implements OnInit {
 
     try {
       const correoCambio =
-        correo !== usuario.email.toLowerCase();
+        correo !==
+        usuario.email.toLowerCase();
 
       if (correoCambio) {
-        await this.usersService.updateEmail(
-          usuario.id,
-          correo
-        );
+        await this.usersService
+          .updateEmail(
+            usuario.id,
+            correo
+          );
       }
 
-      await this.usersService.updateUser(
-        usuario.id,
-        {
-          full_name: nombre,
-          role_id:
-            this.formularioEdicion.role_id,
-          dependency_id:
-            this.formularioEdicion.dependency_id,
-          active:
-            this.formularioEdicion.active
-        }
-      );
+      await this.usersService
+        .updateUser(
+          usuario.id,
+          {
+            full_name: nombre,
+            role_id:
+              this.formularioEdicion
+                .role_id,
+            dependency_id:
+              this.formularioEdicion
+                .dependency_id,
+            active:
+              this.formularioEdicion
+                .active
+          }
+        );
 
       await this.cargarUsuarios();
 
-      this.modalEditarAbierto.set(false);
-      this.usuarioSeleccionado.set(null);
+      this.modalEditarAbierto
+        .set(false);
+
+      this.usuarioSeleccionado
+        .set(null);
 
       this.successMessage.set(
         'El usuario fue actualizado correctamente.'
@@ -460,65 +683,105 @@ export class Usuarios implements OnInit {
   abrirRestablecerPassword(
     usuario: UserProfile
   ): void {
+    if (
+      !this.verificarPermiso(
+        'usuarios.password',
+        'No tienes permiso para restablecer contraseñas.'
+      )
+    ) {
+      return;
+    }
+
     this.limpiarMensajes();
-    this.usuarioSeleccionado.set(usuario);
+
+    this.usuarioSeleccionado
+      .set(usuario);
 
     this.formularioPassword = {
       password: '',
       confirm_password: ''
     };
 
-    this.mostrarPasswordNueva.set(false);
-    this.modalPasswordAbierto.set(true);
+    this.mostrarPasswordNueva
+      .set(false);
+
+    this.modalPasswordAbierto
+      .set(true);
   }
 
   cerrarModalPassword(): void {
-    if (this.restableciendoPassword()) {
+    if (
+      this.restableciendoPassword()
+    ) {
       return;
     }
 
-    this.modalPasswordAbierto.set(false);
-    this.usuarioSeleccionado.set(null);
+    this.modalPasswordAbierto
+      .set(false);
+
+    this.usuarioSeleccionado
+      .set(null);
   }
 
-  async restablecerPassword(): Promise<void> {
-    const usuario = this.usuarioSeleccionado();
+  async restablecerPassword():
+    Promise<void> {
+    if (
+      !this.verificarPermiso(
+        'usuarios.password',
+        'No tienes permiso para restablecer contraseñas.'
+      )
+    ) {
+      return;
+    }
+
+    const usuario =
+      this.usuarioSeleccionado();
 
     if (!usuario) {
       return;
     }
 
     const password =
-      this.formularioPassword.password;
+      this.formularioPassword
+        .password;
 
     if (password.length < 8) {
       this.errorMessage.set(
         'La contraseña debe tener al menos 8 caracteres.'
       );
+
       return;
     }
 
     if (
       password !==
-      this.formularioPassword.confirm_password
+      this.formularioPassword
+        .confirm_password
     ) {
       this.errorMessage.set(
         'Las contraseñas no coinciden.'
       );
+
       return;
     }
 
-    this.restableciendoPassword.set(true);
+    this.restableciendoPassword
+      .set(true);
+
     this.limpiarMensajes();
 
     try {
-      await this.usersService.resetPassword(
-        usuario.id,
-        password
-      );
+      await this.usersService
+        .resetPassword(
+          usuario.id,
+          password
+        );
 
-      this.modalPasswordAbierto.set(false);
-      this.usuarioSeleccionado.set(null);
+      this.modalPasswordAbierto
+        .set(false);
+
+      this.usuarioSeleccionado
+        .set(null);
 
       this.successMessage.set(
         'La contraseña fue restablecida correctamente.'
@@ -536,16 +799,30 @@ export class Usuarios implements OnInit {
         )
       );
     } finally {
-      this.restableciendoPassword.set(false);
+      this.restableciendoPassword
+        .set(false);
     }
   }
 
   abrirEliminarUsuario(
     usuario: UserProfile
   ): void {
+    if (
+      !this.verificarPermiso(
+        'usuarios.eliminar',
+        'No tienes permiso para eliminar usuarios.'
+      )
+    ) {
+      return;
+    }
+
     this.limpiarMensajes();
-    this.usuarioSeleccionado.set(usuario);
-    this.modalEliminarAbierto.set(true);
+
+    this.usuarioSeleccionado
+      .set(usuario);
+
+    this.modalEliminarAbierto
+      .set(true);
   }
 
   cerrarModalEliminar(): void {
@@ -553,12 +830,26 @@ export class Usuarios implements OnInit {
       return;
     }
 
-    this.modalEliminarAbierto.set(false);
-    this.usuarioSeleccionado.set(null);
+    this.modalEliminarAbierto
+      .set(false);
+
+    this.usuarioSeleccionado
+      .set(null);
   }
 
-  async eliminarUsuario(): Promise<void> {
-    const usuario = this.usuarioSeleccionado();
+  async eliminarUsuario():
+    Promise<void> {
+    if (
+      !this.verificarPermiso(
+        'usuarios.eliminar',
+        'No tienes permiso para eliminar usuarios.'
+      )
+    ) {
+      return;
+    }
+
+    const usuario =
+      this.usuarioSeleccionado();
 
     if (!usuario) {
       return;
@@ -568,15 +859,19 @@ export class Usuarios implements OnInit {
     this.limpiarMensajes();
 
     try {
-      await this.usersService.deleteUser(
-        usuario.id,
-        true
-      );
+      await this.usersService
+        .deleteUser(
+          usuario.id,
+          true
+        );
 
       await this.cargarUsuarios();
 
-      this.modalEliminarAbierto.set(false);
-      this.usuarioSeleccionado.set(null);
+      this.modalEliminarAbierto
+        .set(false);
+
+      this.usuarioSeleccionado
+        .set(null);
 
       this.successMessage.set(
         'El usuario fue eliminado correctamente.'
@@ -601,25 +896,39 @@ export class Usuarios implements OnInit {
   async cambiarEstado(
     usuario: UserProfile
   ): Promise<void> {
+    if (
+      !this.verificarPermiso(
+        'usuarios.estado',
+        'No tienes permiso para cambiar el estado de usuarios.'
+      )
+    ) {
+      return;
+    }
+
     this.limpiarMensajes();
-    this.cambiandoEstadoId.set(usuario.id);
+
+    this.cambiandoEstadoId
+      .set(usuario.id);
 
     try {
       const actualizado =
-        await this.usersService.changeStatus(
-          usuario.id,
-          !usuario.active
-        );
+        await this.usersService
+          .changeStatus(
+            usuario.id,
+            !usuario.active
+          );
 
-      this.usuarios.update((usuarios) =>
-        usuarios.map((item) =>
-          item.id === actualizado.id
-            ? {
-                ...item,
-                ...actualizado
-              }
-            : item
-        )
+      this.usuarios.update(
+        (usuarios) =>
+          usuarios.map(
+            (item) =>
+              item.id === actualizado.id
+                ? {
+                    ...item,
+                    ...actualizado
+                  }
+                : item
+          )
       );
 
       this.successMessage.set(
@@ -640,13 +949,16 @@ export class Usuarios implements OnInit {
         )
       );
     } finally {
-      this.cambiandoEstadoId.set(null);
+      this.cambiandoEstadoId
+        .set(null);
     }
   }
 
   limpiarFiltros(): void {
     this.busqueda.set('');
-    this.filtroEstado.set('todos');
+    this.filtroEstado.set(
+      'todos'
+    );
   }
 
   obtenerIniciales(
@@ -660,22 +972,33 @@ export class Usuarios implements OnInit {
       .trim()
       .split(/\s+/)
       .slice(0, 2)
-      .map((parte) =>
-        parte.charAt(0).toUpperCase()
+      .map(
+        (parte) =>
+          parte
+            .charAt(0)
+            .toUpperCase()
       )
       .join('');
   }
 
   formatearFecha(
-    fecha: string | null | undefined
+    fecha:
+      string |
+      null |
+      undefined
   ): string {
     if (!fecha) {
       return 'Sin registro';
     }
 
-    const valor = new Date(fecha);
+    const valor =
+      new Date(fecha);
 
-    if (Number.isNaN(valor.getTime())) {
+    if (
+      Number.isNaN(
+        valor.getTime()
+      )
+    ) {
       return 'Sin registro';
     }
 
@@ -688,7 +1011,26 @@ export class Usuarios implements OnInit {
     ).format(valor);
   }
 
-  private limpiarMensajes(): void {
+  private verificarPermiso(
+    codigo: string,
+    mensaje: string
+  ): boolean {
+    if (
+      this.authService
+        .hasPermission(codigo)
+    ) {
+      return true;
+    }
+
+    this.errorMessage.set(
+      mensaje
+    );
+
+    return false;
+  }
+
+  private limpiarMensajes():
+    void {
     this.errorMessage.set('');
     this.successMessage.set('');
   }
@@ -696,9 +1038,8 @@ export class Usuarios implements OnInit {
   private esCorreoValido(
     email: string
   ): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-      email
-    );
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      .test(email);
   }
 
   private obtenerMensajeError(

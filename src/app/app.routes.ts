@@ -7,15 +7,20 @@ import { Ambiente } from './pages/ambiente/ambiente';
 import { Movilidad } from './pages/movilidad/movilidad';
 import { OcioTurismo } from './pages/ocio-turismo/ocio-turismo';
 
+import { AccesoDenegado } from './pages/acceso-denegado/acceso-denegado';
+
 import { Configuracion } from './pages/configuracion/configuracion';
 import { Usuarios } from './pages/configuracion/usuarios/usuarios';
 import { Roles } from './pages/configuracion/roles/roles';
 import { Dependencias } from './pages/configuracion/dependencias/dependencias';
-import { Parametros } from './pages/configuracion/parametros/parametros';
 import { CargaMasiva } from './pages/configuracion/carga-masiva/carga-masiva';
 
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
+
+import {
+  permissionGuard
+} from './core/guards/permission.guard';
 
 import { PrivateLayout } from './layout/private-layout/private-layout';
 
@@ -23,13 +28,17 @@ export const routes: Routes = [
   {
     path: 'login',
     component: Login,
-    canActivate: [guestGuard]
+    canActivate: [
+      guestGuard
+    ]
   },
 
   {
     path: '',
     component: PrivateLayout,
-    canActivate: [authGuard],
+    canActivate: [
+      authGuard
+    ],
 
     children: [
       {
@@ -39,28 +48,70 @@ export const routes: Routes = [
       },
 
       {
+        path: 'acceso-denegado',
+        component: AccesoDenegado
+      },
+
+      {
         path: 'dashboard',
-        component: Dashboard
+        component: Dashboard,
+        canActivate: [
+          permissionGuard([
+            'dashboard.ver'
+          ])
+        ]
       },
 
       {
         path: 'ambiente',
-        component: Ambiente
+        component: Ambiente,
+        canActivate: [
+          permissionGuard([
+            'ambiente.ver'
+          ])
+        ]
       },
 
       {
         path: 'movilidad',
-        component: Movilidad
+        component: Movilidad,
+        canActivate: [
+          permissionGuard([
+            'movilidad.ver'
+          ])
+        ]
       },
 
       {
         path: 'ocio-turismo',
-        component: OcioTurismo
+        component: OcioTurismo,
+        canActivate: [
+          permissionGuard([
+            'turismo.ver'
+          ])
+        ]
       },
 
       {
         path: 'configuracion',
         component: Configuracion,
+
+        /*
+         * Puede abrir Configuración cuando posea
+         * al menos uno de los permisos indicados.
+         */
+        canActivate: [
+          permissionGuard(
+            [
+              'usuarios.ver',
+              'roles.ver',
+              'dependencias.ver',
+              'parametros.ver',
+              'carga_masiva.ver'
+            ],
+            'any'
+          )
+        ],
 
         children: [
           {
@@ -71,27 +122,44 @@ export const routes: Routes = [
 
           {
             path: 'usuarios',
-            component: Usuarios
+            component: Usuarios,
+            canActivate: [
+              permissionGuard([
+                'usuarios.ver'
+              ])
+            ]
           },
 
           {
             path: 'roles',
-            component: Roles
+            component: Roles,
+            canActivate: [
+              permissionGuard([
+                'roles.ver'
+              ])
+            ]
           },
 
           {
             path: 'dependencias',
-            component: Dependencias
+            component: Dependencias,
+            canActivate: [
+              permissionGuard([
+                'dependencias.ver'
+              ])
+            ]
           },
 
-          {
-            path: 'parametros',
-            component: Parametros
-          },
+          
 
           {
             path: 'carga-masiva',
-            component: CargaMasiva
+            component: CargaMasiva,
+            canActivate: [
+              permissionGuard([
+                'carga_masiva.ver'
+              ])
+            ]
           }
         ]
       }
