@@ -7,22 +7,49 @@ import { Ambiente } from './pages/ambiente/ambiente';
 import { Movilidad } from './pages/movilidad/movilidad';
 import { OcioTurismo } from './pages/ocio-turismo/ocio-turismo';
 
-import { AccesoDenegado } from './pages/acceso-denegado/acceso-denegado';
+import {
+  AccesoDenegado
+} from './pages/acceso-denegado/acceso-denegado';
 
-import { Configuracion } from './pages/configuracion/configuracion';
-import { Usuarios } from './pages/configuracion/usuarios/usuarios';
-import { Roles } from './pages/configuracion/roles/roles';
-import { Dependencias } from './pages/configuracion/dependencias/dependencias';
-import { CargaMasiva } from './pages/configuracion/carga-masiva/carga-masiva';
+import {
+  Configuracion
+} from './pages/configuracion/configuracion';
 
-import { authGuard } from './core/guards/auth.guard';
-import { guestGuard } from './core/guards/guest.guard';
+import {
+  Usuarios
+} from './pages/configuracion/usuarios/usuarios';
+
+import {
+  Roles
+} from './pages/configuracion/roles/roles';
+
+import {
+  Dependencias
+} from './pages/configuracion/dependencias/dependencias';
+
+import {
+  CargaMasiva
+} from './pages/configuracion/carga-masiva/carga-masiva';
+
+import {
+  authGuard
+} from './core/guards/auth.guard';
+
+import {
+  guestGuard
+} from './core/guards/guest.guard';
 
 import {
   permissionGuard
 } from './core/guards/permission.guard';
 
-import { PrivateLayout } from './layout/private-layout/private-layout';
+import {
+  configuracionRedirectGuard
+} from './core/guards/configuracion-redirect.guard';
+
+import {
+  PrivateLayout
+} from './layout/private-layout/private-layout';
 
 export const routes: Routes = [
   {
@@ -97,16 +124,21 @@ export const routes: Routes = [
         component: Configuracion,
 
         /*
-         * Puede abrir Configuración cuando posea
-         * al menos uno de los permisos indicados.
+         * El primer guard redirige a la primera
+         * sección permitida cuando se entra exactamente
+         * a /configuracion.
+         *
+         * El segundo permite abrir Configuración cuando
+         * el usuario posee al menos uno de sus permisos.
          */
         canActivate: [
+          configuracionRedirectGuard,
+
           permissionGuard(
             [
               'usuarios.ver',
               'roles.ver',
               'dependencias.ver',
-              'parametros.ver',
               'carga_masiva.ver'
             ],
             'any'
@@ -114,12 +146,6 @@ export const routes: Routes = [
         ],
 
         children: [
-          {
-            path: '',
-            redirectTo: 'usuarios',
-            pathMatch: 'full'
-          },
-
           {
             path: 'usuarios',
             component: Usuarios,
@@ -149,8 +175,6 @@ export const routes: Routes = [
               ])
             ]
           },
-
-          
 
           {
             path: 'carga-masiva',
