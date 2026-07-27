@@ -55,6 +55,7 @@
 .btn-confirm-delete {
   font: inherit;
   cursor: pointer;
+
   transition:
     background-color 0.18s ease,
     border-color 0.18s ease,
@@ -73,14 +74,18 @@
   align-items: center;
   justify-content: center;
   gap: 9px;
+
   min-height: 44px;
   padding: 0 18px;
+
   border: 0;
   border-radius: 11px;
   background: #176aa7;
+
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
+
   box-shadow: 0 8px 18px rgba(23, 106, 167, 0.2);
 
   &:hover {
@@ -100,8 +105,10 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
+
   margin-bottom: 20px;
   padding: 14px 16px;
+
   border-radius: 12px;
 
   strong {
@@ -141,11 +148,14 @@
   grid-template-columns: minmax(260px, 1fr) 210px auto;
   align-items: end;
   gap: 16px;
+
   margin-bottom: 20px;
   padding: 18px;
+
   border: 1px solid #e2e8ef;
   border-radius: 14px;
   background: #ffffff;
+
   box-shadow: 0 8px 22px rgba(31, 52, 79, 0.05);
 }
 
@@ -156,12 +166,15 @@
     width: 100%;
     height: 44px;
     padding: 0 15px 0 44px;
+
     border: 1px solid #d8e0e9;
     border-radius: 10px;
     background: #fbfcfe;
+
     color: #25344a;
     font: inherit;
     font-size: 14px;
+
     outline: none;
 
     &::placeholder {
@@ -180,8 +193,10 @@
   position: absolute;
   top: 50%;
   left: 15px;
+
   color: #788697;
   font-size: 22px;
+
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -190,6 +205,7 @@
   label {
     display: block;
     margin-bottom: 6px;
+
     color: #526176;
     font-size: 12px;
     font-weight: 700;
@@ -199,12 +215,15 @@
     width: 100%;
     height: 44px;
     padding: 0 13px;
+
     border: 1px solid #d8e0e9;
     border-radius: 10px;
     background: #fbfcfe;
+
     color: #34445b;
     font: inherit;
     font-size: 14px;
+
     outline: none;
     cursor: pointer;
 
@@ -219,9 +238,11 @@
 .btn-secondary {
   min-height: 44px;
   padding: 0 15px;
+
   border: 1px solid #d2dce6;
   border-radius: 10px;
   background: #ffffff;
+
   color: #53647b;
   font-size: 13px;
   font-weight: 700;
@@ -240,17 +261,22 @@
 
 .roles-permissions-layout {
   display: grid;
-  grid-template-columns: minmax(320px, 0.9fr) minmax(500px, 1.6fr);
+  grid-template-columns:
+    minmax(320px, 0.9fr)
+    minmax(500px, 1.6fr);
   gap: 20px;
   align-items: start;
 }
 
 .roles-panel,
 .permissions-panel {
+  min-width: 0;
   overflow: hidden;
+
   border: 1px solid #e1e7ee;
   border-radius: 15px;
   background: #ffffff;
+
   box-shadow: 0 12px 28px rgba(31, 52, 79, 0.06);
 }
 
@@ -260,7 +286,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+
   padding: 18px 20px;
+
   border-bottom: 1px solid #e8edf2;
 
   h3 {
@@ -279,9 +307,11 @@
 .btn-refresh {
   min-height: 36px;
   padding: 0 13px;
+
   border: 1px solid #cad7e2;
   border-radius: 9px;
   background: #ffffff;
+
   color: #41647f;
   font-size: 12px;
   font-weight: 700;
@@ -295,17 +325,24 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+
   max-height: 720px;
   overflow-y: auto;
+
   padding: 14px;
 }
 
 .role-item {
+  flex: 0 0 auto;
+
   padding: 14px;
+
   border: 1px solid #e2e8ef;
   border-radius: 12px;
   background: #ffffff;
+
   cursor: pointer;
+
   transition:
     border-color 0.18s ease,
     background-color 0.18s ease,
@@ -338,11 +375,15 @@
 .role-icon {
   display: grid;
   flex: 0 0 42px;
+
   width: 42px;
   height: 42px;
+
   place-items: center;
+
   border-radius: 12px;
   background: #e8f3fa;
+
   color: #176aa7;
   font-size: 15px;
   font-weight: 750;
@@ -365,9 +406,11 @@
   > span {
     overflow: hidden;
     margin-top: 4px;
+
     color: #7a8797;
     font-size: 12px;
     line-height: 1.45;
+
     text-overflow: ellipsis;
   }
 
@@ -393,8 +436,10 @@
 .protected-badge {
   display: inline-flex;
   padding: 4px 8px;
+
   border-radius: 999px;
   background: #f1e9fc;
+
   color: #714ba1;
   font-size: 10px;
   font-weight: 700;
@@ -408,8 +453,10 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
+
   padding: 6px 10px;
   border-radius: 999px;
+
   font-size: 11px;
   font-weight: 700;
 
@@ -442,8 +489,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
+
   margin-top: 13px;
   padding-top: 12px;
+
   border-top: 1px solid #edf1f5;
 }
 
@@ -452,8 +501,10 @@
 .btn-delete {
   min-height: 34px;
   padding: 0 11px;
+
   border-radius: 8px;
   background: transparent;
+
   font-size: 11px;
   font-weight: 700;
 }
@@ -502,9 +553,13 @@
 
 .selected-role-badge {
   display: inline-flex;
+  flex: 0 0 auto;
+
   padding: 7px 11px;
+
   border-radius: 999px;
   background: #eaf4fb;
+
   color: #276c9a;
   font-size: 11px;
   font-weight: 700;
@@ -520,7 +575,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+
   padding: 15px 20px;
+
   border-bottom: 1px solid #e9eef3;
   background: #fafbfd;
 
@@ -549,9 +606,11 @@
 .admin-info {
   margin: 16px 20px 0;
   padding: 14px 16px;
+
   border: 1px solid #d8c9eb;
   border-radius: 11px;
   background: #f8f3fd;
+
   color: #67458f;
 
   strong {
@@ -567,17 +626,41 @@
   }
 }
 
+/*
+ * Contenedor general de módulos.
+ *
+ * Los módulos no deben encogerse verticalmente.
+ * Cada grupo conserva la altura que necesita
+ * según la cantidad de permisos que contiene.
+ */
 .permission-groups {
   display: flex;
   flex-direction: column;
   gap: 14px;
+
+  width: 100%;
   max-height: 650px;
+
+  overflow-x: hidden;
   overflow-y: auto;
+
   padding: 20px;
 }
 
+/*
+ * flex: 0 0 auto evita que los módulos se compriman
+ * y que su contenido se monte sobre el módulo siguiente.
+ */
 .permission-group {
+  display: block;
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-width: 0;
+  height: auto;
+
   overflow: hidden;
+
   border: 1px solid #e0e7ee;
   border-radius: 13px;
   background: #ffffff;
@@ -586,9 +669,13 @@
 .permission-group-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
+  align-items: center;
   gap: 18px;
+
+  width: 100%;
+  min-height: 72px;
   padding: 16px 18px;
+
   border-bottom: 1px solid #e9eef3;
   background: #f8fafc;
 
@@ -598,6 +685,7 @@
 
   h4 {
     margin: 0;
+
     color: #263b57;
     font-size: 14px;
     font-weight: 500;
@@ -607,6 +695,7 @@
   > div > span {
     display: block;
     margin-top: 4px;
+
     color: #8490a0;
     font-size: 10px;
     line-height: 14px;
@@ -617,10 +706,11 @@
   display: grid;
   grid-template-columns: 18px auto;
   align-items: center;
-  align-self: start;
   gap: 9px;
+
   min-width: 175px;
   min-height: 20px;
+
   margin: 0;
   padding: 0;
 
@@ -629,22 +719,28 @@
   font-weight: 700;
   line-height: 20px;
   white-space: nowrap;
+
   cursor: pointer;
 
   input {
     display: block;
+
     width: 18px;
     height: 18px;
-    margin: 1px 0 0;
+
+    margin: 0;
     padding: 0;
+
     accent-color: #176aa7;
     cursor: pointer;
   }
 
   span {
     display: block;
+
     margin: 0;
     padding: 0;
+
     color: inherit;
     font-size: inherit;
     line-height: 20px;
@@ -660,23 +756,42 @@
   }
 }
 
+/*
+ * Las tarjetas se distribuyen en dos columnas.
+ * La altura de cada fila se adapta al contenido.
+ */
 .permission-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: row;
+  grid-auto-rows: minmax(100px, auto);
+  align-items: stretch;
+
+  width: 100%;
   gap: 10px;
   padding: 14px;
 }
 
 .permission-option {
   position: relative;
+
   display: flex;
   align-items: flex-start;
   gap: 11px;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 100px;
+  height: auto;
+
   padding: 13px;
+
   border: 1px solid #e1e7ed;
   border-radius: 10px;
   background: #ffffff;
+
   cursor: pointer;
+
   transition:
     border-color 0.18s ease,
     background-color 0.18s ease,
@@ -714,15 +829,20 @@
 .permission-check {
   display: grid;
   flex: 0 0 20px;
+
   width: 20px;
   height: 20px;
+
   place-items: center;
+
   border: 1px solid #c9d3dc;
   border-radius: 6px;
   background: #ffffff;
+
   color: transparent;
   font-size: 12px;
   font-weight: 800;
+
   transition:
     background-color 0.18s ease,
     border-color 0.18s ease,
@@ -730,18 +850,30 @@
 }
 
 .permission-info {
+  display: block;
+  flex: 1;
+
+  width: 100%;
   min-width: 0;
 
   strong,
   span,
   small {
     display: block;
+
+    max-width: 100%;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
   }
 
   strong {
     margin-bottom: 4px;
+
     color: #2f4159;
     font-size: 12px;
+    line-height: 1.4;
   }
 
   span {
@@ -752,9 +884,11 @@
 
   small {
     margin-top: 6px;
+
     color: #9aa5b2;
     font-family: monospace;
     font-size: 9px;
+    line-height: 1.4;
   }
 }
 
@@ -763,7 +897,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
+
   padding: 17px 20px;
+
   border-top: 1px solid #e8edf2;
   background: #fafbfd;
 
@@ -793,6 +929,7 @@
   strong {
     display: block;
     margin-bottom: 7px;
+
     color: #2d405c;
     font-size: 14px;
   }
@@ -811,10 +948,13 @@
 .spinner {
   width: 34px;
   height: 34px;
+
   margin: 0 auto 15px;
+
   border: 3px solid #dce8f0;
   border-top-color: #176aa7;
   border-radius: 50%;
+
   animation: spin 0.8s linear infinite;
 }
 
@@ -827,12 +967,17 @@
 
 .permission-empty-icon {
   display: grid;
+
   width: 50px;
   height: 50px;
+
   margin: 0 auto 13px;
+
   place-items: center;
+
   border-radius: 50%;
   background: #edf5fa;
+
   color: #2c79a9;
   font-size: 22px;
 }
@@ -841,9 +986,12 @@
   position: fixed;
   z-index: 1000;
   inset: 0;
+
   display: grid;
   place-items: center;
+
   padding: 24px;
+
   background: rgba(15, 31, 51, 0.58);
   backdrop-filter: blur(3px);
 }
@@ -851,9 +999,12 @@
 .modal-card {
   width: min(680px, 100%);
   max-height: calc(100vh - 48px);
+
   overflow-y: auto;
+
   border-radius: 18px;
   background: #ffffff;
+
   box-shadow: 0 24px 70px rgba(10, 30, 55, 0.3);
 }
 
@@ -866,7 +1017,9 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
+
   padding: 24px 26px;
+
   border-bottom: 1px solid #e7ecf1;
 
   h3 {
@@ -886,14 +1039,19 @@
 .modal-close {
   display: grid;
   flex: 0 0 36px;
+
   width: 36px;
   height: 36px;
+
   place-items: center;
+
   border: 1px solid #d9e1e9;
   border-radius: 9px;
   background: #ffffff;
+
   color: #607086;
   font-size: 22px;
+
   cursor: pointer;
 
   &:hover:not(:disabled) {
@@ -905,6 +1063,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 19px;
+
   padding: 25px 26px;
 }
 
@@ -912,6 +1071,7 @@
   label {
     display: block;
     margin-bottom: 7px;
+
     color: #42536a;
     font-size: 12px;
     font-weight: 700;
@@ -921,12 +1081,15 @@
   textarea {
     width: 100%;
     padding: 0 13px;
+
     border: 1px solid #d4dde7;
     border-radius: 10px;
     background: #ffffff;
+
     color: #2e4058;
     font: inherit;
     font-size: 14px;
+
     outline: none;
 
     &:focus {
@@ -954,6 +1117,7 @@
   small {
     display: block;
     margin-top: 6px;
+
     color: #8490a0;
     font-size: 11px;
     line-height: 1.4;
@@ -966,13 +1130,17 @@
 
 .status-control {
   grid-column: 1 / -1;
+
   display: flex;
   align-items: center;
   gap: 12px;
+
   padding: 14px;
+
   border: 1px solid #dfe6ed;
   border-radius: 11px;
   background: #f9fbfc;
+
   cursor: pointer;
 
   &.disabled {
@@ -1014,21 +1182,28 @@
 .status-switch {
   position: relative;
   flex: 0 0 44px;
+
   width: 44px;
   height: 24px;
+
   border-radius: 999px;
   background: #b8c2cd;
+
   transition: background 0.2s ease;
 
   &::after {
     position: absolute;
     top: 3px;
     left: 3px;
+
     width: 18px;
     height: 18px;
+
     border-radius: 50%;
     background: #ffffff;
+
     content: '';
+
     box-shadow: 0 2px 5px rgba(24, 44, 65, 0.25);
     transition: transform 0.2s ease;
   }
@@ -1036,9 +1211,11 @@
 
 .modal-actions {
   grid-column: 1 / -1;
+
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+
   padding-top: 5px;
 }
 
@@ -1047,7 +1224,9 @@
 .btn-confirm-delete {
   min-height: 42px;
   padding: 0 17px;
+
   border-radius: 10px;
+
   font-size: 13px;
   font-weight: 700;
 }
@@ -1066,6 +1245,7 @@
   border: 0;
   background: #176aa7;
   color: #ffffff;
+
   box-shadow: 0 7px 16px rgba(23, 106, 167, 0.2);
 
   &:hover:not(:disabled) {
@@ -1086,6 +1266,7 @@
 
   p {
     margin: 0 0 16px;
+
     color: #4f5e71;
     font-size: 14px;
     line-height: 1.6;
@@ -1096,8 +1277,10 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+
   margin-bottom: 18px;
   padding: 14px;
+
   border: 1px solid #e4e9ef;
   border-radius: 10px;
   background: #f8fafc;
@@ -1110,9 +1293,11 @@
 
 .delete-warning {
   padding: 13px 14px;
+
   border: 1px solid #efcaca;
   border-radius: 10px;
   background: #fff1f1;
+
   color: #9e3a3a !important;
   font-size: 12px !important;
 }
@@ -1171,6 +1356,7 @@
 
   .permission-options {
     grid-template-columns: 1fr;
+    grid-auto-rows: auto;
   }
 
   .permissions-toolbar-actions {
@@ -1207,6 +1393,7 @@
 @media (max-width: 620px) {
   .permission-group-header {
     grid-template-columns: 1fr;
+    align-items: start;
   }
 
   .module-toggle {
