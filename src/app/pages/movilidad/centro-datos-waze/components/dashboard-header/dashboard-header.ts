@@ -43,9 +43,9 @@ export class DashboardHeaderComponent {
 
   async copiarIframe(): Promise<void> {
 
-    const iframe =
+const iframe =
 `<iframe
-  src="https://analytics-tulua.onrender.com/embed/centro-datos-waze"
+  src="https://analitics-tulua.onrender.com/embed/centro-datos-waze"
   width="100%"
   height="950"
   frameborder="0"
