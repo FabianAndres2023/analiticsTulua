@@ -1,0 +1,160 @@
+<section class="jam-section">
+
+  <div class="section-heading">
+
+    <div class="section-title">
+
+      <div class="section-icon">
+        <svg lucideTriangleAlert></svg>
+      </div>
+
+      <div>
+        <span>Congestión vial</span>
+
+        <h3>Atascos activos</h3>
+
+        <p>
+          Estado actual de los eventos de congestión reportados
+          por Waze en la red vial monitoreada.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="jam-layout">
+
+    <article class="list-card">
+
+      <div class="card-heading">
+        <div>
+          <span>Estado actual</span>
+          <h4>Eventos de congestión</h4>
+        </div>
+      </div>
+
+      @if (atascos.length > 0) {
+
+        <div class="data-list">
+
+          @for (
+            atasco of atascos;
+            track atasco.uuid
+          ) {
+
+            <div class="data-list-item">
+
+              <div class="data-list-description">
+
+                <strong>
+                  {{ atasco.calle || 'Vía sin identificar' }}
+                </strong>
+
+                <span>
+                  {{ atasco.ciudad || 'Tuluá' }}
+                </span>
+
+              </div>
+
+              <div class="data-list-values">
+
+                <span>
+                  Nivel:
+                  {{ atasco.nivel_congestion ?? '--' }}
+                </span>
+
+                <span>
+                  {{
+                    atasco.velocidad_kmh != null
+                      ? (
+                        atasco.velocidad_kmh
+                          | number:'1.0-1'
+                      )
+                      : '--'
+                  }}
+                  km/h
+                </span>
+
+                <span>
+                  {{
+                    atasco.longitud_metros != null
+                      ? (
+                        atasco.longitud_metros
+                          | number:'1.0-0'
+                      )
+                      : '--'
+                  }}
+                  m
+                </span>
+
+                <span>
+                  {{
+                    atasco.retraso_segundos != null
+                      ? (
+                        atasco.retraso_segundos
+                          | number:'1.0-0'
+                      )
+                      : '--'
+                  }}
+                  s
+                </span>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      } @else {
+
+        <div class="empty-state">
+
+          <svg lucideActivity></svg>
+
+          <p>
+            No hay atascos activos reportados en este momento.
+          </p>
+
+        </div>
+
+      }
+
+    </article>
+
+    <article class="metric-card">
+
+      <div class="card-heading">
+        <div>
+          <span>Retraso</span>
+          <h4>Promedio actual</h4>
+        </div>
+      </div>
+
+      <div class="metric-content">
+
+        <strong>
+          @if (retrasoPromedioSegundos != null) {
+            {{
+              retrasoPromedioSegundos
+                | number:'1.0-0'
+            }}
+            s
+          } @else {
+            --
+          }
+        </strong>
+
+        <span>
+          Retraso promedio de los atascos activos
+        </span>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>

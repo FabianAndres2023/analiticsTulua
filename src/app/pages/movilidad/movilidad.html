@@ -1,1 +1,52 @@
-<p>movilidad works!</p>
+<section class="mobility-page">
+
+  <header class="mobility-header">
+
+    <div class="header-icon">
+      <svg lucideCarFront></svg>
+    </div>
+
+    <div>
+      <h1>Movilidad</h1>
+
+      <p>
+        Consulta y administra la información relacionada con movilidad,
+        seguridad vial y gestión semafórica de Tuluá.
+      </p>
+    </div>
+
+  </header>
+
+  <nav class="mobility-navigation">
+
+    <a
+      routerLink="/movilidad/centro-datos-waze"
+      routerLinkActive="active"
+    >
+      <svg lucideMapPinned></svg>
+      <span>Centro de Datos Waze</span>
+    </a>
+
+    <a
+      routerLink="/movilidad/siniestros-viales"
+      routerLinkActive="active"
+    >
+      <svg lucideTrafficCone></svg>
+      <span>Registro de Siniestros Viales</span>
+    </a>
+
+    <a
+      routerLink="/movilidad/semaforica"
+      routerLinkActive="active"
+    >
+      <svg lucideActivity></svg>
+      <span>Semafórica</span>
+    </a>
+
+  </nav>
+
+  <section class="mobility-content">
+    <router-outlet></router-outlet>
+  </section>
+
+</section>

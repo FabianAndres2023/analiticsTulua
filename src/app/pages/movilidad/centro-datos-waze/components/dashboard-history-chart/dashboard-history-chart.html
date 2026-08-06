@@ -1,0 +1,41 @@
+<article class="chart-card">
+
+  <div class="chart-header">
+
+    <div>
+      <span>Evolución temporal</span>
+
+      <h4>Atascos y alertas registrados</h4>
+    </div>
+
+  </div>
+
+  @if (historico.length > 0) {
+
+    <div class="chart-container">
+
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+      >
+      </canvas>
+
+    </div>
+
+  } @else {
+
+    <div class="chart-placeholder">
+
+      <svg lucideActivity></svg>
+
+      <p>
+        Todavía no existen registros históricos suficientes.
+      </p>
+
+    </div>
+
+  }
+
+</article>

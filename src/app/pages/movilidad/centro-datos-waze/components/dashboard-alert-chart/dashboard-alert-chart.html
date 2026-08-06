@@ -1,0 +1,41 @@
+<article class="chart-card">
+
+  <div class="chart-header">
+
+    <div>
+      <span>Distribución actual</span>
+
+      <h4>Alertas por tipo</h4>
+    </div>
+
+  </div>
+
+  @if (alertas.length > 0) {
+
+    <div class="chart-container">
+
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+      >
+      </canvas>
+
+    </div>
+
+  } @else {
+
+    <div class="chart-placeholder">
+
+      <svg lucideBellRing></svg>
+
+      <p>
+        No existen alertas activas para representar.
+      </p>
+
+    </div>
+
+  }
+
+</article>

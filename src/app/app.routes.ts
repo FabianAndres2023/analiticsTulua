@@ -5,6 +5,9 @@ import { Login } from './pages/login/login';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Ambiente } from './pages/ambiente/ambiente';
 import { Movilidad } from './pages/movilidad/movilidad';
+import { CentroDatosWaze } from './pages/movilidad/centro-datos-waze/centro-datos-waze';
+import { SiniestrosViales } from './pages/movilidad/siniestros-viales/siniestros-viales';
+import { Semaforica } from './pages/movilidad/semaforica/semaforica';
 import { OcioTurismo } from './pages/ocio-turismo/ocio-turismo';
 
 import {
@@ -106,6 +109,29 @@ export const routes: Routes = [
           permissionGuard([
             'movilidad.ver'
           ])
+        ],
+
+        children: [
+          {
+            path: '',
+            redirectTo: 'centro-datos-waze',
+            pathMatch: 'full'
+          },
+
+          {
+            path: 'centro-datos-waze',
+            component: CentroDatosWaze
+          },
+
+          {
+            path: 'siniestros-viales',
+            component: SiniestrosViales
+          },
+
+          {
+            path: 'semaforica',
+            component: Semaforica
+          }
         ]
       },
 
@@ -123,14 +149,6 @@ export const routes: Routes = [
         path: 'configuracion',
         component: Configuracion,
 
-        /*
-         * El primer guard redirige a la primera
-         * sección permitida cuando se entra exactamente
-         * a /configuracion.
-         *
-         * El segundo permite abrir Configuración cuando
-         * el usuario posee al menos uno de sus permisos.
-         */
         canActivate: [
           configuracionRedirectGuard,
 
