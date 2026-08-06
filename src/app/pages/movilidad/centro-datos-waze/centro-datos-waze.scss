@@ -168,3 +168,160 @@
     padding: 13px 15px;
   }
 }
+
+
+.auto-update-status {
+  margin: 14px 0 22px;
+  padding: 10px 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+
+  color: #526174;
+  background: #f6faff;
+  border: 1px solid #dce9f5;
+  border-radius: 12px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  strong {
+    margin-left: auto;
+    color: #1468aa;
+  }
+}
+
+.status-indicator {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+
+  background: #22c55e;
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(34, 197, 94, 0.13);
+}
+
+@media (max-width: 580px) {
+  .auto-update-status {
+    align-items: flex-start;
+
+    strong {
+      width: 100%;
+      margin-left: 18px;
+    }
+  }
+}
+
+.waze-dashboard.embed-mode {
+  min-height: 100vh;
+  padding: 22px;
+  background: #f5f8fc;
+}
+
+.embed-header {
+  padding: 22px 24px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 22px;
+
+  background: #ffffff;
+  border: 1px solid #e5edf6;
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 28px
+    rgba(15, 76, 129, 0.06);
+
+  h1 {
+    margin: 5px 0 7px;
+
+    color: #071a52;
+
+    font-size: clamp(
+      24px,
+      3vw,
+      34px
+    );
+
+    line-height: 1.15;
+  }
+
+  p {
+    max-width: 700px;
+    margin: 0;
+
+    color: #667085;
+    line-height: 1.6;
+  }
+}
+
+.embed-eyebrow {
+  color: #2d78b8;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.embed-status {
+  min-width: 220px;
+  padding: 12px 14px;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  color: #526174;
+  background: #f6faff;
+
+  border: 1px solid #dce9f5;
+  border-radius: 12px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  small {
+    width: 100%;
+    margin-left: 18px;
+
+    color: #7a8797;
+    font-size: 11px;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 760px) {
+  .waze-dashboard.embed-mode {
+    padding: 14px;
+  }
+
+  .embed-header {
+    padding: 18px;
+    flex-direction: column;
+  }
+
+  .embed-status {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .waze-dashboard.embed-mode {
+    padding: 10px;
+  }
+
+  .embed-header {
+    border-radius: 14px;
+  }
+}
