@@ -22,26 +22,43 @@
 
   </div>
 
-  <button
-    class="update-button"
-    type="button"
-    [disabled]="loading"
-    [attr.aria-busy]="loading"
-    (click)="actualizar.emit()"
-  >
+  <div class="dashboard-header-actions">
 
-    <svg
-      lucideRefreshCw
-      [class.rotating]="loading"
+    <button
+      class="update-button"
+      type="button"
+      [disabled]="loading"
+      [attr.aria-busy]="loading"
+      (click)="actualizar.emit()"
     >
-    </svg>
 
-    @if (loading) {
-      Actualizando...
-    } @else {
-      Actualizar datos
-    }
+      <svg
+        lucideRefreshCw
+        [class.rotating]="loading"
+      >
+      </svg>
 
-  </button>
+      @if (loading) {
+        Actualizando...
+      } @else {
+        Actualizar datos
+      }
+
+    </button>
+
+    <button
+      class="copy-iframe-button"
+      type="button"
+      (click)="copiarIframe()"
+    >
+      🌐 Copiar iframe
+    </button>
+
+  </div>
 
 </header>
+
+<app-toast
+  [visible]="toastVisible"
+  [message]="toastMessage">
+</app-toast>

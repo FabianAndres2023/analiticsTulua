@@ -5,10 +5,22 @@ import { Login } from './pages/login/login';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Ambiente } from './pages/ambiente/ambiente';
 import { Movilidad } from './pages/movilidad/movilidad';
-import { CentroDatosWaze } from './pages/movilidad/centro-datos-waze/centro-datos-waze';
-import { SiniestrosViales } from './pages/movilidad/siniestros-viales/siniestros-viales';
-import { Semaforica } from './pages/movilidad/semaforica/semaforica';
-import { OcioTurismo } from './pages/ocio-turismo/ocio-turismo';
+
+import {
+  CentroDatosWaze
+} from './pages/movilidad/centro-datos-waze/centro-datos-waze';
+
+import {
+  SiniestrosViales
+} from './pages/movilidad/siniestros-viales/siniestros-viales';
+
+import {
+  Semaforica
+} from './pages/movilidad/semaforica/semaforica';
+
+import {
+  OcioTurismo
+} from './pages/ocio-turismo/ocio-turismo';
 
 import {
   AccesoDenegado
@@ -55,6 +67,22 @@ import {
 } from './layout/private-layout/private-layout';
 
 export const routes: Routes = [
+
+  /*
+   * Ruta pública para insertar el dashboard
+   * en otros portales mediante iframe.
+   *
+   * Se encuentra fuera de PrivateLayout,
+   * por lo que no muestra menú lateral.
+   */
+  {
+    path: 'embed/centro-datos-waze',
+    component: CentroDatosWaze,
+    data: {
+      embed: true
+    }
+  },
+
   {
     path: 'login',
     component: Login,

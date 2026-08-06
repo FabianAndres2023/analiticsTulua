@@ -79,6 +79,7 @@ Deno.serve(
       new Date().toISOString();
 
     try {
+
       /*
        * 1. Consultar el feed oficial de Waze.
        */
@@ -86,13 +87,67 @@ Deno.serve(
         await fetchWazeFeed();
 
       /*
-       * Registro temporal para revisar la estructura real
-       * que está entregando Waze.
+       * Diagnóstico temporal para conocer
+       * exactamente qué está enviando Waze.
        */
       console.log(
-        'Feed recibido:',
-        JSON.stringify(feed)
-          .substring(0, 1500)
+        'Claves principales del feed:',
+        Object.keys(feed)
+      );
+
+      console.log(
+        'Cantidad de elementos recibidos:',
+        {
+          alertas: Array.isArray(feed.alerts)
+            ? feed.alerts.length
+            : 0,
+
+          atascos: Array.isArray(feed.jams)
+            ? feed.jams.length
+            : 0,
+
+          irregularidades: Array.isArray(
+            feed.irregularities
+          )
+            ? feed.irregularities.length
+            : 0
+        }
+      );
+
+      console.log(
+        'Primer atasco recibido:',
+        Array.isArray(feed.jams) &&
+        feed.jams.length > 0
+          ? JSON.stringify(
+              feed.jams[0],
+              null,
+              2
+            )
+          : 'No llegaron atascos.'
+      );
+
+      console.log(
+        'Primera alerta recibida:',
+        Array.isArray(feed.alerts) &&
+        feed.alerts.length > 0
+          ? JSON.stringify(
+              feed.alerts[0],
+              null,
+              2
+            )
+          : 'No llegaron alertas.'
+      );
+
+      console.log(
+        'Primera irregularidad recibida:',
+        Array.isArray(feed.irregularities) &&
+        feed.irregularities.length > 0
+          ? JSON.stringify(
+              feed.irregularities[0],
+              null,
+              2
+            )
+          : 'No llegaron irregularidades.'
       );
 
       /*
@@ -109,7 +164,7 @@ Deno.serve(
         buildResumen(feed);
 
       /*
-       * Registro temporal de diagnóstico.
+       * Diagnóstico posterior al parseo.
        */
       console.log(
         'Resumen del feed:',
@@ -218,6 +273,7 @@ Deno.serve(
       );
 
     } catch (error: unknown) {
+
       const message =
         error instanceof Error
           ? error.message
@@ -229,6 +285,7 @@ Deno.serve(
       );
 
       try {
+
         await registerSynchronization({
           estado: 'error',
           mensaje: message,
@@ -236,13 +293,16 @@ Deno.serve(
           finalizadoEn:
             new Date().toISOString()
         });
+
       } catch (
         logError: unknown
       ) {
+
         console.error(
           'No fue posible registrar el error de sincronización:',
           logError
         );
+
       }
 
       return jsonResponse(
