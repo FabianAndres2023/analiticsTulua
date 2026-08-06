@@ -1,0 +1,194 @@
+<section class="waze-dashboard">
+
+  <!-- ENCABEZADO -->
+
+  <app-dashboard-header
+    [loading]="loading"
+    [ultimaSincronizacion]="
+      (
+        dashboard?.ultimaSincronizacion?.finalizado_en
+          | date:'dd/MM/yyyy, h:mm a'
+      ) ?? '--'
+    "
+    (actualizar)="actualizarDatos()"
+  >
+  </app-dashboard-header>
+
+  <!-- MENSAJES -->
+
+  @if (error) {
+    <div
+      class="dashboard-message dashboard-message-error"
+      role="alert"
+    >
+      {{ error }}
+    </div>
+  }
+
+  @if (loading && !dashboard) {
+    <div
+      class="dashboard-message dashboard-message-loading"
+      role="status"
+    >
+      Cargando información del Centro de Datos Waze...
+    </div>
+  }
+
+  <!-- NAVEGACIÓN INTERNA -->
+
+  <nav
+    class="section-navigation"
+    aria-label="Navegación del dashboard Waze"
+  >
+
+    <button
+      type="button"
+      (click)="scrollToSection('resumen')"
+    >
+      Resumen
+    </button>
+
+    <button
+      type="button"
+      (click)="scrollToSection('mapa')"
+    >
+      Mapa
+    </button>
+
+    <button
+      type="button"
+      (click)="scrollToSection('tendencias')"
+    >
+      Tendencias
+    </button>
+
+    <button
+      type="button"
+      (click)="scrollToSection('alertas')"
+    >
+      Alertas
+    </button>
+
+    <button
+      type="button"
+      (click)="scrollToSection('atascos')"
+    >
+      Atascos
+    </button>
+
+  </nav>
+
+  <!-- RESUMEN GENERAL -->
+
+  <section
+    id="resumen"
+    class="dashboard-section"
+  >
+
+    <app-dashboard-kpis
+      [dashboard]="dashboard"
+    >
+    </app-dashboard-kpis>
+
+  </section>
+
+  <!-- MAPA OPERATIVO -->
+
+  <section
+    id="mapa"
+    class="dashboard-section map-dashboard-section"
+  >
+
+    <app-dashboard-map
+      [alertas]="dashboard?.alertas ?? []"
+      [atascos]="dashboard?.atascos ?? []"
+    >
+    </app-dashboard-map>
+
+  </section>
+
+  <!-- TENDENCIAS -->
+
+  <section
+    id="tendencias"
+    class="dashboard-section"
+  >
+
+    <header class="dashboard-section-header">
+
+      <div>
+        <span class="section-eyebrow">
+          Análisis temporal
+        </span>
+
+        <h2>
+          Tendencias de movilidad
+        </h2>
+
+        <p>
+          Evolución de los eventos, las velocidades y la actividad
+          vial registrada durante los últimos siete días.
+        </p>
+      </div>
+
+    </header>
+
+    <div class="charts-grid">
+
+      <app-dashboard-history-chart
+        [historico]="dashboard?.historico ?? []"
+      >
+      </app-dashboard-history-chart>
+
+      <app-dashboard-speed-chart
+        [historico]="dashboard?.historico ?? []"
+      >
+      </app-dashboard-speed-chart>
+
+      <app-dashboard-activity-chart
+        [historico]="dashboard?.historico ?? []"
+      >
+      </app-dashboard-activity-chart>
+
+      <app-dashboard-alert-chart
+        [alertas]="dashboard?.alertas ?? []"
+      >
+      </app-dashboard-alert-chart>
+
+    </div>
+
+  </section>
+
+  <!-- ALERTAS -->
+
+  <section
+    id="alertas"
+    class="dashboard-section"
+  >
+
+    <app-dashboard-alert-list
+      [alertas]="dashboard?.alertas ?? []"
+    >
+    </app-dashboard-alert-list>
+
+  </section>
+
+  <!-- ATASCOS -->
+
+  <section
+    id="atascos"
+    class="dashboard-section"
+  >
+
+    <app-dashboard-jam-list
+      [atascos]="dashboard?.atascos ?? []"
+      [retrasoPromedioSegundos]="
+        dashboard?.estadoActual
+          ?.retrasoPromedioSegundos ?? null
+      "
+    >
+    </app-dashboard-jam-list>
+
+  </section>
+
+</section>

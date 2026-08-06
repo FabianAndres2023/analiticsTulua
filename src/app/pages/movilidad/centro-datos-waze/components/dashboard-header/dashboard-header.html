@@ -1,0 +1,47 @@
+<header class="dashboard-header">
+
+  <div class="dashboard-header-content">
+
+    <span class="eyebrow">
+      Waze for Cities
+    </span>
+
+    <h2>
+      Centro de Datos Waze
+    </h2>
+
+    <p>
+      Consulta el comportamiento de la movilidad
+      mediante datos oficiales de Waze.
+    </p>
+
+    <small class="last-update">
+      Última sincronización:
+      {{ ultimaSincronizacion }}
+    </small>
+
+  </div>
+
+  <button
+    class="update-button"
+    type="button"
+    [disabled]="loading"
+    [attr.aria-busy]="loading"
+    (click)="actualizar.emit()"
+  >
+
+    <svg
+      lucideRefreshCw
+      [class.rotating]="loading"
+    >
+    </svg>
+
+    @if (loading) {
+      Actualizando...
+    } @else {
+      Actualizar datos
+    }
+
+  </button>
+
+</header>

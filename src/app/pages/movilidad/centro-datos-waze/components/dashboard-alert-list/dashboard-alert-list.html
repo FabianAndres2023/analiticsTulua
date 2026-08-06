@@ -1,0 +1,124 @@
+<section class="alert-section">
+
+  <div class="section-heading">
+
+    <div class="section-title">
+
+      <div class="section-icon">
+        <svg lucideBellRing></svg>
+      </div>
+
+      <div>
+        <span>Eventos viales</span>
+
+        <h3>Alertas vigentes</h3>
+
+        <p>
+          Consolidado de accidentes, obras, cierres
+          y peligros reportados actualmente en la vía.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <article class="list-card">
+
+    @if (alertas.length > 0) {
+
+      <div class="data-list">
+
+        @for (
+          alerta of alertas;
+          track alerta.uuid
+        ) {
+
+          <div class="data-list-item">
+
+            <div class="event-icon">
+              {{
+                getPresentation(alerta).icon
+              }}
+            </div>
+
+            <div class="data-list-description">
+
+              <strong>
+                {{
+                  getPresentation(alerta).label
+                }}
+              </strong>
+
+              <span>
+                {{ getLocation(alerta) }}
+              </span>
+
+              <small>
+                {{
+                  getRelativeTime(
+                    alerta.publicado_en
+                  )
+                }}
+              </small>
+
+            </div>
+
+            <div class="data-list-values">
+
+              <span
+                class="event-category"
+                [style.color]="
+                  getPresentation(alerta).color
+                "
+                [style.border-color]="
+                  getPresentation(alerta).color
+                "
+              >
+                {{
+                  getPresentation(alerta)
+                    .category
+                }}
+              </span>
+
+              @if (
+                alerta.latitud != null &&
+                alerta.longitud != null
+              ) {
+                <span>
+                  {{
+                    alerta.latitud
+                      | number:'1.4-4'
+                  }},
+                  {{
+                    alerta.longitud
+                      | number:'1.4-4'
+                  }}
+                </span>
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    } @else {
+
+      <div class="empty-state">
+
+        <svg lucideBellRing></svg>
+
+        <p>
+          No hay alertas activas reportadas.
+        </p>
+
+      </div>
+
+    }
+
+  </article>
+
+</section>

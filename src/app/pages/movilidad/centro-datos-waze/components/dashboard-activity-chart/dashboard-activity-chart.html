@@ -1,0 +1,51 @@
+<article class="chart-card">
+
+  <div class="chart-header">
+    <div>
+      <span>Tendencia de actividad vial</span>
+      <h4>Eventos registrados por Waze</h4>
+    </div>
+  </div>
+
+  @if (historico.length > 0) {
+
+    <div class="activity-summary">
+      <span>
+        Actividad actual
+      </span>
+
+      <strong>
+        {{ historico[historico.length - 1].actividad_vial }}
+      </strong>
+
+      <small>
+        Alertas + atascos + irregularidades
+      </small>
+    </div>
+
+    <div class="chart-container">
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+      >
+      </canvas>
+    </div>
+
+  } @else {
+
+    <div class="chart-placeholder">
+
+      <svg lucideRoute></svg>
+
+      <p>
+        Todavía no existen registros históricos
+        de actividad vial.
+      </p>
+
+    </div>
+
+  }
+
+</article>

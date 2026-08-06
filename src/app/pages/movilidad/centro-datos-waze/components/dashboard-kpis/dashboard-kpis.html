@@ -1,0 +1,110 @@
+<section class="summary-section">
+
+  <div class="section-heading">
+
+    <div>
+      <span>Resumen general</span>
+      <h3>Estado actual de la movilidad</h3>
+    </div>
+
+  </div>
+
+  <div class="kpi-grid">
+
+    <article class="kpi-card">
+
+      <div class="kpi-icon">
+        <svg lucideTriangleAlert></svg>
+      </div>
+
+      <div>
+        <span>Atascos reportados</span>
+
+        <strong>
+          {{ dashboard?.estadoActual?.totalAtascos ?? 0 }}
+        </strong>
+
+        <small>Datos actuales de Waze</small>
+      </div>
+
+    </article>
+
+    <article class="kpi-card">
+
+      <div class="kpi-icon">
+        <svg lucideGauge></svg>
+      </div>
+
+      <div>
+        <span>Velocidad promedio</span>
+
+        <strong>
+          @if (
+            dashboard?.estadoActual?.velocidadPromedioKmh != null
+          ) {
+            {{
+              dashboard?.estadoActual?.velocidadPromedioKmh
+                | number:'1.0-1'
+            }}
+            km/h
+          } @else {
+            --
+          }
+        </strong>
+
+        <small>Promedio de los atascos activos</small>
+      </div>
+
+    </article>
+
+    <article class="kpi-card">
+
+      <div class="kpi-icon">
+        <svg lucideRoute></svg>
+      </div>
+
+      <div>
+        <span>Longitud congestionada</span>
+
+        <strong>
+          @if (
+            dashboard?.estadoActual?.longitudCongestionadaMetros
+              != null
+          ) {
+            {{
+              dashboard?.estadoActual
+                ?.longitudCongestionadaMetros
+                | number:'1.0-0'
+            }}
+            m
+          } @else {
+            0 m
+          }
+        </strong>
+
+        <small>Longitud total reportada</small>
+      </div>
+
+    </article>
+
+    <article class="kpi-card">
+
+      <div class="kpi-icon">
+        <svg lucideBellRing></svg>
+      </div>
+
+      <div>
+        <span>Alertas vigentes</span>
+
+        <strong>
+          {{ dashboard?.estadoActual?.totalAlertas ?? 0 }}
+        </strong>
+
+        <small>Incidentes y novedades activas</small>
+      </div>
+
+    </article>
+
+  </div>
+
+</section>

@@ -1,0 +1,107 @@
+<section class="map-section">
+
+  <div class="section-heading">
+
+    <div class="section-title">
+
+      <div>
+        <span>
+          Monitoreo territorial
+        </span>
+
+        <h3>
+          Mapa operativo
+        </h3>
+
+        <p>
+          Ubicación actual de las alertas y los atascos
+          registrados por Waze en Tuluá.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <article class="map-card">
+
+    <div class="chart-header">
+
+      <div>
+        <span>
+          Ubicación geográfica
+        </span>
+
+        <h4>
+          Eventos viales activos
+        </h4>
+      </div>
+
+    </div>
+
+    <!--
+      Este contenedor es obligatorio.
+      Leaflet dibuja el mapa dentro de este elemento.
+    -->
+
+    <div
+      id="waze-map"
+      class="waze-map"
+      role="application"
+      aria-label="Mapa de alertas y atascos reportados por Waze"
+    >
+    </div>
+
+    <div class="map-legend">
+
+      <span>
+        <i class="legend-symbol">
+          ⚠️
+        </i>
+
+        Peligros
+      </span>
+
+      <span>
+        <i class="legend-symbol">
+          🚧
+        </i>
+
+        Obras
+      </span>
+
+      <span>
+        <i class="legend-symbol">
+          🚗
+        </i>
+
+        Vehículos detenidos
+      </span>
+
+      <span>
+        <i class="legend-symbol">
+          🚑
+        </i>
+
+        Accidentes
+      </span>
+
+      <span>
+        <i class="legend-symbol">
+          ⛔
+        </i>
+
+        Cierres
+      </span>
+
+      <span>
+        <i class="legend-line jam-line"></i>
+
+        Atascos
+      </span>
+
+    </div>
+
+  </article>
+
+</section>
