@@ -20,11 +20,77 @@ import {
 
 import * as L from 'leaflet';
 
-import 'leaflet.heat';
+import * as LeafletHeat
+  from '@linkurious/leaflet-heat';
 
 import type {
   WazeAtasco
 } from '../../models/waze-dashboard.model';
+
+/*
+ * ================================================
+ * TIPOS DEL MAPA DE CALOR
+ * ================================================
+ */
+
+/*
+ * Punto del heatmap:
+ *
+ * [
+ *   latitud,
+ *   longitud,
+ *   intensidad
+ * ]
+ */
+type HeatPoint = [
+  number,
+  number,
+  number
+];
+
+/*
+ * Opciones utilizadas
+ * por la capa de calor.
+ */
+interface HeatLayerOptions {
+  radius?: number;
+
+  blur?: number;
+
+  maxZoom?: number;
+
+  minOpacity?: number;
+
+  gradient?: {
+    [key: number]: string;
+  };
+}
+
+/*
+ * Firma esperada para
+ * crear una capa de calor.
+ */
+type HeatLayerFactory = (
+  points: HeatPoint[],
+  options?: HeatLayerOptions
+) => L.Layer;
+
+/*
+ * Compatibilidad con distintas
+ * formas de empaquetado.
+ */
+interface HeatModuleCompatibility {
+
+  heatLayer?:
+    HeatLayerFactory;
+
+  default?:
+    | HeatLayerFactory
+    | {
+        heatLayer?:
+          HeatLayerFactory;
+      };
+}
 
 @Component({
   selector: 'app-dashboard-jam-list',
@@ -42,9 +108,21 @@ import type {
 export class DashboardJamListComponent
   implements AfterViewInit, OnChanges, OnDestroy {
 
+  /*
+   * ================================================
+   * ELEMENTO HTML
+   * ================================================
+   */
+
   @ViewChild('heatmapContainer')
   heatmapContainer?:
     ElementRef<HTMLDivElement>;
+
+  /*
+   * ================================================
+   * INPUTS
+   * ================================================
+   */
 
   @Input()
   atascos: WazeAtasco[] = [];
@@ -53,45 +131,95 @@ export class DashboardJamListComponent
   retrasoPromedioSegundos:
     number | null = null;
 
+  /*
+   * ================================================
+   * LEAFLET
+   * ================================================
+   */
+
   private map:
     L.Map | null = null;
 
-  private heatLayer:
-    L.HeatLayer | null = null;
+  /*
+   * Capa actual del heatmap.
+   */
+  private heatmapLayer:
+    L.Layer | null = null;
 
   /*
-   * Grupo que contiene las zonas
-   * invisibles de interacción.
+   * Zonas invisibles utilizadas
+   * para detectar clics.
    */
   private jamLayer:
     L.LayerGroup | null = null;
 
   /*
-   * Renderer SVG exclusivo para
-   * detectar los clics sobre los
-   * tramos congestionados.
+   * Renderer SVG para las
+   * líneas invisibles.
    */
   private jamRenderer:
     L.SVG | null = null;
 
+  /*
+   * ================================================
+   * CONTROL DE INICIALIZACIÓN
+   * ================================================
+   */
+
+  private viewInitialized = false;
+
+  /*
+   * Guardamos los temporizadores
+   * utilizados durante la estabilización
+   * inicial del mapa.
+   */
+  private stabilizationTimers:
+    number[] = [];
+
+  /*
+   * Centro aproximado
+   * de Tuluá.
+   */
   private readonly tuluaCenter:
     L.LatLngExpression = [
       4.0847,
       -76.1954
     ];
 
-  private viewInitialized = false;
+  /*
+   * ================================================
+   * CICLO DE VIDA
+   * ================================================
+   */
 
   ngAfterViewInit(): void {
 
     this.viewInitialized = true;
 
+    /*
+     * Primera inicialización.
+     *
+     * Esperamos al siguiente ciclo
+     * del navegador para que Angular
+     * termine de pintar el contenedor.
+     */
     window.setTimeout(
       () => {
 
         this.initializeMap();
 
         this.renderHeatmap();
+
+        /*
+         * En builds de producción el layout
+         * puede terminar de calcular sus
+         * dimensiones algunos milisegundos
+         * después.
+         *
+         * Por eso hacemos varias verificaciones
+         * controladas durante el primer segundo.
+         */
+        this.scheduleInitialStabilization();
 
       },
       0
@@ -111,7 +239,8 @@ export class DashboardJamListComponent
     }
 
     /*
-     * Esperamos a que Angular termine
+     * Cuando llegan datos nuevos
+     * esperamos a que Angular termine
      * de actualizar el DOM.
      */
     window.setTimeout(
@@ -130,6 +259,25 @@ export class DashboardJamListComponent
 
   ngOnDestroy(): void {
 
+    /*
+     * Cancelamos temporizadores
+     * pendientes.
+     */
+    for (
+      const timerId
+      of this.stabilizationTimers
+    ) {
+
+      window.clearTimeout(
+        timerId
+      );
+    }
+
+    this.stabilizationTimers = [];
+
+    /*
+     * Destruimos Leaflet.
+     */
     if (this.map) {
 
       this.map.remove();
@@ -137,11 +285,92 @@ export class DashboardJamListComponent
       this.map = null;
     }
 
-    this.heatLayer = null;
+    this.heatmapLayer = null;
 
     this.jamLayer = null;
 
     this.jamRenderer = null;
+  }
+
+  /*
+   * ================================================
+   * ESTABILIZACIÓN INICIAL
+   * ================================================
+   *
+   * Esto resuelve el caso en que el build
+   * de producción inicializa Leaflet antes
+   * de que el contenedor tenga su tamaño final.
+   */
+
+  private scheduleInitialStabilization(): void {
+
+    /*
+     * Primera comprobación rápida.
+     */
+    this.scheduleMapRefresh(
+      150
+    );
+
+    /*
+     * Segunda comprobación cuando
+     * el layout ya debería estar estable.
+     */
+    this.scheduleMapRefresh(
+      400
+    );
+
+    /*
+     * Última comprobación de seguridad.
+     *
+     * Después de este punto no seguimos
+     * redibujando automáticamente.
+     */
+    this.scheduleMapRefresh(
+      900
+    );
+  }
+
+  /*
+   * ================================================
+   * PROGRAMAR REAJUSTE
+   * ================================================
+   */
+
+  private scheduleMapRefresh(
+    delayMs: number
+  ): void {
+
+    const timerId =
+      window.setTimeout(
+        () => {
+
+          if (!this.map) {
+            return;
+          }
+
+          /*
+           * Leaflet vuelve a leer
+           * ancho y alto reales.
+           */
+          this.map.invalidateSize({
+            animate: false,
+            pan: false
+          });
+
+          /*
+           * Volvemos a construir la capa
+           * utilizando el tamaño definitivo
+           * del mapa.
+           */
+          this.renderHeatmap();
+
+        },
+        delayMs
+      );
+
+    this.stabilizationTimers.push(
+      timerId
+    );
   }
 
   /*
@@ -163,17 +392,36 @@ export class DashboardJamListComponent
       return;
     }
 
-    this.map = L.map(
-      element,
-      {
-        center:
-          this.tuluaCenter,
+    /*
+     * ================================================
+     * MAPA
+     * ================================================
+     */
 
-        zoom: 13,
+    this.map =
+      L.map(
+        element,
+        {
+          center:
+            this.tuluaCenter,
 
-        zoomControl: true
-      }
-    );
+          zoom: 13,
+
+          zoomControl: true,
+
+          /*
+           * SVG se utiliza para
+           * las geometrías interactivas.
+           */
+          preferCanvas: false
+        }
+      );
+
+    /*
+     * ================================================
+     * OPENSTREETMAP
+     * ================================================
+     */
 
     L.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -188,16 +436,14 @@ export class DashboardJamListComponent
     );
 
     /*
-     * ===========================================
-     * PANE PARA INTERACCIÓN
-     * ===========================================
+     * ================================================
+     * PANE DE INTERACCIÓN
+     * ================================================
      *
-     * Esta capa estará por encima del heatmap,
-     * pero sus líneas serán completamente
-     * transparentes.
+     * Las geometrías de Waze estarán
+     * en esta capa.
      *
-     * De esta manera podemos detectar clics
-     * sin mostrar rayas sobre el mapa.
+     * Son invisibles, pero clicables.
      */
 
     const jamPane =
@@ -212,9 +458,11 @@ export class DashboardJamListComponent
       'auto';
 
     /*
-     * Renderer SVG para las zonas
-     * invisibles de interacción.
+     * ================================================
+     * RENDERER SVG
+     * ================================================
      */
+
     this.jamRenderer =
       L.svg({
         pane:
@@ -226,29 +474,38 @@ export class DashboardJamListComponent
     );
 
     /*
-     * Grupo que contendrá las zonas
-     * invisibles de los atascos.
+     * ================================================
+     * GRUPO DE ATASCOS
+     * ================================================
      */
+
     this.jamLayer =
       L.layerGroup()
         .addTo(
           this.map
         );
 
+    /*
+     * Primera actualización
+     * de dimensiones.
+     */
     window.setTimeout(
       () => {
 
         this.map
-          ?.invalidateSize();
+          ?.invalidateSize({
+            animate: false,
+            pan: false
+          });
 
       },
-      100
+      50
     );
   }
 
   /*
    * ================================================
-   * RENDERIZAR HEATMAP
+   * RENDERIZAR MAPA DE CALOR
    * ================================================
    */
 
@@ -259,33 +516,49 @@ export class DashboardJamListComponent
     }
 
     /*
-     * Eliminamos el heatmap anterior.
+     * ================================================
+     * ELIMINAR HEATMAP ANTERIOR
+     * ================================================
      */
-    if (this.heatLayer) {
+
+    if (this.heatmapLayer) {
 
       this.map.removeLayer(
-        this.heatLayer
+        this.heatmapLayer
       );
 
-      this.heatLayer = null;
+      this.heatmapLayer = null;
     }
 
     /*
-     * Eliminamos las zonas de interacción
-     * anteriores.
+     * ================================================
+     * LIMPIAR ZONAS DE CLIC
+     * ================================================
      *
-     * Esto es importante para que cuando
-     * se actualicen los datos cada 2 minutos
-     * no queden atascos antiguos clicables.
+     * Es importante para la actualización
+     * automática cada dos minutos.
      */
+
     this.jamLayer
       ?.clearLayers();
 
+    /*
+     * ================================================
+     * ARRAYS DE DATOS
+     * ================================================
+     */
+
     const heatPoints:
-      L.HeatLatLngTuple[] = [];
+      HeatPoint[] = [];
 
     const visibleCoordinates:
       L.LatLngExpression[] = [];
+
+    /*
+     * ================================================
+     * PROCESAR ATASCOS
+     * ================================================
+     */
 
     for (
       const atasco
@@ -303,7 +576,7 @@ export class DashboardJamListComponent
 
       /*
        * ===========================================
-       * INTENSIDAD DEL HEATMAP
+       * INTENSIDAD
        * ===========================================
        */
 
@@ -311,6 +584,10 @@ export class DashboardJamListComponent
         atasco.nivel_congestion
         ?? 1;
 
+      /*
+       * Convertimos nivel Waze
+       * a intensidad 0 - 1.
+       */
       const intensity =
         Math.min(
           Math.max(
@@ -320,8 +597,18 @@ export class DashboardJamListComponent
           1
         );
 
+      /*
+       * Coordenadas del atasco
+       * individual.
+       */
       const jamCoordinates:
         L.LatLngExpression[] = [];
+
+      /*
+       * ===========================================
+       * GEOMETRÍA
+       * ===========================================
+       */
 
       for (
         const point
@@ -340,7 +627,7 @@ export class DashboardJamListComponent
         }
 
         /*
-         * En el feed de Waze:
+         * Waze:
          *
          * x = longitud
          * y = latitud
@@ -352,8 +639,7 @@ export class DashboardJamListComponent
           point.x;
 
         /*
-         * Punto utilizado por el
-         * mapa de calor.
+         * Mapa de calor.
          */
         heatPoints.push(
           [
@@ -364,8 +650,8 @@ export class DashboardJamListComponent
         );
 
         /*
-         * Coordenadas utilizadas
-         * para ajustar la vista.
+         * Ajuste automático
+         * de límites.
          */
         visibleCoordinates.push(
           [
@@ -375,9 +661,8 @@ export class DashboardJamListComponent
         );
 
         /*
-         * Coordenadas utilizadas para
-         * crear la zona invisible
-         * correspondiente al atasco.
+         * Área invisible
+         * para clic.
          */
         jamCoordinates.push(
           [
@@ -388,9 +673,8 @@ export class DashboardJamListComponent
       }
 
       /*
-       * Solamente creamos una zona
-       * interactiva cuando existen al
-       * menos dos puntos.
+       * Una polilínea necesita
+       * mínimo dos coordenadas.
        */
       if (
         jamCoordinates.length >= 2
@@ -418,14 +702,27 @@ export class DashboardJamListComponent
         13
       );
 
-      window.setTimeout(
-        () => {
+      this.map.invalidateSize({
+        animate: false,
+        pan: false
+      });
 
-          this.map
-            ?.invalidateSize();
+      return;
+    }
 
-        },
-        50
+    /*
+     * ================================================
+     * OBTENER FACTORÍA DEL HEATMAP
+     * ================================================
+     */
+
+    const heatLayerFactory =
+      this.getHeatLayerFactory();
+
+    if (!heatLayerFactory) {
+
+      console.error(
+        'No fue posible inicializar el mapa de calor.'
       );
 
       return;
@@ -437,8 +734,8 @@ export class DashboardJamListComponent
      * ================================================
      */
 
-    this.heatLayer =
-      L.heatLayer(
+    this.heatmapLayer =
+      heatLayerFactory(
         heatPoints,
         {
           radius: 28,
@@ -468,13 +765,19 @@ export class DashboardJamListComponent
         }
       );
 
-    this.heatLayer.addTo(
+    /*
+     * ================================================
+     * AGREGAR AL MAPA
+     * ================================================
+     */
+
+    this.heatmapLayer.addTo(
       this.map
     );
 
     /*
      * ================================================
-     * AJUSTAR VISTA
+     * AJUSTAR MAPA A LOS EVENTOS
      * ================================================
      */
 
@@ -495,7 +798,9 @@ export class DashboardJamListComponent
             30
           ],
 
-          maxZoom: 15
+          maxZoom: 15,
+
+          animate: false
         }
       );
 
@@ -508,14 +813,19 @@ export class DashboardJamListComponent
     }
 
     /*
-     * Forzamos a Leaflet a recalcular
-     * correctamente las dimensiones.
+     * ================================================
+     * RECALCULAR TAMAÑO
+     * ================================================
      */
+
     window.setTimeout(
       () => {
 
         this.map
-          ?.invalidateSize();
+          ?.invalidateSize({
+            animate: false,
+            pan: false
+          });
 
       },
       50
@@ -524,15 +834,132 @@ export class DashboardJamListComponent
 
   /*
    * ================================================
-   * ZONA INVISIBLE INTERACTIVA
+   * OBTENER HEATLAYER
    * ================================================
    *
-   * Esta línea NO se utiliza para representar
-   * gráficamente el atasco.
-   *
-   * Su única función es permitir que el usuario
-   * haga clic sobre el sector correspondiente
-   * y consulte la información.
+   * Compatibilidad con diferentes
+   * formas de empaquetado del módulo.
+   */
+
+  private getHeatLayerFactory():
+    HeatLayerFactory | null {
+
+    const heatModule =
+      LeafletHeat as unknown as
+      HeatModuleCompatibility;
+
+    /*
+     * ================================================
+     * OPCIÓN 1
+     * ================================================
+     *
+     * module.heatLayer
+     */
+
+    if (
+      typeof heatModule
+        .heatLayer ===
+        'function'
+    ) {
+
+      return heatModule
+        .heatLayer;
+    }
+
+    /*
+     * ================================================
+     * DEFAULT
+     * ================================================
+     */
+
+    const defaultExport =
+      heatModule.default;
+
+    /*
+     * ================================================
+     * OPCIÓN 2
+     * ================================================
+     *
+     * module.default.heatLayer
+     */
+
+    if (
+      defaultExport &&
+      typeof defaultExport
+        === 'object' &&
+      'heatLayer'
+        in defaultExport &&
+      typeof defaultExport
+        .heatLayer ===
+        'function'
+    ) {
+
+      return defaultExport
+        .heatLayer;
+    }
+
+    /*
+     * ================================================
+     * OPCIÓN 3
+     * ================================================
+     *
+     * module.default
+     */
+
+    if (
+      typeof defaultExport
+        === 'function'
+    ) {
+
+      return defaultExport;
+    }
+
+    /*
+     * ================================================
+     * OPCIÓN 4
+     * ================================================
+     *
+     * L.heatLayer
+     */
+
+    const leafletWithHeat =
+      L as typeof L & {
+        heatLayer?:
+          HeatLayerFactory;
+      };
+
+    if (
+      typeof leafletWithHeat
+        .heatLayer ===
+        'function'
+    ) {
+
+      return leafletWithHeat
+        .heatLayer;
+    }
+
+    /*
+     * ================================================
+     * ERROR DE DIAGNÓSTICO
+     * ================================================
+     */
+
+    console.error(
+      'No se encontró una función heatLayer válida.'
+    );
+
+    console.error(
+      'Contenido de @linkurious/leaflet-heat:',
+      LeafletHeat
+    );
+
+    return null;
+  }
+
+  /*
+   * ================================================
+   * ZONA INVISIBLE INTERACTIVA
+   * ================================================
    */
 
   private createInteractiveJamLine(
@@ -550,14 +977,13 @@ export class DashboardJamListComponent
     }
 
     /*
-     * Creamos una línea suficientemente ancha
-     * para facilitar la selección.
+     * Línea totalmente transparente.
      *
-     * opacity: 0 hace que sea completamente
-     * invisible.
+     * No representa visualmente
+     * el atasco.
      *
-     * Aunque no se vea, SVG conserva la zona
-     * interactiva de la línea.
+     * Solamente sirve para
+     * detectar el clic.
      */
     const polyline =
       L.polyline(
@@ -573,14 +999,13 @@ export class DashboardJamListComponent
             '#000000',
 
           /*
-           * Área cómoda para hacer clic.
+           * Superficie cómoda
+           * para hacer clic.
            */
           weight: 20,
 
           /*
-           * IMPORTANTE:
-           *
-           * La línea nunca será visible.
+           * Invisible.
            */
           opacity: 0,
 
@@ -599,12 +1024,6 @@ export class DashboardJamListComponent
      * ================================================
      * POPUP
      * ================================================
-     *
-     * No utilizamos tooltip ni resaltamos
-     * visualmente la línea.
-     *
-     * La información solamente aparece
-     * cuando el usuario hace clic.
      */
 
     polyline.bindPopup(
@@ -619,11 +1038,6 @@ export class DashboardJamListComponent
         className:
           'waze-jam-popup',
 
-        /*
-         * Leaflet moverá ligeramente el mapa
-         * cuando sea necesario para mantener
-         * el popup visible.
-         */
         autoPan: true,
 
         autoPanPadding: [
@@ -639,10 +1053,6 @@ export class DashboardJamListComponent
      * ================================================
      * CURSOR
      * ================================================
-     *
-     * La línea continúa siendo invisible,
-     * pero el cursor cambia para indicar
-     * que existe información disponible.
      */
 
     polyline.on(
@@ -663,10 +1073,6 @@ export class DashboardJamListComponent
       }
     );
 
-    /*
-     * Agregamos la zona invisible
-     * a la capa de interacción.
-     */
     polyline.addTo(
       this.jamLayer
     );
@@ -682,26 +1088,41 @@ export class DashboardJamListComponent
     atasco: WazeAtasco
   ): string {
 
+    /*
+     * Vía.
+     */
     const street =
       this.escapeHtml(
         atasco.calle ||
         'Vía sin identificar'
       );
 
+    /*
+     * Ciudad.
+     */
     const city =
       this.escapeHtml(
         atasco.ciudad ||
         'Tuluá'
       );
 
+    /*
+     * Nivel.
+     */
     const congestionLevel =
       atasco.nivel_congestion;
 
+    /*
+     * Texto del nivel.
+     */
     const congestionLabel =
       this.getCongestionLabel(
         congestionLevel
       );
 
+    /*
+     * Color del nivel.
+     */
     const color =
       this.getCongestionColor(
         congestionLevel
@@ -737,7 +1158,7 @@ export class DashboardJamListComponent
         : 'Sin información';
 
     /*
-     * Retraso en segundos.
+     * Retraso.
      */
     const delay =
       atasco.retraso_segundos
@@ -751,7 +1172,7 @@ export class DashboardJamListComponent
         : 'Sin información';
 
     /*
-     * Retraso convertido a minutos.
+     * Equivalente en minutos.
      */
     const delayMinutes =
       atasco.retraso_segundos
@@ -762,6 +1183,12 @@ export class DashboardJamListComponent
             60
           ).toFixed(1)
         : null;
+
+    /*
+     * ================================================
+     * HTML
+     * ================================================
+     */
 
     return `
       <div class="jam-popup">
@@ -908,7 +1335,7 @@ export class DashboardJamListComponent
 
   /*
    * ================================================
-   * CLASIFICACIÓN DE CONGESTIÓN
+   * CLASIFICACIÓN
    * ================================================
    */
 
@@ -938,7 +1365,7 @@ export class DashboardJamListComponent
 
   /*
    * ================================================
-   * COLOR SEGÚN NIVEL
+   * COLOR
    * ================================================
    */
 
