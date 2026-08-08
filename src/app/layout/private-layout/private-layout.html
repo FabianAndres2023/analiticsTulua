@@ -1,4 +1,6 @@
-<section class="private-layout">
+<div class="private-layout">
+
+  <!-- SIDEBAR -->
 
   <aside class="sidebar">
 
@@ -15,7 +17,9 @@
         loadingPermissions() ||
         puedeVerDashboard()
       ) {
+
         @if (puedeVerDashboard()) {
+
           <a
             routerLink="/dashboard"
             routerLinkActive="active"
@@ -29,10 +33,13 @@
               Inicio
             </span>
           </a>
+
         }
+
       }
 
       @if (puedeVerAmbiente()) {
+
         <a
           routerLink="/ambiente"
           routerLinkActive="active"
@@ -43,9 +50,11 @@
             Ambiente
           </span>
         </a>
+
       }
 
       @if (puedeVerMovilidad()) {
+
         <a
           routerLink="/movilidad"
           routerLinkActive="active"
@@ -56,9 +65,11 @@
             Movilidad
           </span>
         </a>
+
       }
 
       @if (puedeVerTurismo()) {
+
         <a
           routerLink="/ocio-turismo"
           routerLinkActive="active"
@@ -69,9 +80,11 @@
             Ocio y Turismo
           </span>
         </a>
+
       }
 
       @if (puedeVerConfiguracion()) {
+
         <a
           routerLink="/configuracion"
           routerLinkActive="active"
@@ -82,13 +95,18 @@
             Configuración
           </span>
         </a>
+
       }
 
     </nav>
 
   </aside>
 
+  <!-- CONTENIDO PRINCIPAL -->
+
   <main class="main-content">
+
+    <!-- TOPBAR -->
 
     <header class="topbar">
 
@@ -148,10 +166,18 @@
 
     </header>
 
+    <!--
+      ÚNICA ZONA CON SCROLL EN ESCRITORIO.
+
+      Cuando el usuario baje por Waze,
+      Siniestros, Semafórica, etc.,
+      el sidebar y el topbar seguirán visibles.
+    -->
+
     <section class="page-content">
       <router-outlet></router-outlet>
     </section>
 
   </main>
 
-</section>
+</div>
