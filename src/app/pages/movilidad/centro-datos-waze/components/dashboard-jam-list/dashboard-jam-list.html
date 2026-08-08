@@ -1,5 +1,7 @@
 <section class="jam-section">
 
+  <!-- TÍTULO -->
+
   <div class="section-heading">
 
     <div class="section-title">
@@ -9,147 +11,206 @@
       </div>
 
       <div>
-        <span>Congestión vial</span>
 
-        <h3>Atascos activos</h3>
+        <span>
+          Congestión vial
+        </span>
+
+        <h3>
+          Atascos activos
+        </h3>
 
         <p>
-          Estado actual de los eventos de congestión reportados
-          por Waze en la red vial monitoreada.
+          Visualización territorial de la congestión
+          reportada por Waze en la red vial monitoreada.
         </p>
+
       </div>
 
     </div>
 
   </div>
 
+  <!-- MAPA DE CALOR + RETRASO -->
+
   <div class="jam-layout">
 
-    <article class="list-card">
+    <!-- MAPA DE CALOR -->
+
+    <article class="heatmap-card">
 
       <div class="card-heading">
+
         <div>
-          <span>Estado actual</span>
-          <h4>Eventos de congestión</h4>
-        </div>
-      </div>
 
-      @if (atascos.length > 0) {
+          <span>
+            Estado actual
+          </span>
 
-        <div class="data-list">
-
-          @for (
-            atasco of atascos;
-            track atasco.uuid
-          ) {
-
-            <div class="data-list-item">
-
-              <div class="data-list-description">
-
-                <strong>
-                  {{ atasco.calle || 'Vía sin identificar' }}
-                </strong>
-
-                <span>
-                  {{ atasco.ciudad || 'Tuluá' }}
-                </span>
-
-              </div>
-
-              <div class="data-list-values">
-
-                <span>
-                  Nivel:
-                  {{ atasco.nivel_congestion ?? '--' }}
-                </span>
-
-                <span>
-                  {{
-                    atasco.velocidad_kmh != null
-                      ? (
-                        atasco.velocidad_kmh
-                          | number:'1.0-1'
-                      )
-                      : '--'
-                  }}
-                  km/h
-                </span>
-
-                <span>
-                  {{
-                    atasco.longitud_metros != null
-                      ? (
-                        atasco.longitud_metros
-                          | number:'1.0-0'
-                      )
-                      : '--'
-                  }}
-                  m
-                </span>
-
-                <span>
-                  {{
-                    atasco.retraso_segundos != null
-                      ? (
-                        atasco.retraso_segundos
-                          | number:'1.0-0'
-                      )
-                      : '--'
-                  }}
-                  s
-                </span>
-
-              </div>
-
-            </div>
-
-          }
-
-        </div>
-
-      } @else {
-
-        <div class="empty-state">
-
-          <svg lucideActivity></svg>
+          <h4>
+            Mapa de calor de congestión
+          </h4>
 
           <p>
-            No hay atascos activos reportados en este momento.
+            Las zonas de mayor intensidad representan
+            los sectores con mayor nivel de congestión.
           </p>
 
         </div>
 
-      }
+      </div>
+
+      <!--
+        IMPORTANTE:
+        Este contenedor permanece siempre en el DOM.
+        Así Leaflet puede inicializarse correctamente.
+      -->
+
+      <div class="heatmap-wrapper">
+
+        <div
+          #heatmapContainer
+          class="congestion-heatmap"
+          role="img"
+          aria-label="Mapa de calor de congestión vial en Tuluá"
+        >
+        </div>
+
+        @if (atascos.length === 0) {
+
+          <div class="heatmap-empty-overlay">
+
+            <svg lucideActivity></svg>
+
+            <strong>
+              Sin congestión activa
+            </strong>
+
+            <p>
+              No hay atascos reportados
+              por Waze en este momento.
+            </p>
+
+          </div>
+
+        }
+
+      </div>
+
+      <!-- LEYENDA -->
+
+      <div class="heatmap-legend">
+
+        <span class="legend-title">
+          Intensidad:
+        </span>
+
+        <div class="legend-item">
+          <i class="legend-dot low"></i>
+          Baja
+        </div>
+
+        <div class="legend-item">
+          <i class="legend-dot medium"></i>
+          Media
+        </div>
+
+        <div class="legend-item">
+          <i class="legend-dot high"></i>
+          Alta
+        </div>
+
+        <div class="legend-item">
+          <i class="legend-dot critical"></i>
+          Crítica
+        </div>
+
+      </div>
+
+      <div class="heatmap-summary">
+
+        <strong>
+          {{ atascos.length }}
+        </strong>
+
+        <span>
+          {{
+            atascos.length === 1
+              ? 'evento de congestión activo'
+              : 'eventos de congestión activos'
+          }}
+        </span>
+
+      </div>
 
     </article>
+
+    <!-- RETRASO PROMEDIO -->
 
     <article class="metric-card">
 
       <div class="card-heading">
+
         <div>
-          <span>Retraso</span>
-          <h4>Promedio actual</h4>
+
+          <span>
+            Retraso
+          </span>
+
+          <h4>
+            Promedio actual
+          </h4>
+
         </div>
+
       </div>
 
       <div class="metric-content">
 
         <strong>
-          @if (retrasoPromedioSegundos != null) {
+
+          @if (
+            retrasoPromedioSegundos != null
+          ) {
+
             {{
               retrasoPromedioSegundos
                 | number:'1.0-0'
             }}
             s
+
           } @else {
+
             --
+
           }
+
         </strong>
 
         <span>
           Retraso promedio de los atascos activos
         </span>
+
+        @if (
+          retrasoPromedioSegundos != null
+        ) {
+
+          <small>
+
+            Aproximadamente
+
+            {{
+              (
+                retrasoPromedioSegundos / 60
+              )
+                | number:'1.0-1'
+            }}
+
+            minutos
+
+          </small>
+
+        }
 
       </div>
 

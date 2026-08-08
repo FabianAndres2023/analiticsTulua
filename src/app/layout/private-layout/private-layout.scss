@@ -1,12 +1,28 @@
 :host {
   display: block;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
+/* =================================
+   LAYOUT GENERAL
+================================= */
+
 .private-layout {
-  min-height: 100vh;
+  width: 100%;
+  height: 100vh;
+
   display: flex;
+
+  overflow: hidden;
+
   background: #eef3f8;
-  font-family: "Segoe UI", Arial, sans-serif;
+
+  font-family:
+    "Segoe UI",
+    Arial,
+    sans-serif;
 }
 
 /* =================================
@@ -15,29 +31,88 @@
 
 .sidebar {
   width: 300px;
-  min-height: 100vh;
+  height: 100vh;
+
   padding: 22px 18px;
+
   flex-shrink: 0;
+
+  /*
+   * Si en el futuro aparecen más módulos
+   * de los que caben verticalmente,
+   * solamente el propio sidebar podrá
+   * desplazarse internamente.
+   */
+  overflow-x: hidden;
+  overflow-y: auto;
+
   background: linear-gradient(
     180deg,
     #003b66 0%,
     #005b8f 100%
   );
+
   color: white;
-  box-shadow: 4px 0 22px rgba(8, 52, 92, 0.16);
+
+  box-shadow:
+    4px 0 22px
+    rgba(8, 52, 92, 0.16);
+
+  /*
+   * Firefox
+   */
+  scrollbar-width: thin;
+  scrollbar-color:
+    rgba(255, 255, 255, 0.3)
+    transparent;
+
+  /*
+   * Chrome / Edge
+   */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background:
+      rgba(255, 255, 255, 0.28);
+
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background:
+      rgba(255, 255, 255, 0.42);
+  }
 }
+
+/* =================================
+   LOGO
+================================= */
 
 .brand-card {
   margin-bottom: 34px;
+
   padding: 18px;
+
   overflow: hidden;
+
   background: white;
+
   border-radius: 24px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+
+  box-shadow:
+    0 15px 35px
+    rgba(0, 0, 0, 0.12);
 
   img {
     width: 100%;
     display: block;
+
     object-fit: contain;
   }
 }
@@ -49,20 +124,31 @@
 .menu {
   display: flex;
   flex-direction: column;
+
   gap: 12px;
 
   a {
     display: flex;
     align-items: center;
+
     gap: 15px;
+
     min-height: 54px;
+
     padding: 14px 18px;
+
     color: white;
+
     text-decoration: none;
+
     font-size: 17px;
     font-weight: 700;
-    border-left: 5px solid transparent;
+
+    border-left:
+      5px solid transparent;
+
     border-radius: 18px;
+
     transition:
       background-color 0.2s ease,
       border-color 0.2s ease,
@@ -71,7 +157,9 @@
     svg {
       width: 23px;
       height: 23px;
+
       flex-shrink: 0;
+
       stroke-width: 2.2;
     }
 
@@ -81,14 +169,22 @@
   }
 
   a:hover {
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateX(3px);
+    background:
+      rgba(255, 255, 255, 0.12);
+
+    transform:
+      translateX(3px);
   }
 
   a.active {
-    background: rgba(255, 255, 255, 0.18);
-    border-left-color: #ffd000;
-    transform: translateX(3px);
+    background:
+      rgba(255, 255, 255, 0.18);
+
+    border-left-color:
+      #ffd000;
+
+    transform:
+      translateX(3px);
   }
 }
 
@@ -98,9 +194,18 @@
 
 .main-content {
   min-width: 0;
+  height: 100vh;
+
   flex: 1;
+
   display: flex;
   flex-direction: column;
+
+  /*
+   * Impide que el contenido haga crecer
+   * toda la página y desplace el sidebar.
+   */
+  overflow: hidden;
 }
 
 /* =================================
@@ -109,41 +214,71 @@
 
 .topbar {
   min-height: 130px;
-  margin: 28px 36px 32px;
-  padding: 24px 46px;
+
+  margin:
+    28px
+    36px
+    32px;
+
+  padding:
+    24px
+    46px;
+
+  flex-shrink: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 32px;
+
   color: white;
+
   background: linear-gradient(
     90deg,
     #064775 0%,
     #00588b 100%
   );
-  border-radius: 0 0 26px 26px;
-  box-shadow: 0 15px 35px rgba(0, 73, 122, 0.2);
+
+  border-radius:
+    0
+    0
+    26px
+    26px;
+
+  box-shadow:
+    0 15px 35px
+    rgba(0, 73, 122, 0.2);
 }
 
 .topbar-title {
   display: flex;
   flex-direction: column;
+
   justify-content: center;
+
   gap: 9px;
 
   h1 {
     margin: 0;
+
     font-size: 38px;
     font-weight: 750;
+
     line-height: 1;
-    letter-spacing: -0.5px;
+
+    letter-spacing:
+      -0.5px;
   }
 
   p {
     margin: 0;
+
     font-size: 18px;
     font-weight: 400;
+
     line-height: 1.3;
+
     opacity: 0.9;
   }
 }
@@ -155,50 +290,71 @@
 .user-area {
   display: flex;
   align-items: center;
+
   gap: 20px;
 }
 
 .user-box {
   display: flex;
   align-items: center;
+
   gap: 15px;
 }
 
 .avatar {
   width: 54px;
   height: 54px;
+
   flex-shrink: 0;
+
   display: grid;
   place-items: center;
+
   color: #003b66;
+
   background: #ffd000;
+
   border-radius: 50%;
+
   font-size: 17px;
   font-weight: 900;
+
   text-transform: uppercase;
-  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.12);
+
+  box-shadow:
+    0 7px 18px
+    rgba(0, 0, 0, 0.12);
 }
 
 .user-information {
   display: flex;
   flex-direction: column;
+
   gap: 4px;
 
   strong {
     max-width: 240px;
+
     overflow: hidden;
+
     color: white;
+
     font-size: 17px;
     font-weight: 750;
+
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   span {
     max-width: 240px;
+
     overflow: hidden;
+
     font-size: 13px;
+
     opacity: 0.78;
+
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -207,13 +363,23 @@
 .logout-button {
   width: 44px;
   height: 44px;
+
   display: grid;
   place-items: center;
+
   color: white;
+
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  background:
+    rgba(255, 255, 255, 0.1);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.22);
+
   border-radius: 13px;
+
   transition:
     background-color 0.2s ease,
     transform 0.2s ease;
@@ -221,12 +387,16 @@
   svg {
     width: 21px;
     height: 21px;
+
     stroke-width: 2.2;
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+    background:
+      rgba(255, 255, 255, 0.2);
+
+    transform:
+      translateY(-2px);
   }
 }
 
@@ -235,29 +405,90 @@
 ================================= */
 
 .page-content {
-  min-height: calc(100vh - 190px);
+  /*
+   * MUY IMPORTANTE:
+   *
+   * Permite que esta zona utilice solamente
+   * el espacio restante debajo del topbar.
+   */
+  min-width: 0;
+  min-height: 0;
+
   flex: 1;
-  padding: 0 36px 36px;
+
+  padding:
+    0
+    36px
+    36px;
+
+  /*
+   * Aquí ocurre ahora el scroll principal
+   * de todos los módulos privados.
+   */
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scroll-behavior: smooth;
+
+  /*
+   * Firefox
+   */
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    #9bb3c8
+    transparent;
+
+  /*
+   * Chrome / Edge
+   */
+  &::-webkit-scrollbar {
+    width: 9px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #b9cad9;
+
+    border:
+      2px solid #eef3f8;
+
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #8faabe;
+  }
 }
 
 /* =================================
-   RESPONSIVE
+   RESPONSIVE - TABLET
 ================================= */
 
 @media (max-width: 1050px) {
+
   .sidebar {
     width: 92px;
-    padding: 20px 12px;
+
+    padding:
+      20px
+      12px;
   }
 
   .brand-card {
     padding: 8px;
+
     border-radius: 16px;
   }
 
   .menu {
+
     a {
       justify-content: center;
+
       padding: 15px;
 
       span {
@@ -267,10 +498,13 @@
   }
 
   .topbar {
-    padding: 24px 30px;
+    padding:
+      24px
+      30px;
   }
 
   .topbar-title {
+
     h1 {
       font-size: 31px;
     }
@@ -285,28 +519,62 @@
   }
 }
 
+/* =================================
+   RESPONSIVE - MÓVIL
+================================= */
+
 @media (max-width: 760px) {
+
+  /*
+   * En móvil regresamos al desplazamiento
+   * convencional de toda la página.
+   *
+   * Evita problemas con teclados virtuales,
+   * barras del navegador y pantallas pequeñas.
+   */
+
+  :host {
+    height: auto;
+
+    overflow: visible;
+  }
+
   .private-layout {
+    min-height: 100vh;
+    height: auto;
+
     flex-direction: column;
+
+    overflow: visible;
   }
 
   .sidebar {
     width: 100%;
+    height: auto;
     min-height: auto;
+
+    overflow: visible;
   }
 
   .brand-card {
     max-width: 220px;
+
     margin-right: auto;
     margin-left: auto;
   }
 
   .menu {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
 
     a {
-      justify-content: flex-start;
+      justify-content:
+        flex-start;
 
       span {
         display: inline;
@@ -314,15 +582,27 @@
     }
   }
 
+  .main-content {
+    height: auto;
+    min-height: 0;
+
+    overflow: visible;
+  }
+
   .topbar {
     min-height: auto;
+
     margin: 18px;
+
     padding: 24px;
+
     flex-direction: column;
+
     align-items: flex-start;
   }
 
   .topbar-title {
+
     h1 {
       font-size: 29px;
     }
@@ -333,21 +613,37 @@
   }
 
   .page-content {
-    padding: 0 18px 24px;
+    min-height: 0;
+
+    padding:
+      0
+      18px
+      24px;
+
+    overflow: visible;
   }
 }
 
+/* =================================
+   RESPONSIVE - MÓVIL PEQUEÑO
+================================= */
+
 @media (max-width: 520px) {
+
   .menu {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 
   .user-area {
     width: 100%;
-    justify-content: space-between;
+
+    justify-content:
+      space-between;
   }
 
   .user-information {
+
     strong,
     span {
       max-width: 170px;
