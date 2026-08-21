@@ -1,8 +1,13 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-ambiente',
-  imports: [],
+
+  imports: [
+    RouterOutlet
+  ],
+
   templateUrl: './ambiente.html',
   styleUrl: './ambiente.scss',
 })

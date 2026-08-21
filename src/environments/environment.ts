@@ -11,5 +11,9 @@ export const environment = {
     'https://ddrbahubpwzfqdkvsjcs.supabase.co/functions/v1/waze-sync',
 
   wazeDashboardUrl:
-    'https://ddrbahubpwzfqdkvsjcs.supabase.co/functions/v1/waze-dashboard'
+    'https://ddrbahubpwzfqdkvsjcs.supabase.co/functions/v1/waze-dashboard',
+
+  ambienteDashboardUrl:
+    'https://ddrbahubpwzfqdkvsjcs.supabase.co/functions/v1/ambiente-dashboard'    
+
 };

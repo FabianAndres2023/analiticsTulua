@@ -11,6 +11,10 @@ import { Semaforica } from './pages/movilidad/semaforica/semaforica';
 import { OcioTurismo } from './pages/ocio-turismo/ocio-turismo';
 
 import {
+  EstacionMeteorologica
+} from './pages/ambiente/estacion-meteorologica/estacion-meteorologica';
+
+import {
   AccesoDenegado
 } from './pages/acceso-denegado/acceso-denegado';
 
@@ -99,9 +103,22 @@ export const routes: Routes = [
           permissionGuard([
             'ambiente.ver'
           ])
+        ],
+
+        children: [
+          {
+            path: '',
+            redirectTo: 'estacion-meteorologica',
+            pathMatch: 'full'
+          },
+
+          {
+            path: 'estacion-meteorologica',
+            component: EstacionMeteorologica
+          }
         ]
       },
-
+      
       {
         path: 'movilidad',
         component: Movilidad,
