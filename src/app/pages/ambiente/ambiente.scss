@@ -1,0 +1,137 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.ambiente-page {
+  width: 100%;
+}
+
+/* ==========================
+   ENCABEZADO
+========================== */
+
+.ambiente-header {
+  min-height: 116px;
+  padding: 28px 32px;
+
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  background: white;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 16px 40px rgba(15, 76, 129, 0.08);
+
+  h1 {
+    margin: 0 0 7px;
+
+    color: #071a52;
+
+    font-size: 30px;
+    font-weight: 750;
+  }
+
+  p {
+    margin: 0;
+
+    color: #667085;
+
+    font-size: 15px;
+    line-height: 1.5;
+  }
+}
+
+.header-icon {
+  width: 58px;
+  height: 58px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  color: white;
+
+  background: linear-gradient(
+    135deg,
+    #0f4c81,
+    #2d78b8
+  );
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 24px rgba(15, 76, 129, 0.2);
+
+  svg {
+    width: 29px;
+    height: 29px;
+    stroke-width: 2.1;
+  }
+}
+
+/* ==========================
+   CONTENIDO
+========================== */
+
+.ambiente-content {
+  min-height: 460px;
+
+  margin-top: 24px;
+
+  padding: 30px;
+
+  background: #ffffff;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 16px 40px rgba(15, 76, 129, 0.08);
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media (max-width: 900px) {
+
+  .ambiente-content {
+    padding: 22px;
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 760px) {
+
+  .ambiente-header {
+    padding: 24px;
+    align-items: flex-start;
+
+    h1 {
+      font-size: 26px;
+    }
+  }
+
+  .ambiente-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .ambiente-content {
+    padding: 16px;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+
+  .ambiente-header {
+    flex-direction: column;
+  }
+}

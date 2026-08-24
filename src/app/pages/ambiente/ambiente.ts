@@ -1,11 +1,16 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+import {
+  LucideLeaf
+} from '@lucide/angular';
+
 @Component({
   selector: 'app-ambiente',
 
   imports: [
-    RouterOutlet
+    RouterOutlet,
+    LucideLeaf
   ],
 
   templateUrl: './ambiente.html',

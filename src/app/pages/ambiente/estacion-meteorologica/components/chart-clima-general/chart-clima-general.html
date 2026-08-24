@@ -1,0 +1,42 @@
+<article class="chart-card">
+
+  <div class="chart-header">
+
+    <div>
+      <span>Clima general</span>
+
+      <h4>Temperatura y humedad relativa</h4>
+    </div>
+
+  </div>
+
+  @if (serie.length > 0) {
+
+    <div class="chart-container">
+
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+      >
+      </canvas>
+
+    </div>
+
+  } @else {
+
+    <div class="chart-placeholder">
+
+      <svg lucideThermometer></svg>
+
+      <p>
+        Todavía no hay mediciones suficientes
+        para graficar.
+      </p>
+
+    </div>
+
+  }
+
+</article>

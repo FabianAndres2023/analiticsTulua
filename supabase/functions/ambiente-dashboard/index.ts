@@ -77,18 +77,18 @@ Deno.serve(async (req) => {
 
       case "7d":
         horas = 24 * 7;
-        intervaloMinutos = 30;
+        intervaloMinutos = 120;
         break;
 
       case "30d":
         horas = 24 * 30;
-        intervaloMinutos = 60;
+        intervaloMinutos = 480;
         break;
 
       case "24h":
       default:
         horas = 24;
-        intervaloMinutos = 5;
+        intervaloMinutos = 15;
         break;
     }
 

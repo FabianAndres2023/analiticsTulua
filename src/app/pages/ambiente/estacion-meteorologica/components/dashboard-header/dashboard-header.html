@@ -1,0 +1,134 @@
+<header class="dashboard-header">
+
+  <div class="dashboard-header-content">
+
+    <span class="eyebrow">
+      Red de sensores IoT · TTN
+    </span>
+
+    <h2>
+      Estación Meteorológica
+    </h2>
+
+    <div class="station-owner">
+      Alcaldía Municipal de Tuluá
+    </div>
+
+    <p>
+      Monitoreo ambiental en tiempo real con los datos de la estación
+      meteorológica conectada a The Things Network.
+    </p>
+
+    <small class="last-update">
+      Última medición:
+      {{ ultimaMedicion }}
+    </small>
+
+
+    <div class="dashboard-header-actions">
+
+      <span
+        class="estado-badge"
+        [class.online]="enLinea"
+      >
+        {{ enLinea ? 'En línea' : 'Sin datos' }}
+      </span>
+
+
+      <div class="dashboard-controls">
+
+        <div
+          class="rango-selector"
+          role="group"
+          aria-label="Rango de consulta"
+        >
+
+          @for (opcion of rangos; track opcion) {
+
+            <button
+              type="button"
+              [class.active]="rango === opcion"
+              [disabled]="loading"
+              (click)="cambioRango.emit(opcion)"
+            >
+
+              @switch (opcion) {
+                @case ('24h') {
+                  24 horas
+                }
+                @case ('7d') {
+                  7 días
+                }
+                @case ('30d') {
+                  30 días
+                }
+              }
+
+            </button>
+
+          }
+
+        </div>
+
+
+        <button
+          class="update-button"
+          type="button"
+          [disabled]="loading"
+          [attr.aria-busy]="loading"
+          (click)="actualizar.emit()"
+        >
+
+          <svg
+            lucideRefreshCw
+            [class.rotating]="loading"
+          >
+          </svg>
+
+          @if (loading) {
+            Actualizando...
+          } @else {
+            Actualizar datos
+          }
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="station-location">
+
+    <div
+      id="station-location-map"
+      class="station-map"
+      aria-label="Ubicación de la Estación Meteorológica de la Alcaldía Municipal de Tuluá"
+    >
+    </div>
+
+    <div class="station-location-info">
+
+      <svg lucideMapPin></svg>
+
+      <div>
+        <strong>
+          Estación Meteorológica
+        </strong>
+
+        <span>
+          Alcaldía Municipal de Tuluá
+        </span>
+
+        <small>
+          4.086115, -76.197753
+        </small>
+      </div>
+
+    </div>
+
+  </div>
+
+</header>

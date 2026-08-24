@@ -1,2 +1,133 @@
-<h1>Estación meteorológica</h1>
-<p>Prueba de conexión con el dashboard de ambiente.</p>
+<section class="estacion-dashboard">
+
+  <app-estacion-header
+    [loading]="cargando()"
+    [enLinea]="estadoActual()?.estado === 'en_linea'"
+    [ultimaMedicion]="ultimaMedicion()"
+    [rango]="rango()"
+    (cambioRango)="cambiarRango($event)"
+    (actualizar)="cambiarRango(rango())"
+  >
+  </app-estacion-header>
+
+  @if (error(); as mensajeError) {
+
+    <div
+      class="dashboard-message dashboard-message-error"
+      role="alert"
+    >
+      {{ mensajeError }}
+    </div>
+
+  }
+
+  @if (cargando() && !dashboard()) {
+
+    <div
+      class="dashboard-message dashboard-message-loading"
+      role="status"
+    >
+      Cargando información de la estación meteorológica...
+    </div>
+
+  }
+
+  @if (!cargando() && !error() && !estadoActual()) {
+
+    <div
+      class="dashboard-message dashboard-message-loading"
+      role="status"
+    >
+      La estación no ha reportado datos todavía.
+    </div>
+
+  }
+
+  <nav
+    class="section-navigation"
+    aria-label="Navegación del dashboard de ambiente"
+  >
+
+    <button
+      type="button"
+      (click)="scrollToSection('resumen')"
+    >
+      Resumen
+    </button>
+
+    <button
+      type="button"
+      (click)="scrollToSection('tendencias')"
+    >
+      Tendencias
+    </button>
+
+  </nav>
+
+  <section
+    id="resumen"
+    class="dashboard-section"
+  >
+
+    <app-estacion-kpis
+      [estadoActual]="estadoActual()"
+    >
+    </app-estacion-kpis>
+
+  </section>
+
+  <section
+    id="tendencias"
+    class="dashboard-section"
+  >
+
+    <header class="dashboard-section-header">
+
+      <div>
+        <span class="section-eyebrow">
+          Análisis temporal
+        </span>
+
+        <h2>
+          Tendencias ambientales
+        </h2>
+
+        <p>
+          Evolución de la temperatura, la humedad, la precipitación y el
+          viento registrada por la estación durante el rango seleccionado.
+        </p>
+      </div>
+
+    </header>
+
+    <div class="charts-grid">
+
+      <app-chart-clima-general
+        [serie]="serie()"
+        [rango]="rango()"
+      >
+      </app-chart-clima-general>
+
+      <app-chart-precipitacion
+        [serie]="serie()"
+        [rango]="rango()"
+      >
+      </app-chart-precipitacion>
+
+      <app-chart-presion
+        [serie]="serie()"
+        [rango]="rango()"
+      >
+      </app-chart-presion>
+
+      <app-chart-viento-atmosfera
+        [serie]="serie()"
+        [rango]="rango()"
+      >
+      </app-chart-viento-atmosfera>
+
+    </div>
+
+  </section>
+
+</section>
