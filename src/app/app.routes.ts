@@ -59,6 +59,10 @@ import {
  * ========================================================= */
 
 import {
+  EstacionMeteorologica
+} from './pages/ambiente/estacion-meteorologica/estacion-meteorologica';
+
+import {
   AccesoDenegado
 } from './pages/acceso-denegado/acceso-denegado';
 
@@ -250,14 +254,22 @@ export const routes:
           permissionGuard([
             'ambiente.ver'
           ])
+        ],
+
+        children: [
+          {
+            path: '',
+            redirectTo: 'estacion-meteorologica',
+            pathMatch: 'full'
+          },
+
+          {
+            path: 'estacion-meteorologica',
+            component: EstacionMeteorologica
+          }
         ]
       },
-
-
-      /* ===================================================
-       * MOVILIDAD
-       * =================================================== */
-
+      
       {
         path:
           'movilidad',

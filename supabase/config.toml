@@ -434,3 +434,16 @@ entrypoint = "./functions/waze-dashboard/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/waze-dashboard/*.html" ]
+
+[functions.ttn-webhook]
+enabled = true
+verify_jwt = false
+import_map = "./functions/ttn-webhook/deno.json"
+entrypoint = "./functions/ttn-webhook/index.ts"
+
+
+[functions.ambiente-dashboard]
+enabled = true
+verify_jwt = true
+import_map = "./functions/ambiente-dashboard/deno.json"
+entrypoint = "./functions/ambiente-dashboard/index.ts"

@@ -1,0 +1,225 @@
+<section class="summary-section">
+
+  <div class="section-heading">
+
+    <div>
+      <span>Lectura actual</span>
+
+      <h3>Estado actual de la estación</h3>
+    </div>
+
+  </div>
+
+  @if (estadoActual; as estado) {
+
+    <div class="kpi-grid">
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon">
+          <svg lucideThermometer></svg>
+        </div>
+
+        <div>
+          <span>Temperatura</span>
+
+          <strong>
+            @if (estado.temperatura != null) {
+              {{ estado.temperatura | number:'1.0-1' }} °C
+            } @else {
+              --
+            }
+          </strong>
+
+          <small>Temperatura ambiente</small>
+        </div>
+
+      </article>
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon">
+          <svg lucideDroplets></svg>
+        </div>
+
+        <div>
+          <span>Humedad relativa</span>
+
+          <strong>
+            @if (estado.humedad_relativa != null) {
+              {{ estado.humedad_relativa | number:'1.0-0' }} %
+            } @else {
+              --
+            }
+          </strong>
+
+          <small>Humedad del aire</small>
+        </div>
+
+      </article>
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon">
+          <svg lucideGauge></svg>
+        </div>
+
+        <div>
+          <span>Presión atmosférica</span>
+
+          <strong>
+            @if (estado.presion != null) {
+              {{ estado.presion | number:'1.0-0' }} hPa
+            } @else {
+              --
+            }
+          </strong>
+
+          <small>Presión barométrica</small>
+        </div>
+
+      </article>
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon">
+          <svg lucideCloudRain></svg>
+        </div>
+
+        <div>
+          <span>Precipitación</span>
+
+          <strong>
+            @if (estado.precipitacion != null) {
+              {{ estado.precipitacion | number:'1.0-1' }} mm
+            } @else {
+              --
+            }
+          </strong>
+
+          <small>Lluvia registrada</small>
+        </div>
+
+      </article>
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon">
+          <svg lucideWind></svg>
+        </div>
+
+        <div>
+          <span>Velocidad del viento</span>
+
+          <strong>
+            @if (estado.viento_velocidad != null) {
+              {{ estado.viento_velocidad | number:'1.0-1' }} m/s
+            } @else {
+              --
+            }
+          </strong>
+
+          <small>Viento actual</small>
+        </div>
+
+      </article>
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon">
+          <svg lucideCompass></svg>
+        </div>
+
+        <div>
+          <span>Dirección del viento</span>
+
+          <strong class="wind-value">
+            @if (estado.viento_direccion != null) {
+
+              <span
+                class="wind-arrow"
+                [style.transform]="
+                  'rotate(' + estado.viento_direccion + 'deg)'
+                "
+              >
+                <svg lucideArrowUp></svg>
+              </span>
+
+              {{ estado.viento_direccion }}°
+
+            } @else {
+              --
+            }
+          </strong>
+
+          <small>Dirección de proveniencia</small>
+        </div>
+
+      </article>
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon">
+          <svg lucideSun></svg>
+        </div>
+
+        <div>
+          <span>Índice UV</span>
+
+          <strong class="uv-value">
+            @if (estado.indice_uv != null) {
+
+              {{ estado.indice_uv | number:'1.0-1' }}
+
+              <em
+                class="uv-badge"
+                [style.background-color]="
+                  uvPresentacion(estado.indice_uv)?.color
+                "
+              >
+                {{ uvPresentacion(estado.indice_uv)?.categoria }}
+              </em>
+
+            } @else {
+              --
+            }
+          </strong>
+
+          <small>Radiación ultravioleta</small>
+        </div>
+
+      </article>
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon">
+          <svg lucideCloudy></svg>
+        </div>
+
+        <div>
+          <span>Nubosidad</span>
+
+          <strong>
+            @if (estado.nubosidad != null) {
+              {{ estado.nubosidad | number:'1.0-0' }} %
+            } @else {
+              --
+            }
+          </strong>
+
+          <small>Cielo cubierto</small>
+        </div>
+
+      </article>
+
+    </div>
+
+  } @else {
+
+    <div class="kpi-empty">
+      La estación todavía no ha reportado lecturas.
+    </div>
+
+  }
+
+</section>

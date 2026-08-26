@@ -1,0 +1,42 @@
+<article class="chart-card">
+
+  <div class="chart-header">
+
+    <div>
+      <span>Viento y atmósfera</span>
+
+      <h4>Viento, índice UV y nubosidad</h4>
+    </div>
+
+  </div>
+
+  @if (serie.length > 0) {
+
+    <div class="chart-container">
+
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+      >
+      </canvas>
+
+    </div>
+
+  } @else {
+
+    <div class="chart-placeholder">
+
+      <svg lucideWind></svg>
+
+      <p>
+        Todavía no hay registros de viento
+        para el rango seleccionado.
+      </p>
+
+    </div>
+
+  }
+
+</article>

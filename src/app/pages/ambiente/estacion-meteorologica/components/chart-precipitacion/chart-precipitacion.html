@@ -1,0 +1,42 @@
+<article class="chart-card">
+
+  <div class="chart-header">
+
+    <div>
+      <span>Precipitación</span>
+
+      <h4>Lluvia registrada por intervalo</h4>
+    </div>
+
+  </div>
+
+  @if (serie.length > 0) {
+
+    <div class="chart-container">
+
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+      >
+      </canvas>
+
+    </div>
+
+  } @else {
+
+    <div class="chart-placeholder">
+
+      <svg lucideCloudRain></svg>
+
+      <p>
+        Todavía no hay registros de lluvia
+        para el rango seleccionado.
+      </p>
+
+    </div>
+
+  }
+
+</article>
