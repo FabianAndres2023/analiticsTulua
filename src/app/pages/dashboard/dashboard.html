@@ -1,5 +1,9 @@
 <section class="dashboard-content">
 
+  <!-- ================================================
+       BIENVENIDA
+       ================================================ -->
+
   <section class="welcome-card">
 
     <h2>
@@ -17,88 +21,302 @@
 
   </section>
 
+
+  <!-- ================================================
+       TÍTULO
+       ================================================ -->
+
   <section class="section-title">
-    <h2>Indicadores Clave del Territorio</h2>
+
+    <h2>
+      Indicadores Clave del Territorio
+    </h2>
+
+    <p>
+      Información consolidada de Ambiente y Movilidad.
+    </p>
+
   </section>
+
+
+  <!-- ================================================
+       ERROR
+       ================================================ -->
+
+  @if (indicatorsError()) {
+
+    <section
+      class="indicator-error"
+      role="alert"
+    >
+
+      <strong>
+        No fue posible cargar los indicadores.
+      </strong>
+
+      <span>
+        {{ indicatorsError() }}
+      </span>
+
+    </section>
+
+  }
+
+
+  <!-- ================================================
+       INDICADORES
+       ================================================ -->
 
   <section class="indicators-grid">
 
+
+    <!-- ==============================================
+         TEMPERATURA
+         ============================================== -->
+
     <article class="indicator-card">
 
       <div class="indicator-header">
-        <svg lucideShield></svg>
 
-        <h3>Índice de Seguridad</h3>
+        <div class="indicator-icon">
+          <svg lucideCloudSun></svg>
+        </div>
 
-        <strong>
-          0%
-          <svg lucideArrowUp></svg>
-        </strong>
+        <div class="indicator-heading">
+
+          <span>
+            Ambiente
+          </span>
+
+          <h3>
+            Temperatura promedio
+          </h3>
+
+        </div>
+
       </div>
 
-      <p>Reportes por fecha</p>
 
-      <div class="mini-chart"></div>
+      <div class="indicator-value">
+
+        @if (
+          loadingIndicators()
+        ) {
+
+          <span class="loading-value">
+            --
+          </span>
+
+        } @else {
+
+          <strong>
+            {{ temperatura() }}
+          </strong>
+
+          <span class="indicator-unit">
+            °C
+          </span>
+
+        }
+
+      </div>
+
+
+      <div class="indicator-footer">
+
+        <span>
+          Promedio de los últimos 30 días
+        </span>
+
+      </div>
 
     </article>
 
+
+    <!-- ==============================================
+         HUMEDAD
+         ============================================== -->
+
     <article class="indicator-card">
 
       <div class="indicator-header">
-        <svg lucideCar></svg>
 
-        <h3>Índice de Congestión</h3>
+        <div class="indicator-icon">
+          <svg lucideDroplets></svg>
+        </div>
 
-        <strong>
-          0%
-          <svg lucideArrowRight></svg>
-        </strong>
+        <div class="indicator-heading">
+
+          <span>
+            Ambiente
+          </span>
+
+          <h3>
+            Humedad relativa
+          </h3>
+
+        </div>
+
       </div>
 
-      <div class="circle-chart">
-        <span>0%</span>
-        <small>Baja</small>
+
+      <div class="indicator-value">
+
+        @if (
+          loadingIndicators()
+        ) {
+
+          <span class="loading-value">
+            --
+          </span>
+
+        } @else {
+
+          <strong>
+            {{ humedad() }}
+          </strong>
+
+          <span class="indicator-unit">
+            %
+          </span>
+
+        }
+
+      </div>
+
+
+      <div class="indicator-footer">
+
+        <span>
+          Promedio de los últimos 30 días
+        </span>
+
       </div>
 
     </article>
 
+
+    <!-- ==============================================
+         WAZE
+         ============================================== -->
+
     <article class="indicator-card">
 
       <div class="indicator-header">
-        <svg lucideWind></svg>
 
-        <h3>Índice de Calidad del Aire</h3>
+        <div class="indicator-icon">
+          <svg lucideCar></svg>
+        </div>
 
-        <strong>
-          0%
-          <svg lucideArrowUp></svg>
-        </strong>
+        <div class="indicator-heading">
+
+          <span>
+            Movilidad · Waze
+          </span>
+
+          <h3>
+            Velocidad en atascos
+          </h3>
+
+        </div>
+
       </div>
 
-      <div class="air-box">
-        <span></span>
-        <em>--</em>
+
+      <div class="indicator-value">
+
+        @if (
+          loadingIndicators()
+        ) {
+
+          <span class="loading-value">
+            --
+          </span>
+
+        } @else {
+
+          <strong>
+            {{ velocidadWaze() }}
+          </strong>
+
+          <span class="indicator-unit">
+            km/h
+          </span>
+
+        }
+
+      </div>
+
+
+      <div class="indicator-footer">
+
+        <span>
+          Promedio de atascos de los últimos 30 días
+        </span>
+
       </div>
 
     </article>
 
+
+    <!-- ==============================================
+         SINIESTROS
+         ============================================== -->
+
     <article class="indicator-card">
 
       <div class="indicator-header">
-        <svg lucideFileText></svg>
 
-        <h3>Reportes Registrados</h3>
+        <div class="indicator-icon">
+          <svg lucideTriangleAlert></svg>
+        </div>
 
-        <strong>
-          0%
-          <svg lucideArrowUp></svg>
-        </strong>
+        <div class="indicator-heading">
+
+          <span>
+            Movilidad
+          </span>
+
+          <h3>
+            Siniestros viales
+          </h3>
+
+        </div>
+
       </div>
 
-      <p>Reportes por fecha</p>
 
-      <div class="total">
-        Total: 0
+      <div class="indicator-value">
+
+        @if (
+          loadingIndicators()
+        ) {
+
+          <span class="loading-value">
+            --
+          </span>
+
+        } @else {
+
+          <strong>
+            {{ totalSiniestros() }}
+          </strong>
+
+          <span class="indicator-unit records-unit">
+            registros
+          </span>
+
+        }
+
+      </div>
+
+
+      <div class="indicator-footer">
+
+        <span>
+          Acumulado del año {{ anioActual() }}
+        </span>
+
       </div>
 
     </article>
