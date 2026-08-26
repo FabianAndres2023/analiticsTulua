@@ -27,8 +27,16 @@ import {
 } from './components/chart-presion/chart-presion';
 
 import {
-  ChartVientoAtmosferaComponent,
-} from './components/chart-viento-atmosfera/chart-viento-atmosfera';
+  ChartVientoComponent,
+} from './components/chart-viento/chart-viento';
+
+import {
+  ChartIndiceUvComponent,
+} from './components/chart-indice-uv/chart-indice-uv';
+
+import {
+  ChartNubosidadComponent,
+} from './components/chart-nubosidad/chart-nubosidad';
 
 import {
   EstacionDashboardResponse,
@@ -50,7 +58,9 @@ import {
     ChartClimaGeneralComponent,
     ChartPrecipitacionComponent,
     ChartPresionComponent,
-    ChartVientoAtmosferaComponent,
+    ChartVientoComponent,
+    ChartIndiceUvComponent,
+    ChartNubosidadComponent,
   ],
 
   templateUrl:
