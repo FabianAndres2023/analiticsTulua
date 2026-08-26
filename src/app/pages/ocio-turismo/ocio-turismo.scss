@@ -1,0 +1,315 @@
+:host {
+  display: block;
+}
+
+
+/* =========================================================
+ * CONTENEDOR PRINCIPAL
+ * ========================================================= */
+
+.tourism-page {
+  width: 100%;
+}
+
+
+/* =========================================================
+ * ENCABEZADO
+ * ========================================================= */
+
+.tourism-header {
+
+  min-height: 116px;
+
+  padding: 28px 32px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 20px;
+
+  background: #ffffff;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 16px 40px
+    rgba(15, 76, 129, 0.08);
+
+
+  h1 {
+
+    margin:
+      0 0 7px;
+
+    color:
+      #071a52;
+
+    font-size:
+      30px;
+
+    font-weight:
+      750;
+  }
+
+
+  p {
+
+    margin:
+      0;
+
+    color:
+      #667085;
+
+    font-size:
+      15px;
+
+    line-height:
+      1.5;
+  }
+}
+
+
+/* =========================================================
+ * ICONO ENCABEZADO
+ * ========================================================= */
+
+.header-icon {
+
+  width:
+    58px;
+
+  height:
+    58px;
+
+  flex-shrink:
+    0;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  color:
+    #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #0f4c81,
+      #2d78b8
+    );
+
+  border-radius:
+    18px;
+
+  box-shadow:
+    0 10px 24px
+    rgba(15, 76, 129, 0.2);
+
+
+  svg {
+
+    width:
+      29px;
+
+    height:
+      29px;
+
+    stroke-width:
+      2.1;
+  }
+}
+
+
+/* =========================================================
+ * NAVEGACIÓN INTERNA
+ * ========================================================= */
+
+.tourism-navigation {
+
+  margin-top:
+    24px;
+
+  padding:
+    10px;
+
+  display:
+    flex;
+
+  gap:
+    8px;
+
+  overflow-x:
+    auto;
+
+  background:
+    #ffffff;
+
+  border-radius:
+    20px;
+
+  box-shadow:
+    0 14px 34px
+    rgba(15, 76, 129, 0.07);
+
+
+  a {
+
+    min-width:
+      max-content;
+
+    min-height:
+      48px;
+
+    padding:
+      11px 16px;
+
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    gap:
+      9px;
+
+    color:
+      #536174;
+
+    text-decoration:
+      none;
+
+    font-size:
+      14px;
+
+    font-weight:
+      700;
+
+    border-radius:
+      14px;
+
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+
+    svg {
+
+      width:
+        20px;
+
+      height:
+        20px;
+
+      stroke-width:
+        2.1;
+    }
+
+
+    &:hover {
+
+      color:
+        #0f4c81;
+
+      background:
+        #eef5fc;
+
+      transform:
+        translateY(-1px);
+    }
+
+
+    &.active {
+
+      color:
+        #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0f4c81,
+          #2d78b8
+        );
+
+      box-shadow:
+        0 7px 18px
+        rgba(15, 76, 129, 0.2);
+    }
+  }
+}
+
+
+/* =========================================================
+ * CONTENIDO
+ * ========================================================= */
+
+.tourism-content {
+
+  min-height:
+    460px;
+
+  margin-top:
+    24px;
+
+  padding:
+    30px;
+
+  background:
+    #ffffff;
+
+  border-radius:
+    24px;
+
+  box-shadow:
+    0 16px 40px
+    rgba(15, 76, 129, 0.08);
+}
+
+
+/* =========================================================
+ * RESPONSIVE
+ * ========================================================= */
+
+@media (
+  max-width: 760px
+) {
+
+  .tourism-header {
+
+    padding:
+      24px;
+
+    align-items:
+      flex-start;
+
+
+    h1 {
+
+      font-size:
+        26px;
+    }
+  }
+
+
+  .tourism-content {
+
+    padding:
+      20px;
+  }
+}
+
+
+@media (
+  max-width: 520px
+) {
+
+  .tourism-header {
+
+    flex-direction:
+      column;
+  }
+}

@@ -14,34 +14,45 @@
       Consulta el comportamiento de la movilidad
       mediante datos oficiales de Waze.
     </p>
+  </div>
 
-    <small class="last-update">
-      Última sincronización:
-      {{ ultimaSincronizacion }}
-    </small>
+  <div class="dashboard-header-actions">
+
+    <button
+      class="update-button"
+      type="button"
+      [disabled]="loading"
+      [attr.aria-busy]="loading"
+      (click)="actualizar.emit()"
+    >
+
+      <svg
+        lucideRefreshCw
+        [class.rotating]="loading"
+      >
+      </svg>
+
+      @if (loading) {
+        Actualizando...
+      } @else {
+        Actualizar datos
+      }
+
+    </button>
+
+    <button
+      class="copy-iframe-button"
+      type="button"
+      (click)="copiarIframe()"
+    >
+      🌐 Copiar iframe
+    </button>
 
   </div>
 
-  <button
-    class="update-button"
-    type="button"
-    [disabled]="loading"
-    [attr.aria-busy]="loading"
-    (click)="actualizar.emit()"
-  >
-
-    <svg
-      lucideRefreshCw
-      [class.rotating]="loading"
-    >
-    </svg>
-
-    @if (loading) {
-      Actualizando...
-    } @else {
-      Actualizar datos
-    }
-
-  </button>
-
 </header>
+
+<app-toast
+  [visible]="toastVisible"
+  [message]="toastMessage">
+</app-toast>

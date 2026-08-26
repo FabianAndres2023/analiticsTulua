@@ -1,14 +1,62 @@
-import { Routes } from '@angular/router';
+import {
+  Routes
+} from '@angular/router';
 
-import { Login } from './pages/login/login';
 
-import { Dashboard } from './pages/dashboard/dashboard';
-import { Ambiente } from './pages/ambiente/ambiente';
-import { Movilidad } from './pages/movilidad/movilidad';
-import { CentroDatosWaze } from './pages/movilidad/centro-datos-waze/centro-datos-waze';
-import { SiniestrosViales } from './pages/movilidad/siniestros-viales/siniestros-viales';
-import { Semaforica } from './pages/movilidad/semaforica/semaforica';
-import { OcioTurismo } from './pages/ocio-turismo/ocio-turismo';
+/* =========================================================
+ * PÁGINAS PRINCIPALES
+ * ========================================================= */
+
+import {
+  Login
+} from './pages/login/login';
+
+import {
+  Dashboard
+} from './pages/dashboard/dashboard';
+
+import {
+  Ambiente
+} from './pages/ambiente/ambiente';
+
+import {
+  Movilidad
+} from './pages/movilidad/movilidad';
+
+
+/* =========================================================
+ * MOVILIDAD
+ * ========================================================= */
+
+import {
+  CentroDatosWaze
+} from './pages/movilidad/centro-datos-waze/centro-datos-waze';
+
+import {
+  SiniestrosViales
+} from './pages/movilidad/siniestros-viales/siniestros-viales';
+
+import {
+  Semaforica
+} from './pages/movilidad/semaforica/semaforica';
+
+
+/* =========================================================
+ * OCIO Y TURISMO
+ * ========================================================= */
+
+import {
+  OcioTurismo
+} from './pages/ocio-turismo/ocio-turismo';
+
+import {
+  ActivosTurismo
+} from './pages/ocio-turismo/activos-turismo/activos-turismo';
+
+
+/* =========================================================
+ * ACCESO DENEGADO
+ * ========================================================= */
 
 import {
   EstacionMeteorologica
@@ -17,6 +65,11 @@ import {
 import {
   AccesoDenegado
 } from './pages/acceso-denegado/acceso-denegado';
+
+
+/* =========================================================
+ * CONFIGURACIÓN
+ * ========================================================= */
 
 import {
   Configuracion
@@ -38,6 +91,11 @@ import {
   CargaMasiva
 } from './pages/configuracion/carga-masiva/carga-masiva';
 
+
+/* =========================================================
+ * GUARDS
+ * ========================================================= */
+
 import {
   authGuard
 } from './core/guards/auth.guard';
@@ -54,41 +112,125 @@ import {
   configuracionRedirectGuard
 } from './core/guards/configuracion-redirect.guard';
 
+
+/* =========================================================
+ * LAYOUT PRIVADO
+ * ========================================================= */
+
 import {
   PrivateLayout
 } from './layout/private-layout/private-layout';
 
-export const routes: Routes = [
+
+/* =========================================================
+ * RUTAS
+ * ========================================================= */
+
+export const routes:
+  Routes = [
+
+
+  /* =======================================================
+   * RUTA PÚBLICA EMBED
+   * ======================================================= */
+
+  /*
+   * Ruta pública para insertar el dashboard
+   * en otros portales mediante iframe.
+   *
+   * Se encuentra fuera de PrivateLayout,
+   * por lo que no muestra menú lateral.
+   */
+
   {
-    path: 'login',
-    component: Login,
+    path:
+      'embed/centro-datos-waze',
+
+    component:
+      CentroDatosWaze,
+
+    data: {
+      embed:
+        true
+    }
+  },
+
+
+  /* =======================================================
+   * LOGIN
+   * ======================================================= */
+
+  {
+    path:
+      'login',
+
+    component:
+      Login,
+
     canActivate: [
       guestGuard
     ]
   },
 
+
+  /* =======================================================
+   * ÁREA PRIVADA
+   * ======================================================= */
+
   {
-    path: '',
-    component: PrivateLayout,
+    path:
+      '',
+
+    component:
+      PrivateLayout,
+
     canActivate: [
       authGuard
     ],
 
     children: [
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
-      },
+
+
+      /* ===================================================
+       * REDIRECCIÓN INICIAL
+       * =================================================== */
 
       {
-        path: 'acceso-denegado',
-        component: AccesoDenegado
+        path:
+          '',
+
+        redirectTo:
+          'dashboard',
+
+        pathMatch:
+          'full'
       },
 
+
+      /* ===================================================
+       * ACCESO DENEGADO
+       * =================================================== */
+
       {
-        path: 'dashboard',
-        component: Dashboard,
+        path:
+          'acceso-denegado',
+
+        component:
+          AccesoDenegado
+      },
+
+
+      /* ===================================================
+       * DASHBOARD
+       * =================================================== */
+
+      {
+        path:
+          'dashboard',
+
+        component:
+          Dashboard,
+
         canActivate: [
           permissionGuard([
             'dashboard.ver'
@@ -96,9 +238,18 @@ export const routes: Routes = [
         ]
       },
 
+
+      /* ===================================================
+       * AMBIENTE
+       * =================================================== */
+
       {
-        path: 'ambiente',
-        component: Ambiente,
+        path:
+          'ambiente',
+
+        component:
+          Ambiente,
+
         canActivate: [
           permissionGuard([
             'ambiente.ver'
@@ -120,8 +271,12 @@ export const routes: Routes = [
       },
       
       {
-        path: 'movilidad',
-        component: Movilidad,
+        path:
+          'movilidad',
+
+        component:
+          Movilidad,
+
         canActivate: [
           permissionGuard([
             'movilidad.ver'
@@ -129,44 +284,143 @@ export const routes: Routes = [
         ],
 
         children: [
-          {
-            path: '',
-            redirectTo: 'centro-datos-waze',
-            pathMatch: 'full'
-          },
+
+
+          /*
+           * Cuando se entra a:
+           *
+           * /movilidad
+           *
+           * redirige automáticamente a:
+           *
+           * /movilidad/centro-datos-waze
+           */
 
           {
-            path: 'centro-datos-waze',
-            component: CentroDatosWaze
+            path:
+              '',
+
+            redirectTo:
+              'centro-datos-waze',
+
+            pathMatch:
+              'full'
           },
 
-          {
-            path: 'siniestros-viales',
-            component: SiniestrosViales
-          },
+
+          /* ===============================================
+           * CENTRO DE DATOS WAZE
+           * =============================================== */
 
           {
-            path: 'semaforica',
-            component: Semaforica
+            path:
+              'centro-datos-waze',
+
+            component:
+              CentroDatosWaze
+          },
+
+
+          /* ===============================================
+           * SINIESTROS VIALES
+           * =============================================== */
+
+          {
+            path:
+              'siniestros-viales',
+
+            component:
+              SiniestrosViales
+          },
+
+
+          /* ===============================================
+           * SEMAFÓRICA
+           * =============================================== */
+
+          {
+            path:
+              'semaforica',
+
+            component:
+              Semaforica
           }
+
         ]
       },
 
+
+      /* ===================================================
+       * OCIO Y TURISMO
+       * =================================================== */
+
       {
-        path: 'ocio-turismo',
-        component: OcioTurismo,
+        path:
+          'ocio-turismo',
+
+        component:
+          OcioTurismo,
+
         canActivate: [
           permissionGuard([
             'turismo.ver'
           ])
+        ],
+
+        children: [
+
+
+          /*
+           * Cuando se entra a:
+           *
+           * /ocio-turismo
+           *
+           * redirige automáticamente a:
+           *
+           * /ocio-turismo/activos-turismo
+           */
+
+          {
+            path:
+              '',
+
+            redirectTo:
+              'activos-turismo',
+
+            pathMatch:
+              'full'
+          },
+
+
+          /* ===============================================
+           * ACTIVOS DE TURISMO
+           * =============================================== */
+
+          {
+            path:
+              'activos-turismo',
+
+            component:
+              ActivosTurismo
+          }
+
         ]
       },
 
+
+      /* ===================================================
+       * CONFIGURACIÓN
+       * =================================================== */
+
       {
-        path: 'configuracion',
-        component: Configuracion,
+        path:
+          'configuracion',
+
+        component:
+          Configuracion,
 
         canActivate: [
+
           configuracionRedirectGuard,
 
           permissionGuard(
@@ -181,9 +435,19 @@ export const routes: Routes = [
         ],
 
         children: [
+
+
+          /* ===============================================
+           * USUARIOS
+           * =============================================== */
+
           {
-            path: 'usuarios',
-            component: Usuarios,
+            path:
+              'usuarios',
+
+            component:
+              Usuarios,
+
             canActivate: [
               permissionGuard([
                 'usuarios.ver'
@@ -191,9 +455,18 @@ export const routes: Routes = [
             ]
           },
 
+
+          /* ===============================================
+           * ROLES
+           * =============================================== */
+
           {
-            path: 'roles',
-            component: Roles,
+            path:
+              'roles',
+
+            component:
+              Roles,
+
             canActivate: [
               permissionGuard([
                 'roles.ver'
@@ -201,9 +474,18 @@ export const routes: Routes = [
             ]
           },
 
+
+          /* ===============================================
+           * DEPENDENCIAS
+           * =============================================== */
+
           {
-            path: 'dependencias',
-            component: Dependencias,
+            path:
+              'dependencias',
+
+            component:
+              Dependencias,
+
             canActivate: [
               permissionGuard([
                 'dependencias.ver'
@@ -211,22 +493,42 @@ export const routes: Routes = [
             ]
           },
 
+
+          /* ===============================================
+           * CARGA MASIVA
+           * =============================================== */
+
           {
-            path: 'carga-masiva',
-            component: CargaMasiva,
+            path:
+              'carga-masiva',
+
+            component:
+              CargaMasiva,
+
             canActivate: [
               permissionGuard([
                 'carga_masiva.ver'
               ])
             ]
           }
+
         ]
       }
+
     ]
   },
 
+
+  /* =======================================================
+   * RUTA NO ENCONTRADA
+   * ======================================================= */
+
   {
-    path: '**',
-    redirectTo: ''
+    path:
+      '**',
+
+    redirectTo:
+      ''
   }
+
 ];

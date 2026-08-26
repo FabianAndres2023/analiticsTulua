@@ -1,1 +1,2690 @@
-<p>siniestros-viales works!</p>
+<section class="siniestros-dashboard">
+
+  <!-- =====================================================
+       ENCABEZADO
+       ===================================================== -->
+
+  <header class="dashboard-hero">
+
+    <div class="hero-copy">
+
+      <span class="section-eyebrow">
+        Movilidad · Seguridad vial
+      </span>
+
+      <h1>
+        Registros de Siniestros Viales
+      </h1>
+
+      <p>
+        Análisis estadístico, temporal y territorial de
+        la accidentalidad registrada en el municipio de Tuluá.
+      </p>
+
+    </div>
+
+
+    <div class="hero-status">
+
+      <span
+        class="status-indicator"
+        [class.active]="filtroAplicado"
+      >
+      </span>
+
+      <div>
+
+        <strong>
+          {{
+            filtroAplicado
+              ? 'Consulta activa'
+              : 'Esperando consulta'
+          }}
+        </strong>
+
+        <small>
+
+          @if (filtroAplicado) {
+
+            {{ kpis.total }}
+            siniestros encontrados
+
+          } @else {
+
+            Selecciona un período para comenzar
+
+          }
+
+        </small>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       NAVEGACIÓN
+       ===================================================== -->
+
+  <nav
+    class="section-navigation"
+    aria-label="Navegación del dashboard"
+  >
+
+    <button
+      type="button"
+      (click)="scrollToSection('resumen')"
+    >
+      Resumen
+    </button>
+
+    <button
+      type="button"
+      (click)="scrollToSection('territorio')"
+    >
+      Territorio
+    </button>
+
+    <button
+      type="button"
+      (click)="scrollToSection('tendencias')"
+    >
+      Tendencias
+    </button>
+
+    <button
+      type="button"
+      (click)="scrollToSection('personas')"
+    >
+      Personas
+    </button>
+
+    <button
+      type="button"
+      (click)="scrollToSection('vehiculos')"
+    >
+      Vehículos
+    </button>
+
+    <button
+      type="button"
+      (click)="scrollToSection('comparativa')"
+    >
+      Comparativa anual
+    </button>
+
+  </nav>
+
+
+  <!-- =====================================================
+       MENSAJES
+       ===================================================== -->
+
+  @if (error) {
+
+    <div
+      class="dashboard-message dashboard-message-error"
+      role="alert"
+    >
+
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <circle
+          cx="12"
+          cy="12"
+          r="9"
+        />
+
+        <path d="M12 7v6" />
+
+        <path d="M12 17h.01" />
+      </svg>
+
+      {{ error }}
+
+    </div>
+
+  }
+
+
+  @if (cargando) {
+
+    <div
+      class="dashboard-message dashboard-message-loading"
+      role="status"
+    >
+
+      <span class="loading-spinner">
+      </span>
+
+      Consultando información de siniestros viales...
+
+    </div>
+
+  }
+
+
+  <!-- =====================================================
+       RESUMEN
+       ===================================================== -->
+
+  <section
+    id="resumen"
+    class="dashboard-section"
+  >
+
+    <header class="dashboard-section-header">
+
+      <span class="section-eyebrow">
+        Resumen del período
+      </span>
+
+      <h2>
+        Comportamiento de la accidentalidad
+      </h2>
+
+      <p>
+        Selecciona las fechas que deseas analizar.
+        Los indicadores y visualizaciones se actualizarán
+        de acuerdo con el período elegido.
+      </p>
+
+    </header>
+
+
+    <!-- FILTROS -->
+
+    <div class="filter-card">
+
+      <div class="filter-field">
+
+        <label for="fechaInicial">
+          Fecha inicial
+        </label>
+
+        <input
+          id="fechaInicial"
+          type="date"
+          [(ngModel)]="fechaInicio"
+        />
+
+      </div>
+
+
+      <div class="filter-field">
+
+        <label for="fechaFinal">
+          Fecha final
+        </label>
+
+        <input
+          id="fechaFinal"
+          type="date"
+          [(ngModel)]="fechaFin"
+        />
+
+      </div>
+
+
+      <button
+        type="button"
+        class="filter-button primary"
+        [disabled]="cargando"
+        (click)="aplicarFiltros()"
+      >
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            d="M4 5h16l-6 7v5l-4 2v-7L4 5z"
+          />
+        </svg>
+
+        Aplicar filtro
+
+      </button>
+
+
+      <button
+        type="button"
+        class="filter-button secondary"
+        [disabled]="cargando"
+        (click)="restablecerFiltros()"
+      >
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            d="M4 4v6h6"
+          />
+
+          <path
+            d="M5.5 15a8 8 0 1 0 1.9-8.3L4 10"
+          />
+        </svg>
+
+        Restablecer
+
+      </button>
+
+    </div>
+
+
+    <!-- KPI -->
+
+    <div class="kpi-grid">
+
+      <!-- SINIESTROS -->
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon blue">
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="M5 17h14" />
+
+            <path d="M7 17l1-5h8l1 5" />
+
+            <path d="M9 12l1-3h4l1 3" />
+
+            <circle
+              cx="8"
+              cy="18"
+              r="1.5"
+            />
+
+            <circle
+              cx="16"
+              cy="18"
+              r="1.5"
+            />
+          </svg>
+
+        </div>
+
+        <div class="kpi-content">
+
+          <span class="kpi-label">
+            Siniestros registrados
+          </span>
+
+          <strong class="kpi-number">
+            {{ kpis.total }}
+          </strong>
+
+          <small>
+            Eventos en el período
+          </small>
+
+        </div>
+
+      </article>
+
+
+      <!-- FALLECIDOS -->
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon red">
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"
+            />
+
+            <path d="M9 12h6" />
+          </svg>
+
+        </div>
+
+        <div class="kpi-content">
+
+          <span class="kpi-label">
+            Víctimas fatales
+          </span>
+
+          <strong class="kpi-number">
+            {{ kpis.victimasFatales }}
+          </strong>
+
+          <small>
+            Personas fallecidas
+          </small>
+
+        </div>
+
+      </article>
+
+
+      <!-- PERSONAS -->
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon cyan">
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle
+              cx="9"
+              cy="8"
+              r="3"
+            />
+
+            <circle
+              cx="17"
+              cy="10"
+              r="2"
+            />
+
+            <path
+              d="M3 20c0-4 2.5-6 6-6s6 2 6 6"
+            />
+
+            <path
+              d="M15 15c3 0 5 1.7 5 5"
+            />
+          </svg>
+
+        </div>
+
+        <div class="kpi-content">
+
+          <span class="kpi-label">
+            Personas involucradas
+          </span>
+
+          <strong class="kpi-number">
+            {{ kpis.personasInvolucradas }}
+          </strong>
+
+          <small>
+            Actores registrados
+          </small>
+
+        </div>
+
+      </article>
+
+
+      <!-- VEHÍCULOS -->
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon indigo">
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              d="M3 15l2-6h12l4 6"
+            />
+
+            <path
+              d="M5 15h14v4H5z"
+            />
+
+            <circle
+              cx="7"
+              cy="19"
+              r="1.5"
+            />
+
+            <circle
+              cx="17"
+              cy="19"
+              r="1.5"
+            />
+          </svg>
+
+        </div>
+
+        <div class="kpi-content">
+
+          <span class="kpi-label">
+            Vehículos involucrados
+          </span>
+
+          <strong class="kpi-number">
+            {{ kpis.vehiculosInvolucrados }}
+          </strong>
+
+          <small>
+            Vehículos asociados
+          </small>
+
+        </div>
+
+      </article>
+
+
+      <!-- MES -->
+
+      <article class="kpi-card insight">
+
+        <div class="kpi-icon green">
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <rect
+              x="4"
+              y="5"
+              width="16"
+              height="15"
+              rx="2"
+            />
+
+            <path
+              d="M8 3v4M16 3v4M4 9h16"
+            />
+
+            <path
+              d="M8 13h3v3H8z"
+            />
+          </svg>
+
+        </div>
+
+        <div class="kpi-content">
+
+          <span class="kpi-label">
+            Mes más crítico
+          </span>
+
+          <strong class="kpi-word">
+            {{ kpis.mesMasCritico }}
+          </strong>
+
+          <small>
+            {{ kpis.totalMesCritico }}
+            siniestros
+          </small>
+
+        </div>
+
+      </article>
+
+
+      <!-- DÍA -->
+
+      <article class="kpi-card insight">
+
+        <div class="kpi-icon orange">
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="8"
+            />
+
+            <path
+              d="M12 8v5l3 2"
+            />
+          </svg>
+
+        </div>
+
+        <div class="kpi-content">
+
+          <span class="kpi-label">
+            Día más crítico
+          </span>
+
+          <strong class="kpi-word">
+            {{ kpis.diaMasCritico }}
+          </strong>
+
+          <small>
+            {{ kpis.totalDiaCritico }}
+            siniestros
+          </small>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       TERRITORIO
+       ===================================================== -->
+
+  <section
+    id="territorio"
+    class="dashboard-section"
+  >
+
+    <header class="dashboard-section-header">
+
+      <span class="section-eyebrow">
+        Distribución territorial
+      </span>
+
+      <h2>
+        Ubicación de los siniestros
+      </h2>
+
+      <p>
+        Localización geográfica de los eventos,
+        comportamiento semanal y principales direcciones
+        de ocurrencia de la accidentalidad.
+      </p>
+
+    </header>
+
+
+    <div class="territory-layout">
+
+      <!-- MAPA -->
+
+      <article class="dashboard-card map-card">
+
+        <header class="card-header">
+
+          <div>
+
+            <span class="card-eyebrow">
+              Georreferenciación
+            </span>
+
+            <h3>
+              Mapa de siniestros viales
+            </h3>
+
+          </div>
+
+
+          <div class="map-legend">
+
+            <span>
+              <i class="legend-dot blue"></i>
+              Heridos
+            </span>
+
+            <span>
+              <i class="legend-dot red"></i>
+              Fatal
+            </span>
+
+            <span>
+              <i class="legend-dot green"></i>
+              Solo daños
+            </span>
+
+          </div>
+
+        </header>
+
+
+        <div class="map-wrapper">
+
+          <div
+            id="siniestros-map"
+            class="siniestros-map"
+          >
+          </div>
+
+
+          @if (!filtroAplicado) {
+
+            <div class="map-empty-state">
+
+              <div class="empty-icon">
+
+                <svg
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11z"
+                  />
+
+                  <circle
+                    cx="12"
+                    cy="10"
+                    r="2"
+                  />
+                </svg>
+
+              </div>
+
+              <strong>
+                Selecciona un período
+              </strong>
+
+              <span>
+                Los puntos aparecerán cuando apliques
+                los filtros de fecha.
+              </span>
+
+            </div>
+
+          }
+
+        </div>
+
+      </article>
+
+
+      <!-- DÍAS -->
+
+      <article class="dashboard-card">
+
+        <header class="card-header">
+
+          <div>
+
+            <span class="card-eyebrow">
+              Frecuencia semanal
+            </span>
+
+            <h3>
+              Siniestros por día
+            </h3>
+
+          </div>
+
+        </header>
+
+
+        <div class="vertical-chart">
+
+          @for (
+            item of distribucionDias;
+            track item.nombre
+          ) {
+
+            <div
+              class="vertical-bar-item chart-hover"
+              tabindex="0"
+              [attr.data-tooltip]="
+                tooltipCantidad(
+                  item,
+                  'siniestros'
+                )
+              "
+            >
+
+              <div class="bar-value">
+                {{ item.cantidad }}
+              </div>
+
+              <div class="bar-track">
+
+                <div
+                  class="bar-column"
+                  [style.height.%]="
+                    alturaBarra(
+                      item.cantidad,
+                      distribucionDias
+                    )
+                  "
+                >
+                </div>
+
+              </div>
+
+              <span>
+                {{
+                  item.nombre
+                    | slice:0:3
+                }}
+              </span>
+
+            </div>
+
+          }
+
+        </div>
+
+
+        @if (!filtroAplicado) {
+
+          <div class="chart-empty">
+
+            Selecciona las fechas para visualizar
+            la distribución semanal.
+
+          </div>
+
+        }
+
+      </article>
+
+    </div>
+
+
+    <!-- =====================================================
+         DIRECCIONES DE OCURRENCIA
+         ===================================================== -->
+
+    <article
+      class="dashboard-card address-analytics-card"
+    >
+
+      <header class="address-card-header">
+
+        <div>
+
+          <span class="card-eyebrow">
+            Concentración territorial
+          </span>
+
+          <h3>
+            Direcciones de ocurrencia 2026
+          </h3>
+
+          <p>
+            Principales direcciones donde se registraron
+            siniestros durante el período seleccionado.
+          </p>
+
+        </div>
+
+
+        @if (
+          filtroAplicado &&
+          direccionPrincipal
+        ) {
+
+          <div class="address-main-badge">
+
+            <span class="address-main-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11z"
+                />
+
+                <circle
+                  cx="12"
+                  cy="10"
+                  r="2"
+                />
+              </svg>
+
+            </span>
+
+
+            <div>
+
+              <small>
+                Mayor ocurrencia
+              </small>
+
+              <strong>
+                {{ direccionPrincipal.nombre }}
+              </strong>
+
+              <span>
+                {{ direccionPrincipal.cantidad }}
+                siniestros
+              </span>
+
+            </div>
+
+          </div>
+
+        }
+
+      </header>
+
+
+      @if (
+        filtroAplicado &&
+        direccionesPrincipales.length > 0
+      ) {
+
+        <!-- RESUMEN DIRECCIONES -->
+
+        <div class="address-summary-grid">
+
+          <div class="address-summary-item">
+
+            <span class="address-summary-icon blue">
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11z"
+                />
+
+                <circle
+                  cx="12"
+                  cy="10"
+                  r="2"
+                />
+              </svg>
+
+            </span>
+
+
+            <div>
+
+              <small>
+                Direcciones identificadas
+              </small>
+
+              <strong>
+                {{ cantidadDireccionesUnicas }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="address-summary-item">
+
+            <span class="address-summary-icon green">
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 19V9M10 19V5M16 19v-8M22 19V2"
+                />
+              </svg>
+
+            </span>
+
+
+            <div>
+
+              <small>
+                Eventos con dirección
+              </small>
+
+              <strong>
+                {{ totalDireccionesIdentificadas }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="address-summary-item">
+
+            <span class="address-summary-icon orange">
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="9"
+                />
+
+                <path
+                  d="M12 7v6"
+                />
+
+                <path
+                  d="M12 17h.01"
+                />
+              </svg>
+
+            </span>
+
+
+            <div>
+
+              <small>
+                Sin dirección registrada
+              </small>
+
+              <strong>
+                {{ siniestrosSinDireccion }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- RANKING -->
+
+        <div class="address-chart">
+
+          <div class="address-ranking-title">
+
+            <div>
+
+              <span>
+                Principales puntos reportados
+              </span>
+
+              <strong>
+                Top 10 direcciones
+              </strong>
+
+            </div>
+
+
+            <small>
+              Participación sobre los siniestros
+              con dirección identificada.
+            </small>
+
+          </div>
+
+
+          <div class="address-ranking-list">
+
+            @for (
+              item of direccionesPrincipales;
+              track item.nombre;
+              let i = $index
+            ) {
+
+              <div
+                class="address-ranking-row chart-hover"
+                tabindex="0"
+                [attr.data-tooltip]="
+                  tooltipCantidad(
+                    item,
+                    'siniestros'
+                  )
+                "
+              >
+
+                <div class="address-ranking-position">
+                  {{ i + 1 }}
+                </div>
+
+
+                <div class="address-ranking-content">
+
+                  <div class="address-ranking-header">
+
+                    <div class="address-name">
+
+                      <span class="address-pin">
+
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11z"
+                          />
+
+                          <circle
+                            cx="12"
+                            cy="10"
+                            r="2"
+                          />
+                        </svg>
+
+                      </span>
+
+
+                      <strong>
+                        {{ item.nombre }}
+                      </strong>
+
+                    </div>
+
+
+                    <div class="address-value">
+
+                      <strong>
+                        {{ item.cantidad }}
+                      </strong>
+
+                      <span>
+                        siniestros
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="address-progress">
+
+                    <div
+                      class="
+                        address-progress-fill
+                        address-color-{{ i % 5 }}
+                      "
+                      [style.width.%]="
+                        anchoBarra(
+                          item.cantidad,
+                          direccionesPrincipales
+                        )
+                      "
+                    >
+                    </div>
+
+                  </div>
+
+
+                  <div class="address-ranking-footer">
+
+                    <span>
+                      {{
+                        item.porcentaje
+                          | number:'1.0-1'
+                      }}%
+                      de los eventos
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+
+        @if (
+          direccionPrincipal
+        ) {
+
+          <div class="address-insight">
+
+            <span class="address-insight-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 18l5-5 4 3 7-9"
+                />
+
+                <path
+                  d="M15 7h5v5"
+                />
+              </svg>
+
+            </span>
+
+
+            <div>
+
+              <small>
+                Principal concentración del período
+              </small>
+
+              <p>
+
+                <strong>
+                  {{ direccionPrincipal.nombre }}
+                </strong>
+
+                registra la mayor frecuencia,
+                con
+
+                <strong>
+                  {{ direccionPrincipal.cantidad }}
+                </strong>
+
+                siniestros, equivalentes al
+
+                <strong>
+                  {{
+                    direccionPrincipal.porcentaje
+                      | number:'1.0-1'
+                  }}%
+                </strong>
+
+                de los registros con dirección.
+
+              </p>
+
+            </div>
+
+          </div>
+
+        }
+
+      } @else {
+
+        <div class="address-empty-state">
+
+          <span class="address-empty-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11z"
+              />
+
+              <circle
+                cx="12"
+                cy="10"
+                r="2"
+              />
+            </svg>
+
+          </span>
+
+
+          <strong>
+            Sin direcciones para visualizar
+          </strong>
+
+          <p>
+            Selecciona el rango de fechas y aplica
+            el filtro para consultar las principales
+            direcciones de ocurrencia.
+          </p>
+
+        </div>
+
+      }
+
+    </article>
+
+  </section>
+
+
+  <!-- =====================================================
+       TENDENCIAS
+       ===================================================== -->
+
+  <section
+    id="tendencias"
+    class="dashboard-section"
+  >
+
+    <header class="dashboard-section-header">
+
+      <span class="section-eyebrow">
+        Análisis temporal
+      </span>
+
+      <h2>
+        Tendencias de accidentalidad
+      </h2>
+
+      <p>
+        Evolución mensual, severidad y tipología
+        de los siniestros registrados.
+      </p>
+
+    </header>
+
+
+    <div class="charts-grid">
+
+
+      <!-- MESES -->
+
+      <article class="dashboard-card chart-card">
+
+        <header class="card-header">
+
+          <div>
+
+            <span class="card-eyebrow">
+              Evolución mensual
+            </span>
+
+            <h3>
+              Siniestros por mes
+            </h3>
+
+          </div>
+
+        </header>
+
+
+        <div class="vertical-chart month-chart">
+
+          @for (
+            item of distribucionMensual;
+            track item.nombre
+          ) {
+
+            <div
+              class="vertical-bar-item chart-hover"
+              tabindex="0"
+              [attr.data-tooltip]="
+                tooltipCantidad(
+                  item,
+                  'siniestros'
+                )
+              "
+            >
+
+              <div class="bar-value">
+                {{ item.cantidad }}
+              </div>
+
+              <div class="bar-track">
+
+                <div
+                  class="bar-column month"
+                  [style.height.%]="
+                    alturaBarra(
+                      item.cantidad,
+                      distribucionMensual
+                    )
+                  "
+                >
+                </div>
+
+              </div>
+
+              <span>
+                {{
+                  item.nombre
+                    | slice:0:3
+                }}
+              </span>
+
+            </div>
+
+          }
+
+        </div>
+
+
+        @if (!filtroAplicado) {
+
+          <div class="chart-empty">
+
+            Selecciona un período para visualizar
+            la evolución mensual.
+
+          </div>
+
+        }
+
+      </article>
+
+
+      <!-- GRAVEDAD -->
+
+      <article class="dashboard-card chart-card">
+
+        <header class="card-header">
+
+          <div>
+
+            <span class="card-eyebrow">
+              Severidad
+            </span>
+
+            <h3>
+              Gravedad de los eventos
+            </h3>
+
+          </div>
+
+        </header>
+
+
+        <div class="donut-layout">
+
+          <div
+            class="donut donut-animated"
+            [style.background]="
+              'conic-gradient(' +
+              obtenerDonut(
+                distribucionGravedad,
+                coloresGravedad
+              ) +
+              ')'
+            "
+          >
+
+            <div class="donut-hole">
+
+              <strong>
+                {{ kpis.total }}
+              </strong>
+
+              <span>
+                Siniestros
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="legend-list">
+
+            @for (
+              item of distribucionGravedad;
+              track item.nombre;
+              let i = $index
+            ) {
+
+              <div
+                class="legend-row chart-hover legend-hover"
+                tabindex="0"
+                [attr.data-tooltip]="
+                  tooltipCantidad(
+                    item,
+                    'eventos'
+                  )
+                "
+              >
+
+                <span
+                  class="legend-color"
+                  [style.background]="
+                    colorItem(
+                      i,
+                      coloresGravedad
+                    )
+                  "
+                >
+                </span>
+
+                <div>
+
+                  <strong>
+                    {{ item.nombre }}
+                  </strong>
+
+                  <small>
+                    {{
+                      item.porcentaje
+                        | number:'1.0-1'
+                    }}%
+                  </small>
+
+                </div>
+
+                <b>
+                  {{ item.cantidad }}
+                </b>
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+
+        @if (!filtroAplicado) {
+
+          <div class="chart-empty">
+            Sin datos para representar.
+          </div>
+
+        }
+
+      </article>
+
+
+      <!-- CLASE -->
+
+      <article class="dashboard-card chart-card wide-card">
+
+        <header class="card-header">
+
+          <div>
+
+            <span class="card-eyebrow">
+              Tipología
+            </span>
+
+            <h3>
+              Clase de accidente
+            </h3>
+
+          </div>
+
+        </header>
+
+
+        <div class="horizontal-chart">
+
+          @for (
+            item of distribucionClase;
+            track item.nombre
+          ) {
+
+            <div
+              class="horizontal-row chart-hover"
+              tabindex="0"
+              [attr.data-tooltip]="
+                tooltipCantidad(
+                  item,
+                  'siniestros'
+                )
+              "
+            >
+
+              <div class="horizontal-header">
+
+                <span>
+                  {{ item.nombre }}
+                </span>
+
+                <strong>
+                  {{ item.cantidad }}
+                </strong>
+
+              </div>
+
+
+              <div class="horizontal-track">
+
+                <div
+                  class="horizontal-fill"
+                  [style.width.%]="
+                    anchoBarra(
+                      item.cantidad,
+                      distribucionClase
+                    )
+                  "
+                >
+                </div>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+
+        @if (!filtroAplicado) {
+
+          <div class="chart-empty">
+
+            Selecciona las fechas para consultar
+            la tipología de los eventos.
+
+          </div>
+
+        }
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       PERSONAS
+       ===================================================== -->
+
+  <section
+    id="personas"
+    class="dashboard-section"
+  >
+
+    <header class="dashboard-section-header">
+
+      <span class="section-eyebrow">
+        Actores involucrados
+      </span>
+
+      <h2>
+        Caracterización de personas
+      </h2>
+
+      <p>
+        Distribución según rol, sexo y rango de edad.
+      </p>
+
+    </header>
+
+
+    <div class="people-grid">
+
+
+      <!-- ACTORES -->
+
+      <article class="dashboard-card">
+
+        <header class="card-header">
+
+          <div>
+
+            <span class="card-eyebrow">
+              Rol
+            </span>
+
+            <h3>
+              Actores involucrados
+            </h3>
+
+          </div>
+
+        </header>
+
+
+        <div class="donut-layout compact">
+
+          <div
+            class="donut small donut-animated"
+            [style.background]="
+              'conic-gradient(' +
+              obtenerDonut(
+                distribucionActores,
+                coloresActores
+              ) +
+              ')'
+            "
+          >
+
+            <div class="donut-hole">
+
+              <strong>
+                {{ kpis.personasInvolucradas }}
+              </strong>
+
+              <span>
+                Personas
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="legend-list">
+
+            @for (
+              item of distribucionActores;
+              track item.nombre;
+              let i = $index
+            ) {
+
+              <div
+                class="legend-row chart-hover legend-hover"
+                tabindex="0"
+                [attr.data-tooltip]="
+                  tooltipCantidad(
+                    item,
+                    'personas'
+                  )
+                "
+              >
+
+                <span
+                  class="legend-color"
+                  [style.background]="
+                    colorItem(
+                      i,
+                      coloresActores
+                    )
+                  "
+                >
+                </span>
+
+                <div>
+
+                  <strong>
+                    {{ item.nombre }}
+                  </strong>
+
+                  <small>
+                    {{
+                      item.porcentaje
+                        | number:'1.0-1'
+                    }}%
+                  </small>
+
+                </div>
+
+                <b>
+                  {{ item.cantidad }}
+                </b>
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <!-- SEXO -->
+
+      <article class="dashboard-card">
+
+        <header class="card-header">
+
+          <div>
+
+            <span class="card-eyebrow">
+              Caracterización
+            </span>
+
+            <h3>
+              Distribución por sexo
+            </h3>
+
+          </div>
+
+        </header>
+
+
+        <div class="donut-layout compact">
+
+          <div
+            class="donut small donut-animated"
+            [style.background]="
+              'conic-gradient(' +
+              obtenerDonut(
+                distribucionSexo,
+                coloresSexo
+              ) +
+              ')'
+            "
+          >
+
+            <div class="donut-hole">
+
+              <strong>
+                {{ kpis.personasInvolucradas }}
+              </strong>
+
+              <span>
+                Personas
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="legend-list">
+
+            @for (
+              item of distribucionSexo;
+              track item.nombre;
+              let i = $index
+            ) {
+
+              <div
+                class="legend-row chart-hover legend-hover"
+                tabindex="0"
+                [attr.data-tooltip]="
+                  tooltipCantidad(
+                    item,
+                    'personas'
+                  )
+                "
+              >
+
+                <span
+                  class="legend-color"
+                  [style.background]="
+                    colorItem(
+                      i,
+                      coloresSexo
+                    )
+                  "
+                >
+                </span>
+
+                <div>
+
+                  <strong>
+                    {{ item.nombre }}
+                  </strong>
+
+                  <small>
+                    {{
+                      item.porcentaje
+                        | number:'1.0-1'
+                    }}%
+                  </small>
+
+                </div>
+
+                <b>
+                  {{ item.cantidad }}
+                </b>
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <!-- EDAD -->
+
+      <article class="dashboard-card">
+
+        <header class="card-header">
+
+          <div>
+
+            <span class="card-eyebrow">
+              Perfil etario
+            </span>
+
+            <h3>
+              Rangos de edad
+            </h3>
+
+          </div>
+
+        </header>
+
+
+        <div class="horizontal-chart age-chart">
+
+          @for (
+            item of distribucionEdad;
+            track item.nombre
+          ) {
+
+            <div
+              class="horizontal-row chart-hover"
+              tabindex="0"
+              [attr.data-tooltip]="
+                tooltipCantidad(
+                  item,
+                  'personas'
+                )
+              "
+            >
+
+              <div class="horizontal-header">
+
+                <span>
+                  {{ item.nombre }}
+                </span>
+
+                <strong>
+                  {{ item.cantidad }}
+                </strong>
+
+              </div>
+
+
+              <div class="horizontal-track">
+
+                <div
+                  class="horizontal-fill secondary-fill"
+                  [style.width.%]="
+                    anchoBarra(
+                      item.cantidad,
+                      distribucionEdad
+                    )
+                  "
+                >
+                </div>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       VEHÍCULOS
+       ===================================================== -->
+
+  <section
+    id="vehiculos"
+    class="dashboard-section"
+  >
+
+    <header class="dashboard-section-header">
+
+      <span class="section-eyebrow">
+        Parque automotor involucrado
+      </span>
+
+      <h2>
+        Caracterización de vehículos
+      </h2>
+
+      <p>
+        Distribución y participación de las principales
+        clases de vehículos involucradas en los siniestros
+        del período seleccionado.
+      </p>
+
+    </header>
+
+
+    <article
+      class="dashboard-card vehicle-analytics-card"
+    >
+
+      @if (
+        filtroAplicado &&
+        kpis.vehiculosInvolucrados > 0
+      ) {
+
+
+        <!-- RESUMEN -->
+
+        <div class="vehicle-summary-grid">
+
+
+          <div class="vehicle-summary-card">
+
+            <div
+              class="vehicle-summary-icon total-icon"
+            >
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M3 15l2-6h12l4 6"
+                />
+
+                <path
+                  d="M5 15h14v4H5z"
+                />
+
+                <circle
+                  cx="7"
+                  cy="19"
+                  r="1.5"
+                />
+
+                <circle
+                  cx="17"
+                  cy="19"
+                  r="1.5"
+                />
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Total involucrados
+              </span>
+
+              <strong>
+                {{ kpis.vehiculosInvolucrados }}
+              </strong>
+
+              <small>
+                Vehículos registrados
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <div class="vehicle-summary-card featured">
+
+            <div
+              class="vehicle-summary-icon principal-icon"
+            >
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 19h16"
+                />
+
+                <path
+                  d="M7 15l2-5h6l2 5"
+                />
+
+                <circle
+                  cx="8"
+                  cy="17"
+                  r="2"
+                />
+
+                <circle
+                  cx="16"
+                  cy="17"
+                  r="2"
+                />
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Mayor participación
+              </span>
+
+              <strong class="vehicle-main-name">
+                {{
+                  vehiculoPrincipal?.nombre ??
+                  'Sin dato'
+                }}
+              </strong>
+
+              <small>
+
+                {{
+                  vehiculoPrincipal?.cantidad ??
+                  0
+                }}
+                vehículos ·
+
+                {{
+                  (vehiculoPrincipal?.porcentaje ?? 0)
+                    | number:'1.0-1'
+                }}%
+
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <div class="vehicle-summary-card">
+
+            <div
+              class="vehicle-summary-icon category-icon"
+            >
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+
+                <rect
+                  x="4"
+                  y="4"
+                  width="6"
+                  height="6"
+                  rx="1"
+                />
+
+                <rect
+                  x="14"
+                  y="4"
+                  width="6"
+                  height="6"
+                  rx="1"
+                />
+
+                <rect
+                  x="4"
+                  y="14"
+                  width="6"
+                  height="6"
+                  rx="1"
+                />
+
+                <rect
+                  x="14"
+                  y="14"
+                  width="6"
+                  height="6"
+                  rx="1"
+                />
+
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Clasificaciones
+              </span>
+
+              <strong>
+                {{ distribucionVehiculos.length }}
+              </strong>
+
+              <small>
+                Tipos identificados
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- RANKING -->
+
+        <div class="vehicle-ranking-section">
+
+
+          <header class="vehicle-ranking-header">
+
+            <div>
+
+              <span class="card-eyebrow">
+                Distribución porcentual
+              </span>
+
+              <h3>
+                Vehículos con mayor participación
+              </h3>
+
+            </div>
+
+
+            <span class="vehicle-ranking-help">
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="9"
+                />
+
+                <path
+                  d="M12 11v5"
+                />
+
+                <path
+                  d="M12 8h.01"
+                />
+              </svg>
+
+              Acerca el cursor para ver el detalle
+
+            </span>
+
+          </header>
+
+
+          <div class="vehicle-ranking-list">
+
+            @for (
+              item of vehiculosPrincipales;
+              track item.nombre;
+              let i = $index
+            ) {
+
+              <div
+                class="vehicle-ranking-item chart-hover"
+                tabindex="0"
+                [attr.data-tooltip]="
+                  tooltipCantidad(
+                    item,
+                    'vehículos'
+                  )
+                "
+              >
+
+
+                <div class="vehicle-rank">
+                  {{ i + 1 }}
+                </div>
+
+
+                <div
+                  class="
+                    vehicle-type-icon
+                    vehicle-type-icon-{{ i % 6 }}
+                  "
+                >
+
+                  @if (
+                    esTipoVehiculo(
+                      item.nombre,
+                      'moto'
+                    )
+                  ) {
+
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+
+                      <circle
+                        cx="6"
+                        cy="17"
+                        r="3"
+                      />
+
+                      <circle
+                        cx="18"
+                        cy="17"
+                        r="3"
+                      />
+
+                      <path
+                        d="M9 17h4l3-6h-5l-2 6"
+                      />
+
+                      <path
+                        d="M13 11l-2-3"
+                      />
+
+                    </svg>
+
+                  } @else if (
+                    esTipoVehiculo(
+                      item.nombre,
+                      'bicic'
+                    )
+                  ) {
+
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+
+                      <circle
+                        cx="6"
+                        cy="17"
+                        r="3"
+                      />
+
+                      <circle
+                        cx="18"
+                        cy="17"
+                        r="3"
+                      />
+
+                      <path
+                        d="M6 17l4-7 4 7"
+                      />
+
+                      <path
+                        d="M10 10h4"
+                      />
+
+                      <path
+                        d="M12 17h6"
+                      />
+
+                    </svg>
+
+                  } @else if (
+                    esTipoVehiculo(
+                      item.nombre,
+                      'bus'
+                    )
+                  ) {
+
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+
+                      <rect
+                        x="5"
+                        y="3"
+                        width="14"
+                        height="16"
+                        rx="3"
+                      />
+
+                      <path
+                        d="M7 8h10"
+                      />
+
+                      <path
+                        d="M7 13h10"
+                      />
+
+                      <circle
+                        cx="8"
+                        cy="19"
+                        r="1"
+                      />
+
+                      <circle
+                        cx="16"
+                        cy="19"
+                        r="1"
+                      />
+
+                    </svg>
+
+                  } @else if (
+                    esTipoVehiculo(
+                      item.nombre,
+                      'camion'
+                    ) ||
+                    esTipoVehiculo(
+                      item.nombre,
+                      'volqueta'
+                    ) ||
+                    esTipoVehiculo(
+                      item.nombre,
+                      'tracto'
+                    )
+                  ) {
+
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+
+                      <path
+                        d="M3 7h11v10H3z"
+                      />
+
+                      <path
+                        d="M14 11h4l3 3v3h-7z"
+                      />
+
+                      <circle
+                        cx="7"
+                        cy="18"
+                        r="2"
+                      />
+
+                      <circle
+                        cx="18"
+                        cy="18"
+                        r="2"
+                      />
+
+                    </svg>
+
+                  } @else {
+
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+
+                      <path
+                        d="M4 15l2-6h12l2 6"
+                      />
+
+                      <path
+                        d="M5 15h14v4H5z"
+                      />
+
+                      <circle
+                        cx="7"
+                        cy="19"
+                        r="1.5"
+                      />
+
+                      <circle
+                        cx="17"
+                        cy="19"
+                        r="1.5"
+                      />
+
+                    </svg>
+
+                  }
+
+                </div>
+
+
+                <div class="vehicle-ranking-content">
+
+                  <div class="vehicle-ranking-meta">
+
+                    <div>
+
+                      <strong>
+                        {{ item.nombre }}
+                      </strong>
+
+                      <small>
+
+                        {{
+                          item.porcentaje
+                            | number:'1.0-1'
+                        }}%
+                        del total
+
+                      </small>
+
+                    </div>
+
+
+                    <div class="vehicle-ranking-value">
+
+                      {{ item.cantidad }}
+
+                      <small>
+                        vehículos
+                      </small>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="vehicle-ranking-track">
+
+                    <div
+                      class="
+                        vehicle-ranking-fill
+                        vehicle-fill-{{ i % 6 }}
+                      "
+                      [style.width.%]="
+                        item.porcentaje
+                      "
+                    >
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            }
+
+
+            @if (
+              vehiculosOtrosCantidad > 0
+            ) {
+
+              <div
+                class="
+                  vehicle-ranking-item
+                  vehicle-ranking-others
+                  chart-hover
+                "
+                tabindex="0"
+                [attr.data-tooltip]="
+                  'Otros tipos: ' +
+                  vehiculosOtrosCantidad +
+                  ' vehículos (' +
+                  vehiculosOtrosPorcentaje.toFixed(1) +
+                  '%)'
+                "
+              >
+
+                <div class="vehicle-rank">
+                  +
+                </div>
+
+
+                <div
+                  class="
+                    vehicle-type-icon
+                    vehicle-type-icon-other
+                  "
+                >
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+
+                    <circle
+                      cx="6"
+                      cy="12"
+                      r="1.5"
+                    />
+
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="1.5"
+                    />
+
+                    <circle
+                      cx="18"
+                      cy="12"
+                      r="1.5"
+                    />
+
+                  </svg>
+
+                </div>
+
+
+                <div class="vehicle-ranking-content">
+
+                  <div class="vehicle-ranking-meta">
+
+                    <div>
+
+                      <strong>
+                        Otros tipos
+                      </strong>
+
+                      <small>
+                        Categorías con menor participación
+                      </small>
+
+                    </div>
+
+
+                    <div class="vehicle-ranking-value">
+
+                      {{ vehiculosOtrosCantidad }}
+
+                      <small>
+                        vehículos
+                      </small>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="vehicle-ranking-track">
+
+                    <div
+                      class="
+                        vehicle-ranking-fill
+                        vehicle-fill-other
+                      "
+                      [style.width.%]="
+                        vehiculosOtrosPorcentaje
+                      "
+                    >
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+
+        @if (
+          vehiculoPrincipal
+        ) {
+
+          <div class="vehicle-insight">
+
+            <div class="vehicle-insight-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 18l5-5 4 3 7-9"
+                />
+
+                <path
+                  d="M15 7h5v5"
+                />
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Principal hallazgo del período
+              </span>
+
+              <p>
+
+                <strong>
+                  {{ vehiculoPrincipal.nombre }}
+                </strong>
+
+                representa el
+
+                <strong>
+                  {{
+                    vehiculoPrincipal.porcentaje
+                      | number:'1.0-1'
+                  }}%
+                </strong>
+
+                de los vehículos involucrados,
+                con
+
+                <strong>
+                  {{ vehiculoPrincipal.cantidad }}
+                </strong>
+
+                registros.
+
+              </p>
+
+            </div>
+
+          </div>
+
+        }
+
+
+      } @else {
+
+
+        <div class="vehicle-empty-state">
+
+          <div class="vehicle-empty-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+
+              <path
+                d="M4 15l2-6h12l2 6"
+              />
+
+              <path
+                d="M5 15h14v4H5z"
+              />
+
+              <circle
+                cx="7"
+                cy="19"
+                r="1.5"
+              />
+
+              <circle
+                cx="17"
+                cy="19"
+                r="1.5"
+              />
+
+            </svg>
+
+          </div>
+
+          <strong>
+            Sin información para mostrar
+          </strong>
+
+          <p>
+            Selecciona un rango de fechas y aplica
+            el filtro para visualizar la caracterización
+            de los vehículos.
+          </p>
+
+        </div>
+
+      }
+
+    </article>
+
+  </section>
+
+
+  <!-- =====================================================
+       COMPARATIVA ANUAL
+       ===================================================== -->
+
+  <section
+    id="comparativa"
+    class="dashboard-section"
+  >
+
+    <app-comparativa-anual>
+    </app-comparativa-anual>
+
+  </section>
+
+</section>
