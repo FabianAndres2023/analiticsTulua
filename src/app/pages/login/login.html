@@ -2,58 +2,155 @@
 
   <div class="login-card">
 
+
+    <!-- ===================================================
+         LOGO
+         =================================================== -->
+
     <img
       src="/logo.png"
       alt="Analytics Tuluá"
-      class="logo">
+      class="logo"
+    />
 
-    <h2>Iniciar sesión</h2>
+
+    <!-- ===================================================
+         ENCABEZADO
+         =================================================== -->
+
+    <h2>
+      Iniciar sesión
+    </h2>
+
 
     <p class="subtitle">
       Plataforma de Inteligencia Territorial
     </p>
 
-    <form (ngSubmit)="login()">
+
+    <!-- ===================================================
+         FORMULARIO
+         =================================================== -->
+
+    <form
+      (ngSubmit)="login()"
+      novalidate
+    >
+
+
+      <!-- =================================================
+           CORREO
+           ================================================= -->
 
       <div class="form-group">
 
-        <label>Correo electrónico</label>
+        <label for="login-email">
+          Correo electrónico
+        </label>
+
 
         <input
+          id="login-email"
           type="email"
           name="email"
           [(ngModel)]="email"
           placeholder="Ingrese su correo"
-          required>
+          autocomplete="email"
+          [disabled]="loading()"
+          (input)="limpiarError()"
+          required
+        />
 
       </div>
 
+
+      <!-- =================================================
+           CONTRASEÑA
+           ================================================= -->
+
       <div class="form-group">
 
-        <label>Contraseña</label>
+        <label for="login-password">
+          Contraseña
+        </label>
+
 
         <input
+          id="login-password"
           type="password"
           name="password"
           [(ngModel)]="password"
           placeholder="Ingrese su contraseña"
-          required>
+          autocomplete="current-password"
+          [disabled]="loading()"
+          (input)="limpiarError()"
+          required
+        />
 
       </div>
 
-      <div
-        class="error-message"
-        *ngIf="errorMessage">
 
-        {{ errorMessage }}
+      <!-- =================================================
+           ERROR
+           ================================================= -->
 
-      </div>
+      @if (
+        errorMessage()
+      ) {
+
+        <div
+          class="error-message"
+          role="alert"
+          aria-live="assertive"
+        >
+
+          <span
+            class="error-icon"
+            aria-hidden="true"
+          >
+            !
+          </span>
+
+
+          <span>
+            {{ errorMessage() }}
+          </span>
+
+        </div>
+
+      }
+
+
+      <!-- =================================================
+           BOTÓN
+           ================================================= -->
 
       <button
         type="submit"
-        [disabled]="loading">
+        [disabled]="loading()"
+      >
 
-        {{ loading ? 'Ingresando...' : 'Ingresar' }}
+        @if (
+          loading()
+        ) {
+
+          <span
+            class="button-spinner"
+            aria-hidden="true"
+          >
+          </span>
+
+          <span>
+            Ingresando...
+          </span>
+
+        } @else {
+
+          <span>
+            Ingresar
+          </span>
+
+        }
 
       </button>
 

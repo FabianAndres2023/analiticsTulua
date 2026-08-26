@@ -1,1 +1,63 @@
-<p>ocio-turismo works!</p>
+<section class="tourism-page">
+
+  <!-- =====================================================
+       ENCABEZADO
+       ===================================================== -->
+
+  <header class="tourism-header">
+
+    <div class="header-icon">
+
+      <svg lucideMapPin></svg>
+
+    </div>
+
+    <div>
+
+      <h1>
+        Ocio y Turismo
+      </h1>
+
+      <p>
+        Consulta y administra la información relacionada con
+        la actividad del municipio de Tuluá.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       NAVEGACIÓN INTERNA
+       ===================================================== -->
+
+  <nav class="tourism-navigation">
+
+    <a
+      routerLink="/ocio-turismo/activos-turismo"
+      routerLinkActive="active"
+    >
+
+      <svg lucideLandmark></svg>
+
+      <span>
+        Activos de Turismo
+      </span>
+
+    </a>
+
+  </nav>
+
+
+  <!-- =====================================================
+       CONTENIDO
+       ===================================================== -->
+
+  <section class="tourism-content">
+
+    <router-outlet></router-outlet>
+
+  </section>
+
+</section>
