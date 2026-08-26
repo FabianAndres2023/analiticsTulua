@@ -1,0 +1,1251 @@
+<section class="annual-dashboard">
+
+  <!-- ======================================================
+       ENCABEZADO
+       ====================================================== -->
+
+  <header class="annual-header">
+
+    <div>
+
+      <span class="eyebrow">
+        ANÁLISIS HISTÓRICO
+      </span>
+
+      <h2>
+        Comparativa anual de accidentalidad
+      </h2>
+
+      <p>
+        Compara el comportamiento de los siniestros
+        entre cualquier par de años y dentro del mismo
+        intervalo mensual.
+      </p>
+
+    </div>
+
+
+    @if (
+      comparacionAplicada
+    ) {
+
+      <div class="current-comparison">
+
+        <span class="current-comparison-icon">
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              d="M7 3v3M17 3v3M4 9h16M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"
+            />
+          </svg>
+
+        </span>
+
+        <div>
+
+          <small>
+            Comparación aplicada
+          </small>
+
+          <strong>
+            {{ anioBase }}
+            vs
+            {{ anioComparado }}
+          </strong>
+
+          <span>
+            {{ periodoComparadoTexto }}
+          </span>
+
+        </div>
+
+      </div>
+
+    }
+
+  </header>
+
+
+  <!-- ======================================================
+       CARGANDO
+       ====================================================== -->
+
+  @if (
+    loading
+  ) {
+
+    <div class="status-message loading">
+
+      <span class="spinner"></span>
+
+      Cargando información histórica...
+
+    </div>
+
+  }
+
+
+  <!-- ======================================================
+       ERROR
+       ====================================================== -->
+
+  @if (
+    error
+  ) {
+
+    <div
+      class="status-message error"
+      role="alert"
+    >
+
+      <span class="status-icon">
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            d="M12 9v4M12 17h.01M10.3 3.9 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"
+          />
+        </svg>
+
+      </span>
+
+      <div>
+
+        <strong>
+          Revisa los filtros de comparación.
+        </strong>
+
+        <span>
+          {{ error }}
+        </span>
+
+      </div>
+
+    </div>
+
+  }
+
+
+  @if (
+    !loading &&
+    comparativaMensual.length > 0
+  ) {
+
+    <!-- ====================================================
+         FILTROS
+         ==================================================== -->
+
+    <section class="filter-card">
+
+      <header class="filter-header">
+
+        <div>
+
+          <span class="eyebrow">
+            FILTROS DE COMPARACIÓN
+          </span>
+
+          <h3>
+            Selecciona los períodos
+          </h3>
+
+          <p>
+            Completa los filtros y presiona
+            <strong>Aplicar comparación</strong>
+            para consultar los resultados.
+          </p>
+
+        </div>
+
+      </header>
+
+
+      <div class="filters-grid">
+
+        <!-- =================================================
+             AÑO BASE
+             ================================================= -->
+
+        <label class="filter-field">
+
+          <span>
+            Año base
+          </span>
+
+          <select
+            [(ngModel)]="
+              anioBaseSeleccionado
+            "
+            (ngModelChange)="
+              onCambioFiltro()
+            "
+          >
+
+            <option
+              [ngValue]="null"
+              disabled
+            >
+              Seleccionar año
+            </option>
+
+
+            @for (
+              anio of aniosDisponibles;
+              track anio
+            ) {
+
+              <option
+                [ngValue]="anio"
+              >
+                {{ anio }}
+              </option>
+
+            }
+
+          </select>
+
+        </label>
+
+
+        <!-- =================================================
+             AÑO COMPARADO
+             ================================================= -->
+
+        <label class="filter-field">
+
+          <span>
+            Comparar con
+          </span>
+
+          <select
+            [(ngModel)]="
+              anioComparadoSeleccionado
+            "
+            (ngModelChange)="
+              onCambioFiltro()
+            "
+          >
+
+            <option
+              [ngValue]="null"
+              disabled
+            >
+              Seleccionar año
+            </option>
+
+
+            @for (
+              anio of aniosDisponibles;
+              track anio
+            ) {
+
+              <option
+                [ngValue]="anio"
+              >
+                {{ anio }}
+              </option>
+
+            }
+
+          </select>
+
+        </label>
+
+
+        <!-- =================================================
+             MES DESDE
+             ================================================= -->
+
+        <label class="filter-field">
+
+          <span>
+            Mes desde
+          </span>
+
+          <select
+            [(ngModel)]="
+              mesDesdeSeleccionado
+            "
+            [disabled]="
+              anioBaseSeleccionado === null ||
+              anioComparadoSeleccionado === null ||
+              anioBaseSeleccionado ===
+                anioComparadoSeleccionado
+            "
+          >
+
+            <option
+              [ngValue]="null"
+              disabled
+            >
+              Seleccionar mes
+            </option>
+
+
+            @for (
+              mes of mesesDisponiblesSeleccionados;
+              track mes.numero
+            ) {
+
+              <option
+                [ngValue]="
+                  mes.numero
+                "
+              >
+                {{ mes.nombre }}
+              </option>
+
+            }
+
+          </select>
+
+        </label>
+
+
+        <!-- =================================================
+             MES HASTA
+             ================================================= -->
+
+        <label class="filter-field">
+
+          <span>
+            Mes hasta
+          </span>
+
+          <select
+            [(ngModel)]="
+              mesHastaSeleccionado
+            "
+            [disabled]="
+              anioBaseSeleccionado === null ||
+              anioComparadoSeleccionado === null ||
+              anioBaseSeleccionado ===
+                anioComparadoSeleccionado
+            "
+          >
+
+            <option
+              [ngValue]="null"
+              disabled
+            >
+              Seleccionar mes
+            </option>
+
+
+            @for (
+              mes of mesesDisponiblesSeleccionados;
+              track mes.numero
+            ) {
+
+              <option
+                [ngValue]="
+                  mes.numero
+                "
+              >
+                {{ mes.nombre }}
+              </option>
+
+            }
+
+          </select>
+
+        </label>
+
+
+        <!-- =================================================
+             APLICAR
+             ================================================= -->
+
+        <button
+          type="button"
+          class="apply-button"
+          (click)="
+            aplicarComparacion()
+          "
+        >
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              d="M4 5h16M7 12h10M10 19h4"
+            />
+          </svg>
+
+          Aplicar comparación
+
+        </button>
+
+
+        <!-- =================================================
+             RESTABLECER
+             ================================================= -->
+
+        <button
+          type="button"
+          class="reset-button"
+          (click)="
+            restablecerFiltros()
+          "
+        >
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              d="M3 12a9 9 0 1 0 3-6.7M3 4v6h6"
+            />
+          </svg>
+
+          Restablecer
+
+        </button>
+
+      </div>
+
+
+      <!-- ===================================================
+           AYUDA
+           =================================================== -->
+
+      <footer class="filter-information">
+
+        <div>
+
+          <span class="info-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 10v6M12 7h.01"
+              />
+            </svg>
+
+          </span>
+
+          <p>
+            El intervalo seleccionado se aplica de la misma
+            forma a ambos años. Puedes comparar
+            <strong>
+              Enero 2025 vs Enero 2026
+            </strong>
+            o
+            <strong>
+              Marzo–Julio 2025 vs Marzo–Julio 2026.
+            </strong>
+          </p>
+
+        </div>
+
+
+        @if (
+          comparacionAplicada
+        ) {
+
+          <div class="legend">
+
+            <span>
+
+              <i
+                [style.background]="
+                  colorBase
+                "
+              ></i>
+
+              {{ anioBase }}
+
+            </span>
+
+
+            <span>
+
+              <i
+                [style.background]="
+                  colorComparado
+                "
+              ></i>
+
+              {{ anioComparado }}
+
+              @if (
+                esDinamico(
+                  anioComparado
+                )
+              ) {
+
+                <small>
+                  en curso
+                </small>
+
+              }
+
+            </span>
+
+          </div>
+
+        }
+
+      </footer>
+
+    </section>
+
+
+    <!-- ====================================================
+         TODO LO SIGUIENTE SOLO APARECE DESPUÉS DE APLICAR
+         ==================================================== -->
+
+    @if (
+      comparacionAplicada
+    ) {
+
+      <!-- ==================================================
+           RESUMEN
+           ================================================== -->
+
+      <section class="comparison-summary">
+
+        <article>
+
+          <span class="summary-icon blue">
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 19V9M10 19V5M16 19v-8M22 19V2"
+              />
+            </svg>
+
+          </span>
+
+
+          <div>
+
+            <small>
+              Comparación
+            </small>
+
+            <strong>
+              {{ anioBase }}
+              vs
+              {{ anioComparado }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article>
+
+          <span class="summary-icon green">
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M7 3v3M17 3v3M4 9h16M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"
+              />
+            </svg>
+
+          </span>
+
+
+          <div>
+
+            <small>
+              Período analizado
+            </small>
+
+            <strong>
+              {{ periodoComparadoTexto }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article>
+
+          <span class="summary-icon violet">
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="m5 12 4 4L19 6"
+              />
+            </svg>
+
+          </span>
+
+
+          <div>
+
+            <small>
+              Meses comparados
+            </small>
+
+            <strong>
+              {{
+                (
+                  mesHasta !== null &&
+                  mesDesde !== null
+                )
+                  ? mesHasta -
+                    mesDesde +
+                    1
+                  : 0
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <!-- ==================================================
+           GRÁFICAS
+           ================================================== -->
+
+      <section class="charts-section">
+
+        <header class="section-heading">
+
+          <span class="eyebrow">
+            COMPARACIÓN MENSUAL
+          </span>
+
+          <h3>
+            Evolución entre períodos
+          </h3>
+
+          <p>
+            Pasa el cursor por cada barra para consultar
+            el detalle del mes correspondiente.
+          </p>
+
+        </header>
+
+
+        <div class="charts-grid">
+
+          @for (
+            comparacion of comparaciones;
+            track comparacion.metrica
+          ) {
+
+            <article class="comparison-card">
+
+              <!-- ===========================================
+                   HEADER
+                   =========================================== -->
+
+              <header class="comparison-card-header">
+
+                <div class="comparison-card-title">
+
+                  <span
+                    class="metric-icon"
+                    [class.fatal]="
+                      comparacion.icono ===
+                      'fallecidos'
+                    "
+                    [class.injured]="
+                      comparacion.icono ===
+                      'lesionados'
+                    "
+                  >
+
+                    @switch (
+                      comparacion.icono
+                    ) {
+
+                      @case ('fallecidos') {
+
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v6M12 17h.01"
+                          />
+                        </svg>
+
+                      }
+
+
+                      @case ('lesionados') {
+
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M9 12h6M12 9v6M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"
+                          />
+                        </svg>
+
+                      }
+
+
+                      @default {
+
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M5 17h14M7 17l1.5-6h7L17 17M8 11l1-4h6l1 4M8 19v2M16 19v2"
+                          />
+                        </svg>
+
+                      }
+
+                    }
+
+                  </span>
+
+
+                  <div>
+
+                    <span class="chart-eyebrow">
+                      {{ comparacion.subtitulo }}
+                    </span>
+
+                    <h4>
+                      {{ comparacion.titulo }}
+                    </h4>
+
+                    <p>
+                      {{ comparacion.descripcion }}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <div
+                  class="variation-badge"
+                  [ngClass]="
+                    variacionClase(
+                      comparacion.variacion
+                    )
+                  "
+                >
+
+                  <span>
+                    {{
+                      variacionIcono(
+                        comparacion.variacion
+                      )
+                    }}
+                  </span>
+
+
+                  <div>
+
+                    <strong>
+                      {{
+                        variacionTexto(
+                          comparacion.variacion
+                        )
+                      }}
+                    </strong>
+
+                    <small>
+                      {{
+                        variacionDescripcion(
+                          comparacion.variacion
+                        )
+                      }}
+                    </small>
+
+                  </div>
+
+                </div>
+
+              </header>
+
+
+              <!-- ===========================================
+                   RESUMEN
+                   =========================================== -->
+
+              <div class="accumulated-summary">
+
+                <div>
+
+                  <span
+                    class="summary-dot"
+                    [style.background]="
+                      colorBase
+                    "
+                  ></span>
+
+                  <div>
+
+                    <small>
+                      {{ anioBase }}
+                    </small>
+
+                    <strong>
+                      {{ comparacion.valorBase }}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+
+                <span class="versus">
+                  VS
+                </span>
+
+
+                <div>
+
+                  <span
+                    class="summary-dot"
+                    [style.background]="
+                      colorComparado
+                    "
+                  ></span>
+
+                  <div>
+
+                    <small>
+                      {{ anioComparado }}
+                    </small>
+
+                    <strong>
+                      {{ comparacion.valorComparado }}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+
+                <div
+                  class="difference"
+                  [class.lower]="
+                    comparacion.diferencia < 0
+                  "
+                  [class.higher]="
+                    comparacion.diferencia > 0
+                  "
+                >
+
+                  <small>
+                    Diferencia
+                  </small>
+
+                  <strong>
+
+                    @if (
+                      comparacion.diferencia >
+                      0
+                    ) {
+                      +
+                    }
+
+                    {{ comparacion.diferencia }}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- ===========================================
+                   GRÁFICA
+                   =========================================== -->
+
+              <div class="comparison-chart">
+
+                <div class="chart-grid-lines">
+
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+
+                </div>
+
+
+                <div class="bars-container">
+
+                  @for (
+                    mes of comparacion.meses;
+                    track mes.mes
+                  ) {
+
+                    <div class="month-group">
+
+                      <div class="bars">
+
+                        <!-- AÑO BASE -->
+
+                        <button
+                          type="button"
+                          class="bar-column"
+                          [style.height.%]="
+                            mes.alturaBase
+                          "
+                          [style.background]="
+                            colorBase
+                          "
+                          (mouseenter)="
+                            mostrarTooltip(
+                              $event,
+                              mes,
+                              anioBase,
+                              mes.valorBase,
+                              etiquetaMetrica(
+                                comparacion.metrica
+                              )
+                            )
+                          "
+                          (mousemove)="
+                            moverTooltip(
+                              $event
+                            )
+                          "
+                          (mouseleave)="
+                            ocultarTooltip()
+                          "
+                          (focus)="
+                            mostrarTooltip(
+                              $event,
+                              mes,
+                              anioBase,
+                              mes.valorBase,
+                              etiquetaMetrica(
+                                comparacion.metrica
+                              )
+                            )
+                          "
+                          (blur)="
+                            ocultarTooltip()
+                          "
+                        >
+
+                          <span class="bar-value">
+                            {{ mes.valorBase }}
+                          </span>
+
+                        </button>
+
+
+                        <!-- AÑO COMPARADO -->
+
+                        <button
+                          type="button"
+                          class="bar-column"
+                          [style.height.%]="
+                            mes.alturaComparado
+                          "
+                          [style.background]="
+                            colorComparado
+                          "
+                          (mouseenter)="
+                            mostrarTooltip(
+                              $event,
+                              mes,
+                              anioComparado,
+                              mes.valorComparado,
+                              etiquetaMetrica(
+                                comparacion.metrica
+                              )
+                            )
+                          "
+                          (mousemove)="
+                            moverTooltip(
+                              $event
+                            )
+                          "
+                          (mouseleave)="
+                            ocultarTooltip()
+                          "
+                          (focus)="
+                            mostrarTooltip(
+                              $event,
+                              mes,
+                              anioComparado,
+                              mes.valorComparado,
+                              etiquetaMetrica(
+                                comparacion.metrica
+                              )
+                            )
+                          "
+                          (blur)="
+                            ocultarTooltip()
+                          "
+                        >
+
+                          <span class="bar-value">
+                            {{ mes.valorComparado }}
+                          </span>
+
+                        </button>
+
+                      </div>
+
+
+                      <strong class="month-label">
+                        {{ mes.abreviatura }}
+                      </strong>
+
+
+                      <span
+                        class="month-variation"
+                        [ngClass]="
+                          variacionClase(
+                            mes.variacion
+                          )
+                        "
+                      >
+
+                        {{
+                          variacionIcono(
+                            mes.variacion
+                          )
+                        }}
+
+                        {{
+                          variacionTexto(
+                            mes.variacion
+                          )
+                        }}
+
+                      </span>
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                @if (
+                  tooltip.visible
+                ) {
+
+                  <div
+                    class="chart-tooltip"
+                    [style.left.px]="
+                      tooltip.x
+                    "
+                    [style.top.px]="
+                      tooltip.y
+                    "
+                  >
+
+                    <strong>
+                      {{ tooltip.titulo }}
+                    </strong>
+
+                    <span>
+                      {{ tooltip.valor }}
+                    </span>
+
+                    <small>
+                      {{ tooltip.detalle }}
+                    </small>
+
+                  </div>
+
+                }
+
+              </div>
+
+
+              <!-- ===========================================
+                   FOOTER
+                   =========================================== -->
+
+              <footer class="chart-footer">
+
+                <span>
+
+                  <i
+                    [style.background]="
+                      colorBase
+                    "
+                  ></i>
+
+                  {{ anioBase }}
+
+                </span>
+
+
+                <span>
+
+                  <i
+                    [style.background]="
+                      colorComparado
+                    "
+                  ></i>
+
+                  {{ anioComparado }}
+
+                </span>
+
+
+                <small>
+                  {{ periodoComparadoTexto }}
+                </small>
+
+              </footer>
+
+            </article>
+
+          }
+
+        </div>
+
+      </section>
+
+
+      <!-- ==================================================
+           ESTADÍSTICA ACUMULADA
+           ================================================== -->
+
+      <section class="accumulated-section">
+
+        <header class="section-heading">
+
+          <span class="eyebrow">
+            ESTADÍSTICA ACUMULADA
+          </span>
+
+          <h3>
+            Resultado del período seleccionado
+          </h3>
+
+          <p>
+            Consolidado de los principales indicadores
+            de la comparación aplicada.
+          </p>
+
+        </header>
+
+
+        <div class="accumulated-grid">
+
+          @for (
+            comparacion of comparaciones;
+            track comparacion.metrica
+          ) {
+
+            <article class="accumulated-card">
+
+              <header>
+
+                <span>
+                  {{ comparacion.titulo }}
+                </span>
+
+                <strong>
+                  {{ comparacion.subtitulo }}
+                </strong>
+
+              </header>
+
+
+              <div class="accumulated-values">
+
+                <div>
+
+                  <small>
+                    {{ anioBase }}
+                  </small>
+
+                  <strong>
+                    {{ comparacion.valorBase }}
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <small>
+                    {{ anioComparado }}
+                  </small>
+
+                  <strong>
+                    {{ comparacion.valorComparado }}
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <footer>
+
+                <span
+                  [ngClass]="
+                    variacionClase(
+                      comparacion.variacion
+                    )
+                  "
+                >
+
+                  {{
+                    variacionIcono(
+                      comparacion.variacion
+                    )
+                  }}
+
+                  {{
+                    variacionTexto(
+                      comparacion.variacion
+                    )
+                  }}
+
+                </span>
+
+
+                <small>
+                  {{
+                    variacionDescripcion(
+                      comparacion.variacion
+                    )
+                  }}
+                </small>
+
+              </footer>
+
+            </article>
+
+          }
+
+        </div>
+
+      </section>
+
+    }
+
+  }
+
+</section>

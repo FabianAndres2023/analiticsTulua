@@ -1,1 +1,279 @@
-<p>carga-masiva works!</p>
+<section class="mass-upload-page">
+  <header class="page-header">
+    <div class="page-header__icon">
+      <span>⇧</span>
+    </div>
+
+    <div>
+      <p class="eyebrow">CONFIGURACIÓN</p>
+      <h1>Carga masiva</h1>
+      <p class="subtitle">
+        Importa los registros de siniestros viales desde un archivo Excel.
+      </p>
+    </div>
+  </header>
+
+  <section class="upload-card">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">SINIESTROS VIALES</p>
+        <h2>Nueva carga</h2>
+        <p>
+          Selecciona el año y carga el archivo suministrado por Movilidad.
+          El período contenido en el archivo será detectado automáticamente.
+        </p>
+      </div>
+    </div>
+
+    <div class="period-grid">
+      <div class="field">
+        <label for="anio">Año</label>
+
+        <select
+          id="anio"
+          [(ngModel)]="anioSeleccionado"
+          [disabled]="procesando || cargandoSupabase"
+        >
+          @for (anio of anios; track anio) {
+            <option [ngValue]="anio">
+              {{ anio }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="mes">Mes</label>
+
+        <select
+          id="mes"
+          [(ngModel)]="mesSeleccionado"
+          [disabled]="procesando || cargandoSupabase"
+        >
+          <option value="">Automático</option>
+
+          @for (mes of meses; track mes.valor) {
+            <option [value]="mes.valor">
+              {{ mes.nombre }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="file-section">
+      <label
+        class="drop-zone"
+        for="archivoSiniestros"
+        [class.drop-zone--success]="archivoValido"
+      >
+        <input
+          #archivoInput
+          id="archivoSiniestros"
+          type="file"
+          accept=".xlsx,.xls"
+          [disabled]="procesando || cargandoSupabase"
+          (change)="onArchivoSeleccionado($event)"
+        />
+
+        <div class="drop-zone__icon">
+          ⇧
+        </div>
+
+        <div class="drop-zone__content">
+          @if (!nombreArchivo) {
+            <strong>Seleccionar archivo Excel</strong>
+            <span>Formatos admitidos: .xlsx y .xls</span>
+          } @else {
+            <strong>{{ nombreArchivo }}</strong>
+
+            @if (procesando) {
+              <span>Validando archivo...</span>
+            } @else if (archivoValido) {
+              <span>
+                Archivo válido · {{ totalRegistros }} registros encontrados
+              </span>
+            } @else {
+              <span>Archivo seleccionado</span>
+            }
+          }
+        </div>
+      </label>
+
+      @if (nombreArchivo) {
+        <button
+          type="button"
+          class="secondary-button"
+          [disabled]="procesando || cargandoSupabase"
+          (click)="limpiarArchivo(archivoInput)"
+        >
+          Quitar archivo
+        </button>
+      }
+    </div>
+
+    @if (mensajeError) {
+      <div class="alert alert--error">
+        <strong>No fue posible validar el archivo.</strong>
+        <span>{{ mensajeError }}</span>
+      </div>
+    }
+
+    @if (mensajeCargaError) {
+      <div class="alert alert--error">
+        <strong>No fue posible completar la carga.</strong>
+        <span>{{ mensajeCargaError }}</span>
+      </div>
+    }
+
+    @if (mensajeExito) {
+      <div class="alert alert--success">
+        <strong>Carga completada correctamente.</strong>
+        <span>{{ mensajeExito }}</span>
+      </div>
+    }
+
+    @if (archivoValido) {
+      @if (!cargaCompletada) {
+        <div class="alert alert--success">
+          <strong>Archivo validado correctamente.</strong>
+          <span>
+            Se encontraron {{ totalRegistros }} registros para procesar.
+          </span>
+        </div>
+      }
+
+      <div class="summary-grid">
+        <article class="summary-card">
+          <span>Registros encontrados</span>
+          <strong>{{ totalRegistros }}</strong>
+        </article>
+
+        <article class="summary-card">
+          <span>Año de carga</span>
+          <strong>{{ anioSeleccionado }}</strong>
+        </article>
+
+        <article class="summary-card">
+          <span>Mes</span>
+          <strong>
+            @if (mesSeleccionado) {
+              {{ meses[+mesSeleccionado - 1].nombre }}
+            } @else {
+              Automático
+            }
+          </strong>
+        </article>
+      </div>
+
+      @if (distribucionMensual.length > 0) {
+        <div class="preview-card">
+          <div class="preview-card__header">
+            <div>
+              <p class="eyebrow">PERÍODO DETECTADO</p>
+              <h3>Distribución mensual de siniestros</h3>
+            </div>
+
+            <span>
+              {{ totalDistribucionMensual }} registros con fecha válida
+            </span>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mes</th>
+                  <th>Registros</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (
+                  item of distribucionMensual;
+                  track item.numeroMes
+                ) {
+                  <tr>
+                    <td>{{ item.mes }}</td>
+                    <td>{{ item.cantidad }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      <div class="preview-card">
+        <div class="preview-card__header">
+          <div>
+            <p class="eyebrow">VISTA PREVIA</p>
+            <h3>Primeros registros encontrados</h3>
+          </div>
+
+          <span>Mostrando máximo 10 filas</span>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Fila</th>
+                <th>Caso</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Clase</th>
+                <th>Gravedad</th>
+                <th>Barrio</th>
+                <th>Dirección</th>
+                <th>Coordenadas</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (
+                registro of registrosPreview;
+                track registro.fila
+              ) {
+                <tr>
+                  <td>{{ registro.fila }}</td>
+                  <td>{{ registro.numeroCaso }}</td>
+                  <td>{{ registro.fecha }}</td>
+                  <td>{{ registro.hora }}</td>
+                  <td>{{ registro.claseAccidente }}</td>
+                  <td>{{ registro.gravedad }}</td>
+                  <td>{{ registro.barrio }}</td>
+                  <td>{{ registro.direccion }}</td>
+                  <td>{{ registro.coordenadas }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <div class="actions">
+      <button
+        type="button"
+        class="primary-button"
+        [disabled]="
+          !archivoValido ||
+          !anioSeleccionado ||
+          procesando ||
+          cargandoSupabase ||
+          cargaCompletada
+        "
+        (click)="iniciarCarga()"
+      >
+        @if (cargandoSupabase) {
+          Procesando carga...
+        } @else if (cargaCompletada) {
+          Carga completada
+        } @else {
+          Procesar carga
+        }
+      </button>
+    </div>
+  </section>
+</section>
