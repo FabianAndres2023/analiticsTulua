@@ -1,0 +1,72 @@
+<article class="chart-card">
+
+  <div class="chart-header">
+
+    <div>
+      <span>Análisis térmico</span>
+
+      <h4>Extremos diarios</h4>
+
+      <p>
+        Temperaturas mínimas y máximas registradas
+        durante cada día del período.
+      </p>
+    </div>
+
+    @if (
+      minimaPeriodo !== null &&
+      maximaPeriodo !== null
+    ) {
+
+      <div class="extremes">
+
+        <div class="extreme">
+          <span>Mín.</span>
+
+          <strong>
+            {{ minimaPeriodo.toFixed(1) }} °C
+          </strong>
+        </div>
+
+        <div class="extreme">
+          <span>Máx.</span>
+
+          <strong>
+            {{ maximaPeriodo.toFixed(1) }} °C
+          </strong>
+        </div>
+
+      </div>
+
+    }
+
+  </div>
+
+  @if (datos.length > 0) {
+
+    <div class="chart-container">
+
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+      >
+      </canvas>
+
+    </div>
+
+  } @else {
+
+    <div class="chart-placeholder">
+
+      <p>
+        Todavía no hay registros de temperatura
+        para el rango seleccionado.
+      </p>
+
+    </div>
+
+  }
+
+</article>

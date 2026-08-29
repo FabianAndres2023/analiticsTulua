@@ -1,0 +1,45 @@
+<article class="chart-card">
+
+  <div class="chart-header">
+
+    <div>
+      <span>Análisis del viento</span>
+
+      <h4>Rosa de los vientos</h4>
+
+      <p>
+        Distribución porcentual de la dirección
+        predominante del viento durante el período seleccionado.
+      </p>
+    </div>
+
+  </div>
+
+  @if (datos.length > 0) {
+
+    <div class="chart-container">
+
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+      >
+      </canvas>
+
+    </div>
+
+  } @else {
+
+    <div class="chart-placeholder">
+
+      <p>
+        Todavía no hay registros de dirección
+        del viento para el rango seleccionado.
+      </p>
+
+    </div>
+
+  }
+
+</article>
