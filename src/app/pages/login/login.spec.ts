@@ -35,9 +35,9 @@ describe(
       ComponentFixture<Login>;
 
 
-    /* =======================================================
+    /* =====================================================
      * MOCK AUTH SERVICE
-     * ======================================================= */
+     * ===================================================== */
 
     const authServiceMock = {
 
@@ -47,9 +47,9 @@ describe(
     };
 
 
-    /* =======================================================
+    /* =====================================================
      * MOCK ROUTER
-     * ======================================================= */
+     * ===================================================== */
 
     const routerMock = {
 
@@ -59,9 +59,9 @@ describe(
     };
 
 
-    /* =======================================================
+    /* =====================================================
      * CONFIGURACIÓN
-     * ======================================================= */
+     * ===================================================== */
 
     beforeEach(
       async () => {
@@ -119,9 +119,9 @@ describe(
     );
 
 
-    /* =======================================================
+    /* =====================================================
      * CREACIÓN
-     * ======================================================= */
+     * ===================================================== */
 
     it(
       'debe crear el componente',
@@ -135,12 +135,12 @@ describe(
     );
 
 
-    /* =======================================================
+    /* =====================================================
      * ESTADO INICIAL
-     * ======================================================= */
+     * ===================================================== */
 
     it(
-      'debe iniciar con los campos vacíos',
+      'debe iniciar con el formulario vacío',
       () => {
 
         expect(
@@ -156,22 +156,132 @@ describe(
 
 
         expect(
-          component.loading
+          component.loading()
         )
           .toBe(false);
 
 
         expect(
-          component.errorMessage
+          component.errorMessage()
         )
           .toBe('');
+
+
+        expect(
+          component.showPassword()
+        )
+          .toBe(false);
       }
     );
 
 
-    /* =======================================================
+    /* =====================================================
+     * MOSTRAR CONTRASEÑA
+     * ===================================================== */
+
+    it(
+      'debe alternar la visibilidad de la contraseña',
+      () => {
+
+        component
+          .togglePasswordVisibility();
+
+
+        expect(
+          component.showPassword()
+        )
+          .toBe(true);
+
+
+        component
+          .togglePasswordVisibility();
+
+
+        expect(
+          component.showPassword()
+        )
+          .toBe(false);
+      }
+    );
+
+
+    /* =====================================================
+     * VALIDACIÓN CORREO
+     * ===================================================== */
+
+    it(
+      'debe solicitar el correo cuando está vacío',
+      async () => {
+
+        component.email =
+          '';
+
+
+        component.password =
+          '123456';
+
+
+        await component
+          .login();
+
+
+        expect(
+          component.errorMessage()
+        )
+          .toBe(
+            'Ingresa tu correo electrónico.'
+          );
+
+
+        expect(
+          authServiceMock.login
+        )
+          .not
+          .toHaveBeenCalled();
+      }
+    );
+
+
+    /* =====================================================
+     * VALIDACIÓN CONTRASEÑA
+     * ===================================================== */
+
+    it(
+      'debe solicitar la contraseña cuando está vacía',
+      async () => {
+
+        component.email =
+          'usuario@ejemplo.com';
+
+
+        component.password =
+          '';
+
+
+        await component
+          .login();
+
+
+        expect(
+          component.errorMessage()
+        )
+          .toBe(
+            'Ingresa tu contraseña.'
+          );
+
+
+        expect(
+          authServiceMock.login
+        )
+          .not
+          .toHaveBeenCalled();
+      }
+    );
+
+
+    /* =====================================================
      * LOGIN INCORRECTO
-     * ======================================================= */
+     * ===================================================== */
 
     it(
       'debe mostrar error cuando las credenciales son incorrectas',
@@ -182,6 +292,7 @@ describe(
           .mockResolvedValue({
 
             data: {
+
               user:
                 null,
 
@@ -190,8 +301,15 @@ describe(
             },
 
             error: {
+
+              code:
+                'invalid_credentials',
+
               message:
-                'Invalid login credentials'
+                'Invalid login credentials',
+
+              status:
+                400
             }
 
           });
@@ -222,15 +340,15 @@ describe(
 
 
         expect(
-          component.errorMessage
+          component.errorMessage()
         )
           .toBe(
-            'Correo o contraseña incorrectos'
+            'Correo electrónico o contraseña incorrectos.'
           );
 
 
         expect(
-          component.loading
+          component.loading()
         )
           .toBe(false);
 
@@ -244,9 +362,9 @@ describe(
     );
 
 
-    /* =======================================================
+    /* =====================================================
      * LOGIN CORRECTO
-     * ======================================================= */
+     * ===================================================== */
 
     it(
       'debe navegar al dashboard cuando el login es correcto',
@@ -259,11 +377,13 @@ describe(
             data: {
 
               user: {
+
                 id:
                   'usuario-prueba'
               },
 
               session: {
+
                 access_token:
                   'token-prueba'
               }
@@ -284,7 +404,7 @@ describe(
 
 
         component.email =
-          'usuario@ejemplo.com';
+          'USUARIO@EJEMPLO.COM';
 
 
         component.password =
@@ -308,13 +428,13 @@ describe(
 
 
         expect(
-          component.errorMessage
+          component.errorMessage()
         )
           .toBe('');
 
 
         expect(
-          component.loading
+          component.loading()
         )
           .toBe(false);
 
@@ -331,50 +451,27 @@ describe(
     );
 
 
-    /* =======================================================
-     * LOADING
-     * ======================================================= */
+    /* =====================================================
+     * LIMPIAR ERROR
+     * ===================================================== */
 
     it(
-      'debe finalizar el estado loading después de un intento fallido',
-      async () => {
+      'debe limpiar el mensaje de error',
+      () => {
 
-        authServiceMock
-          .login
-          .mockResolvedValue({
-
-            data: {
-              user:
-                null,
-
-              session:
-                null
-            },
-
-            error: {
-              message:
-                'Invalid login credentials'
-            }
-
-          });
+        component.errorMessage.set(
+          'Error de prueba'
+        );
 
 
-        component.email =
-          'prueba@ejemplo.com';
-
-
-        component.password =
-          'incorrecta';
-
-
-        await component
-          .login();
+        component
+          .limpiarError();
 
 
         expect(
-          component.loading
+          component.errorMessage()
         )
-          .toBe(false);
+          .toBe('');
       }
     );
 

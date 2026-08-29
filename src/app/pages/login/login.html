@@ -1,161 +1,373 @@
 <section class="login-page">
 
-  <div class="login-card">
+  <!-- =====================================================
+       DECORACIÓN DE FONDO
+       ===================================================== -->
+
+  <div
+    class="background-shape background-shape-one"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    class="background-shape background-shape-two"
+    aria-hidden="true"
+  ></div>
+
+
+  <!-- =====================================================
+       CONTENEDOR
+       ===================================================== -->
+
+  <main class="login-shell">
 
 
     <!-- ===================================================
-         LOGO
+         PANEL INSTITUCIONAL
          =================================================== -->
 
-    <img
-      src="/logo.png"
-      alt="Analytics Tuluá"
-      class="logo"
-    />
+    <section class="brand-panel">
+
+      <div class="brand-content">
 
 
-    <!-- ===================================================
-         ENCABEZADO
-         =================================================== -->
+        <div class="brand-badge">
 
-    <h2>
-      Iniciar sesión
-    </h2>
-
-
-    <p class="subtitle">
-      Plataforma de Inteligencia Territorial
-    </p>
-
-
-    <!-- ===================================================
-         FORMULARIO
-         =================================================== -->
-
-    <form
-      (ngSubmit)="login()"
-      novalidate
-    >
-
-
-      <!-- =================================================
-           CORREO
-           ================================================= -->
-
-      <div class="form-group">
-
-        <label for="login-email">
-          Correo electrónico
-        </label>
-
-
-        <input
-          id="login-email"
-          type="email"
-          name="email"
-          [(ngModel)]="email"
-          placeholder="Ingrese su correo"
-          autocomplete="email"
-          [disabled]="loading()"
-          (input)="limpiarError()"
-          required
-        />
-
-      </div>
-
-
-      <!-- =================================================
-           CONTRASEÑA
-           ================================================= -->
-
-      <div class="form-group">
-
-        <label for="login-password">
-          Contraseña
-        </label>
-
-
-        <input
-          id="login-password"
-          type="password"
-          name="password"
-          [(ngModel)]="password"
-          placeholder="Ingrese su contraseña"
-          autocomplete="current-password"
-          [disabled]="loading()"
-          (input)="limpiarError()"
-          required
-        />
-
-      </div>
-
-
-      <!-- =================================================
-           ERROR
-           ================================================= -->
-
-      @if (
-        errorMessage()
-      ) {
-
-        <div
-          class="error-message"
-          role="alert"
-          aria-live="assertive"
-        >
-
-          <span
-            class="error-icon"
-            aria-hidden="true"
-          >
-            !
-          </span>
-
+          <svg lucideShieldCheck></svg>
 
           <span>
-            {{ errorMessage() }}
+            Plataforma institucional
           </span>
 
         </div>
 
-      }
+
+        <div class="brand-logo-container">
+
+          <img
+            src="/logo.png"
+            alt="Analytics Tuluá"
+            class="brand-logo"
+          />
+
+        </div>
 
 
-      <!-- =================================================
-           BOTÓN
-           ================================================= -->
+        <div class="brand-copy">
 
-      <button
-        type="submit"
-        [disabled]="loading()"
-      >
+          <span class="brand-eyebrow">
+            Inteligencia territorial
+          </span>
 
-        @if (
-          loading()
-        ) {
+          <h1>
+            Información para tomar
+            mejores decisiones.
+          </h1>
 
-          <span
-            class="button-spinner"
-            aria-hidden="true"
+          <p>
+            Plataforma de análisis y seguimiento de indicadores
+            estratégicos del municipio de Tuluá.
+          </p>
+
+        </div>
+
+
+        <div class="brand-features">
+
+          <span>
+            Datos
+          </span>
+
+          <i></i>
+
+          <span>
+            Territorio
+          </span>
+
+          <i></i>
+
+          <span>
+            Gestión
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="brand-footer">
+        Alcaldía de Tuluá
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         PANEL DE LOGIN
+         =================================================== -->
+
+    <section class="login-panel">
+
+      <div class="login-form-container">
+
+
+        <!-- =================================================
+             LOGO MÓVIL
+             ================================================= -->
+
+        <img
+          src="/logo.png"
+          alt="Analytics Tuluá"
+          class="mobile-logo"
+        />
+
+
+        <!-- =================================================
+             ENCABEZADO
+             ================================================= -->
+
+        <header class="login-header">
+
+          <span class="login-eyebrow">
+            Acceso seguro
+          </span>
+
+          <h2>
+            Iniciar sesión
+          </h2>
+
+          <p>
+            Ingresa con las credenciales asignadas
+            para acceder a Analytics Tuluá.
+          </p>
+
+        </header>
+
+
+        <!-- =================================================
+             FORMULARIO
+             ================================================= -->
+
+        <form
+          class="login-form"
+          (ngSubmit)="login()"
+          novalidate
+        >
+
+
+          <!-- ===============================================
+               CORREO
+               =============================================== -->
+
+          <div class="form-group">
+
+            <label for="login-email">
+              Correo electrónico
+            </label>
+
+
+            <div class="input-wrapper">
+
+              <span
+                class="input-icon"
+                aria-hidden="true"
+              >
+                <svg lucideMail></svg>
+              </span>
+
+
+              <input
+                id="login-email"
+                type="email"
+                name="email"
+                [(ngModel)]="email"
+                placeholder="nombre@tulua.gov.co"
+                autocomplete="email"
+                inputmode="email"
+                [disabled]="loading()"
+                (input)="limpiarError()"
+                required
+              />
+
+            </div>
+
+          </div>
+
+
+          <!-- ===============================================
+               CONTRASEÑA
+               =============================================== -->
+
+          <div class="form-group">
+
+            <label for="login-password">
+              Contraseña
+            </label>
+
+
+            <div class="input-wrapper password-wrapper">
+
+              <span
+                class="input-icon"
+                aria-hidden="true"
+              >
+                <svg lucideLockKeyhole></svg>
+              </span>
+
+
+              <input
+                id="login-password"
+                [type]="
+                  showPassword()
+                    ? 'text'
+                    : 'password'
+                "
+                name="password"
+                [(ngModel)]="password"
+                placeholder="Ingresa tu contraseña"
+                autocomplete="current-password"
+                [disabled]="loading()"
+                (input)="limpiarError()"
+                required
+              />
+
+
+              <button
+                type="button"
+                class="password-toggle"
+                [disabled]="loading()"
+                [attr.aria-label]="
+                  showPassword()
+                    ? 'Ocultar contraseña'
+                    : 'Mostrar contraseña'
+                "
+                [attr.title]="
+                  showPassword()
+                    ? 'Ocultar contraseña'
+                    : 'Mostrar contraseña'
+                "
+                (click)="togglePasswordVisibility()"
+              >
+
+                @if (
+                  showPassword()
+                ) {
+
+                  <svg lucideEyeOff></svg>
+
+                } @else {
+
+                  <svg lucideEye></svg>
+
+                }
+
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- ===============================================
+               ERROR
+               =============================================== -->
+
+          @if (
+            errorMessage()
+          ) {
+
+            <div
+              class="error-message"
+              role="alert"
+              aria-live="assertive"
+            >
+
+              <span
+                class="error-icon"
+                aria-hidden="true"
+              >
+                <svg lucideCircleAlert></svg>
+              </span>
+
+
+              <span>
+                {{ errorMessage() }}
+              </span>
+
+            </div>
+
+          }
+
+
+          <!-- ===============================================
+               BOTÓN DE INGRESO
+               =============================================== -->
+
+          <button
+            type="submit"
+            class="login-button"
+            [disabled]="loading()"
           >
-          </span>
 
-          <span>
-            Ingresando...
-          </span>
+            @if (
+              loading()
+            ) {
 
-        } @else {
+              <span
+                class="button-spinner"
+                aria-hidden="true"
+              ></span>
 
-          <span>
-            Ingresar
-          </span>
+              <span>
+                Verificando acceso...
+              </span>
 
-        }
+            } @else {
 
-      </button>
+              <span>
+                Ingresar a Analytics Tuluá
+              </span>
 
-    </form>
+            }
 
-  </div>
+          </button>
+
+
+          <!-- ===============================================
+               SEGURIDAD
+               =============================================== -->
+
+          <div class="security-note">
+
+            <svg lucideShieldCheck></svg>
+
+            <span>
+              Acceso exclusivo para usuarios autorizados.
+            </span>
+
+          </div>
+
+        </form>
+
+      </div>
+
+
+      <footer class="login-footer">
+
+        <span>
+          Analytics Tuluá
+        </span>
+
+        <i></i>
+
+        <span>
+          Plataforma de Inteligencia Territorial
+        </span>
+
+      </footer>
+
+    </section>
+
+  </main>
 
 </section>
