@@ -16,6 +16,15 @@ import {
 } from '@angular/router';
 
 import {
+  LucideCircleAlert,
+  LucideEye,
+  LucideEyeOff,
+  LucideLockKeyhole,
+  LucideMail,
+  LucideShieldCheck
+} from '@lucide/angular';
+
+import {
   AuthService
 } from '../../core/services/auth.service';
 
@@ -29,8 +38,22 @@ import {
     true,
 
   imports: [
+
     CommonModule,
-    FormsModule
+
+    FormsModule,
+
+    LucideCircleAlert,
+
+    LucideEye,
+
+    LucideEyeOff,
+
+    LucideLockKeyhole,
+
+    LucideMail,
+
+    LucideShieldCheck
   ],
 
   templateUrl:
@@ -71,6 +94,12 @@ export class Login {
     );
 
 
+  readonly showPassword =
+    signal(
+      false
+    );
+
+
   /* =======================================================
    * CONSTRUCTOR
    * ======================================================= */
@@ -84,6 +113,28 @@ export class Login {
       Router
 
   ) {}
+
+
+  /* =======================================================
+   * MOSTRAR / OCULTAR CONTRASEÑA
+   * ======================================================= */
+
+  togglePasswordVisibility():
+    void {
+
+    if (
+      this.loading()
+    ) {
+
+      return;
+    }
+
+
+    this.showPassword.update(
+      current =>
+        !current
+    );
+  }
 
 
   /* =======================================================
@@ -132,6 +183,20 @@ export class Login {
     }
 
 
+    if (
+      !this.isValidEmail(
+        email
+      )
+    ) {
+
+      this.errorMessage.set(
+        'Ingresa un correo electrónico válido.'
+      );
+
+      return;
+    }
+
+
     /* =====================================================
      * VALIDAR CONTRASEÑA
      * ===================================================== */
@@ -164,7 +229,6 @@ export class Login {
 
     try {
 
-
       const response =
         await this.authService
           .login(
@@ -181,10 +245,10 @@ export class Login {
         response.error
       ) {
 
-
         console.warn(
           'Inicio de sesión rechazado:',
           {
+
             code:
               response.error.code,
 
@@ -193,6 +257,7 @@ export class Login {
 
             status:
               response.error.status
+
           }
         );
 
@@ -203,14 +268,12 @@ export class Login {
 
         if (
           response.error.code ===
-            'invalid_credentials'
+          'invalid_credentials'
         ) {
-
 
           this.errorMessage.set(
             'Correo electrónico o contraseña incorrectos.'
           );
-
 
           return;
         }
@@ -222,14 +285,12 @@ export class Login {
 
         if (
           response.error.code ===
-            'email_not_confirmed'
+          'email_not_confirmed'
         ) {
-
 
           this.errorMessage.set(
             'El correo electrónico todavía no ha sido confirmado.'
           );
-
 
           return;
         }
@@ -241,27 +302,24 @@ export class Login {
 
         if (
           response.error.status ===
-            429
+          429
         ) {
-
 
           this.errorMessage.set(
             'Se realizaron demasiados intentos. Espera unos segundos e inténtalo nuevamente.'
           );
-
 
           return;
         }
 
 
         /* =================================================
-         * OTRO ERROR DE AUTENTICACIÓN
+         * OTRO ERROR
          * ================================================= */
 
         this.errorMessage.set(
           'No fue posible iniciar sesión. Verifica tus credenciales.'
         );
-
 
         return;
       }
@@ -283,11 +341,9 @@ export class Login {
           ]
         );
 
-
     } catch (
       error
     ) {
-
 
       console.error(
         'Error inesperado durante el inicio de sesión:',
@@ -299,15 +355,7 @@ export class Login {
         'No fue posible conectar con el servicio de autenticación. Inténtalo nuevamente.'
       );
 
-
     } finally {
-
-
-      /*
-       * Como loading es un signal,
-       * Angular actualizará inmediatamente
-       * la interfaz.
-       */
 
       this.loading.set(
         false
@@ -317,12 +365,11 @@ export class Login {
 
 
   /* =======================================================
-   * LIMPIAR ERROR AL ESCRIBIR
+   * LIMPIAR ERROR
    * ======================================================= */
 
   limpiarError():
     void {
-
 
     if (
       this.errorMessage()
@@ -332,5 +379,24 @@ export class Login {
         ''
       );
     }
+  }
+
+
+  /* =======================================================
+   * VALIDAR CORREO
+   * ======================================================= */
+
+  private isValidEmail(
+    email:
+      string
+  ): boolean {
+
+    const emailPattern =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+    return emailPattern.test(
+      email
+    );
   }
 }
