@@ -1,5 +1,9 @@
 <section class="tourism-assets-page">
 
+  <!-- =====================================================
+       ENCABEZADO
+       ===================================================== -->
+
   <header class="tourism-assets-header">
 
     <span class="eyebrow">
@@ -7,14 +11,796 @@
     </span>
 
     <h2>
-      Activos de Turismo
+      Activos Turísticos
     </h2>
 
     <p>
-      Consulta y administra los activos turísticos
-      registrados en el municipio de Tuluá.
+      Consulta la oferta turística registrada en el municipio,
+      su distribución por categoría y su ubicación geográfica.
     </p>
 
   </header>
+
+
+  <!-- =====================================================
+       CARGA
+       ===================================================== -->
+
+  <section
+    *ngIf="loading"
+    class="state-card"
+  >
+
+    <svg lucideRefreshCw></svg>
+
+    <div>
+
+      <strong>
+        Cargando activos turísticos
+      </strong>
+
+      <span>
+        Estamos consultando la información registrada.
+      </span>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       ERROR
+       ===================================================== -->
+
+  <section
+    *ngIf="!loading && errorMessage"
+    class="state-card state-card-error"
+  >
+
+    <svg lucideMapPin></svg>
+
+    <div>
+
+      <strong>
+        No fue posible cargar la información
+      </strong>
+
+      <span>
+        {{ errorMessage }}
+      </span>
+
+    </div>
+
+    <button
+      type="button"
+      (click)="loadAssets()"
+    >
+      Reintentar
+    </button>
+
+  </section>
+
+
+  <!-- =====================================================
+       CONTENIDO
+       ===================================================== -->
+
+  <ng-container
+    *ngIf="!loading && !errorMessage"
+  >
+
+
+    <!-- ===================================================
+         INDICADORES
+         =================================================== -->
+
+    <section class="summary-grid">
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideBuilding2></svg>
+        </div>
+
+        <div class="summary-content">
+
+          <span class="summary-label">
+            Activos registrados
+          </span>
+
+          <strong class="summary-value">
+            {{ summary.total }}
+          </strong>
+
+          <small>
+            Registros activos en el sistema
+          </small>
+
+        </div>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideMapPinned></svg>
+        </div>
+
+        <div class="summary-content">
+
+          <span class="summary-label">
+            Ubicados en el mapa
+          </span>
+
+          <strong class="summary-value">
+            {{ summary.ubicados }}
+          </strong>
+
+          <small>
+            Activos con coordenadas disponibles
+          </small>
+
+        </div>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideMapPin></svg>
+        </div>
+
+        <div class="summary-content">
+
+          <span class="summary-label">
+            Ubicación exacta
+          </span>
+
+          <strong class="summary-value">
+            {{ summary.exactos }}
+          </strong>
+
+          <small>
+            Registros con georreferenciación exacta
+          </small>
+
+        </div>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideCompass></svg>
+        </div>
+
+        <div class="summary-content">
+
+          <span class="summary-label">
+            Ubicación aproximada
+          </span>
+
+          <strong class="summary-value">
+            {{ summary.aproximados }}
+          </strong>
+
+          <small>
+            Registros con ubicación referencial
+          </small>
+
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- ===================================================
+         TREEMAP
+         =================================================== -->
+
+    <section class="distribution-section">
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="section-eyebrow">
+            Distribución
+          </span>
+
+          <h3>
+            Oferta turística por categoría
+          </h3>
+
+          <p>
+            La dimensión de cada bloque representa la participación
+            de la categoría dentro de la oferta turística registrada.
+          </p>
+
+        </div>
+
+
+        <div class="distribution-total">
+
+          <strong>
+            {{ summary.total }}
+          </strong>
+
+          <span>
+            activos
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="tourism-treemap">
+
+
+        <!-- HOTELES -->
+
+        <button
+          type="button"
+          class="treemap-item treemap-hotel"
+          [class.selected]="
+            isFilterActive('HOTEL')
+          "
+          (click)="
+            setFilter('HOTEL')
+          "
+        >
+
+          <div class="treemap-icon">
+            <svg lucideHotel></svg>
+          </div>
+
+          <div class="treemap-content">
+
+            <span class="treemap-label">
+              Hoteles y alojamientos
+            </span>
+
+            <strong class="treemap-value">
+              {{ getCategoryCount('HOTEL') }}
+            </strong>
+
+            <span class="treemap-percentage">
+              {{
+                getCategoryPercentage('HOTEL')
+                  | number:'1.0-1'
+              }}%
+            </span>
+
+          </div>
+
+        </button>
+
+
+        <!-- GASTRONOMÍA -->
+
+        <button
+          type="button"
+          class="treemap-item treemap-gastronomy"
+          [class.selected]="
+            isFilterActive('GASTRONOMIA')
+          "
+          (click)="
+            setFilter('GASTRONOMIA')
+          "
+        >
+
+          <div class="treemap-icon">
+            <svg lucideUtensils></svg>
+          </div>
+
+          <div class="treemap-content">
+
+            <span class="treemap-label">
+              Gastronomía
+            </span>
+
+            <strong class="treemap-value">
+              {{ getCategoryCount('GASTRONOMIA') }}
+            </strong>
+
+            <span class="treemap-percentage">
+              {{
+                getCategoryPercentage('GASTRONOMIA')
+                  | number:'1.0-1'
+              }}%
+            </span>
+
+          </div>
+
+        </button>
+
+
+        <!-- CATEGORÍAS MENORES -->
+
+        <div class="treemap-small-group">
+
+
+          <!-- AGENCIAS -->
+
+          <button
+            type="button"
+            class="
+              treemap-item
+              treemap-small
+              treemap-agency
+            "
+            [class.selected]="
+              isFilterActive('AGENCIA')
+            "
+            (click)="
+              setFilter('AGENCIA')
+            "
+          >
+
+            <div class="treemap-small-heading">
+
+              <div class="treemap-icon">
+                <svg lucideCompass></svg>
+              </div>
+
+              <strong>
+                {{ getCategoryCount('AGENCIA') }}
+              </strong>
+
+            </div>
+
+            <div class="treemap-small-content">
+
+              <span class="treemap-label">
+                Agencias operadoras
+              </span>
+
+              <span class="treemap-percentage">
+                {{
+                  getCategoryPercentage('AGENCIA')
+                    | number:'1.0-1'
+                }}%
+              </span>
+
+            </div>
+
+          </button>
+
+
+          <!-- CAFÉS -->
+
+          <button
+            type="button"
+            class="
+              treemap-item
+              treemap-small
+              treemap-coffee
+            "
+            [class.selected]="
+              isFilterActive('CAFE')
+            "
+            (click)="
+              setFilter('CAFE')
+            "
+          >
+
+            <div class="treemap-small-heading">
+
+              <div class="treemap-icon">
+                <svg lucideCoffee></svg>
+              </div>
+
+              <strong>
+                {{ getCategoryCount('CAFE') }}
+              </strong>
+
+            </div>
+
+            <div class="treemap-small-content">
+
+              <span class="treemap-label">
+                Cafés
+              </span>
+
+              <span class="treemap-percentage">
+                {{
+                  getCategoryPercentage('CAFE')
+                    | number:'1.0-1'
+                }}%
+              </span>
+
+            </div>
+
+          </button>
+
+
+          <!-- ARTESANÍAS -->
+
+          <button
+            type="button"
+            class="
+              treemap-item
+              treemap-small
+              treemap-crafts
+            "
+            [class.selected]="
+              isFilterActive('ARTESANIA_RECUERDO')
+            "
+            (click)="
+              setFilter('ARTESANIA_RECUERDO')
+            "
+          >
+
+            <div class="treemap-small-heading">
+
+              <div class="treemap-icon">
+                <svg lucideShoppingBag></svg>
+              </div>
+
+              <strong>
+                {{
+                  getCategoryCount(
+                    'ARTESANIA_RECUERDO'
+                  )
+                }}
+              </strong>
+
+            </div>
+
+            <div class="treemap-small-content">
+
+              <span class="treemap-label">
+                Artesanías y recuerdos
+              </span>
+
+              <span class="treemap-percentage">
+                {{
+                  getCategoryPercentage(
+                    'ARTESANIA_RECUERDO'
+                  )
+                    | number:'1.0-1'
+                }}%
+              </span>
+
+            </div>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="treemap-help">
+
+        <span class="treemap-help-dot"></span>
+
+        <span>
+          Selecciona una categoría para explorar
+          sus activos georreferenciados.
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         MAPA
+         =================================================== -->
+
+    <section class="map-section">
+
+      <div class="section-heading map-heading">
+
+        <div>
+
+          <span class="section-eyebrow">
+            Georreferenciación
+          </span>
+
+          <h3>
+            Mapa de activos turísticos
+          </h3>
+
+          <p>
+            Explora la distribución territorial de la oferta
+            turística registrada en Tuluá.
+          </p>
+
+        </div>
+
+
+        <div class="map-counter">
+
+          <strong>
+            {{ mappedAssets.length }}
+          </strong>
+
+          <span>
+            ubicados
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           FILTROS DEL MAPA
+           ================================================= -->
+
+      <div class="map-filters">
+
+        <button
+          *ngFor="
+            let category of categories;
+            trackBy: trackByCategory
+          "
+          type="button"
+          class="filter-button"
+          [class.active]="
+            isFilterActive(category.value)
+          "
+          (click)="
+            setFilter(category.value)
+          "
+        >
+
+          <span>
+            {{ category.shortLabel }}
+          </span>
+
+          <small>
+            {{ getMapCategoryCount(category.value) }}
+          </small>
+
+        </button>
+
+      </div>
+
+
+      <!-- =================================================
+           LEYENDA
+           ================================================= -->
+
+      <div class="map-legend">
+
+        <span class="legend-title">
+          Categorías:
+        </span>
+
+        <span class="legend-item">
+          <i class="legend-dot hotel"></i>
+          Alojamientos
+        </span>
+
+        <span class="legend-item">
+          <i class="legend-dot gastronomy"></i>
+          Gastronomía
+        </span>
+
+        <span class="legend-item">
+          <i class="legend-dot agency"></i>
+          Agencias
+        </span>
+
+        <span class="legend-item">
+          <i class="legend-dot coffee"></i>
+          Cafés
+        </span>
+
+        <span class="legend-item">
+          <i class="legend-dot crafts"></i>
+          Artesanías
+        </span>
+
+      </div>
+
+
+      <!-- =================================================
+           MAPA + PANEL
+           ================================================= -->
+
+      <div class="map-layout">
+
+
+        <!-- MAPA -->
+
+        <div class="map-container">
+
+          <div
+            #tourismMap
+            class="leaflet-map"
+          ></div>
+
+        </div>
+
+
+        <!-- PANEL LATERAL -->
+
+        <aside class="map-sidebar">
+
+          <div class="map-sidebar-header">
+
+            <div>
+
+              <span>
+                Activos en el mapa
+              </span>
+
+              <small>
+                Selecciona uno para localizarlo
+              </small>
+
+            </div>
+
+
+            <strong>
+              {{ mappedAssets.length }}
+            </strong>
+
+          </div>
+
+
+          <div
+            *ngIf="
+              mappedAssets.length > 0;
+              else noResults
+            "
+            class="asset-list"
+          >
+
+            <article
+              *ngFor="
+                let asset of mappedAssets;
+                trackBy: trackByAssetId
+              "
+              class="asset-item has-location"
+              [class.selected]="
+                selectedAssetId === asset.id
+              "
+              (click)="
+                focusAsset(asset)
+              "
+            >
+
+              <div class="asset-item-heading">
+
+                <div>
+
+                  <span class="asset-category">
+                    {{
+                      getCategoryLabel(
+                        asset.categoria
+                      )
+                    }}
+                  </span>
+
+                  <h4>
+                    {{ asset.nombre }}
+                  </h4>
+
+                </div>
+
+
+                <span
+                  class="location-status"
+                  [class.exact]="
+                    asset.precision_ubicacion ===
+                    'EXACTA'
+                  "
+                  [class.approximate]="
+                    asset.precision_ubicacion ===
+                    'APROXIMADA'
+                  "
+                >
+                  {{
+                    getPrecisionLabel(
+                      asset
+                    )
+                  }}
+                </span>
+
+              </div>
+
+
+              <p
+                *ngIf="asset.subcategoria"
+                class="asset-subcategory"
+              >
+                {{ asset.subcategoria }}
+              </p>
+
+
+              <p
+                *ngIf="asset.direccion"
+                class="asset-address"
+              >
+
+                <svg lucideMapPin></svg>
+
+                <span>
+                  {{ asset.direccion }}
+                </span>
+
+              </p>
+
+
+              <div
+                *ngIf="
+                  asset.telefono ||
+                  asset.correo ||
+                  asset.sitio_web
+                "
+                class="asset-contact"
+              >
+
+                <span
+                  *ngIf="asset.telefono"
+                >
+                  {{ asset.telefono }}
+                </span>
+
+
+                <span
+                  *ngIf="asset.correo"
+                >
+                  {{ asset.correo }}
+                </span>
+
+
+                <a
+                  *ngIf="
+                    getWebsiteUrl(
+                      asset.sitio_web
+                    ) as website
+                  "
+                  [href]="website"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  (click)="$event.stopPropagation()"
+                >
+                  Sitio web
+                </a>
+
+              </div>
+
+            </article>
+
+          </div>
+
+
+          <ng-template #noResults>
+
+            <div class="empty-results">
+
+              <svg lucideMapPin></svg>
+
+              <strong>
+                No hay activos georreferenciados
+              </strong>
+
+              <span>
+                No existen activos con coordenadas
+                disponibles para esta categoría.
+              </span>
+
+            </div>
+
+          </ng-template>
+
+        </aside>
+
+      </div>
+
+    </section>
+
+  </ng-container>
 
 </section>
