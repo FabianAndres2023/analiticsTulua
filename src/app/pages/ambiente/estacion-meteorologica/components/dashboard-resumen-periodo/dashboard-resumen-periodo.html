@@ -1,0 +1,203 @@
+<section class="period-summary">
+
+  <div class="summary-header">
+
+    <div>
+      <span>Resumen estadístico</span>
+
+      <h3>
+        Indicadores del período seleccionado
+      </h3>
+    </div>
+
+  </div>
+
+  @if (resumen) {
+
+    <div class="summary-grid">
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideThermometer></svg>
+        </div>
+
+        <div>
+          <span>Temperatura mínima</span>
+
+          <strong>
+            {{ resumen.temperatura_minima ?? '—' }}
+            <small>°C</small>
+          </strong>
+
+          <small>
+            Menor temperatura registrada
+          </small>
+        </div>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideThermometer></svg>
+        </div>
+
+        <div>
+          <span>Temperatura máxima</span>
+
+          <strong>
+            {{ resumen.temperatura_maxima ?? '—' }}
+            <small>°C</small>
+          </strong>
+
+          <small>
+            Mayor temperatura registrada
+          </small>
+        </div>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideDroplets></svg>
+        </div>
+
+        <div>
+          <span>Humedad mínima</span>
+
+          <strong>
+            {{ resumen.humedad_minima ?? '—' }}
+            <small>%</small>
+          </strong>
+
+          <small>
+            Menor humedad registrada
+          </small>
+        </div>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideDroplets></svg>
+        </div>
+
+        <div>
+          <span>Humedad máxima</span>
+
+          <strong>
+            {{ resumen.humedad_maxima ?? '—' }}
+            <small>%</small>
+          </strong>
+
+          <small>
+            Mayor humedad registrada
+          </small>
+        </div>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideCloudRain></svg>
+        </div>
+
+        <div>
+          <span>Precipitación acumulada</span>
+
+          <strong>
+            {{ resumen.precipitacion_acumulada ?? '—' }}
+            <small>mm</small>
+          </strong>
+
+          <small>
+            Lluvia total del período
+          </small>
+        </div>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideWind></svg>
+        </div>
+
+        <div>
+          <span>Velocidad máxima del viento</span>
+
+          <strong>
+            {{ resumen.viento_maximo ?? '—' }}
+            <small>m/s</small>
+          </strong>
+
+          <small>
+            Mayor velocidad registrada
+          </small>
+        </div>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideSun></svg>
+        </div>
+
+        <div>
+          <span>Índice UV máximo</span>
+
+          <strong>
+            {{ resumen.uv_maximo ?? '—' }}
+          </strong>
+
+          <small>
+            Máxima radiación UV registrada
+          </small>
+        </div>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon">
+          <svg lucideGauge></svg>
+        </div>
+
+        <div>
+          <span>Variación de presión</span>
+
+          <strong>
+            {{ resumen.variacion_presion ?? '—' }}
+            <small>hPa</small>
+          </strong>
+
+          <small>
+            Cambio durante el período
+          </small>
+        </div>
+
+      </article>
+
+    </div>
+
+  } @else {
+
+    <div class="summary-empty">
+      No hay información disponible para el período seleccionado.
+    </div>
+
+  }
+
+</section>

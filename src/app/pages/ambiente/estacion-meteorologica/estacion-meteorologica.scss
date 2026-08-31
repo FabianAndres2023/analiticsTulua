@@ -164,3 +164,58 @@
     padding: 13px 15px;
   }
 }
+
+.analysis-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.15fr)
+    minmax(0, 1fr);
+
+  gap: 20px;
+
+  align-items: stretch;
+}
+
+.analysis-main {
+  min-width: 0;
+
+  display: flex;
+}
+
+.analysis-main app-chart-rosa-vientos {
+  flex: 1;
+
+  display: block;
+}
+
+.analysis-side {
+  min-width: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr);
+
+  grid-template-rows:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 20px;
+}
+
+@media (max-width: 1100px) {
+
+  .analysis-grid {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .analysis-main {
+    display: block;
+  }
+
+  .analysis-side {
+    grid-template-rows:
+      auto;
+  }
+}

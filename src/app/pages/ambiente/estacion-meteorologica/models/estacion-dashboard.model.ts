@@ -20,6 +20,28 @@ export interface EstadoActual {
   estado: string;
 }
 
+export interface ResumenEstacion {
+  temperatura_minima: number | null;
+  temperatura_maxima: number | null;
+
+  humedad_minima: number | null;
+  humedad_maxima: number | null;
+
+  precipitacion_acumulada: number | null;
+
+  viento_maximo: number | null;
+
+  uv_maximo: number | null;
+
+  presion_minima: number | null;
+  presion_maxima: number | null;
+
+  presion_inicial: number | null;
+  presion_final: number | null;
+
+  variacion_presion: number | null;
+}
+
 export interface SerieTemporal {
   periodo: string;
 
@@ -34,9 +56,36 @@ export interface SerieTemporal {
   nubosidad: number | null;
 }
 
+export interface RosaVientoItem {
+  direccion: string;
+  direccion_grados: number;
+
+  registros: number;
+  porcentaje: number;
+
+  velocidad_promedio: number | null;
+  velocidad_maxima: number | null;
+}
+
+export interface PrecipitacionDiariaItem {
+  fecha: string;
+  precipitacion: number;
+}
+
+export interface ExtremoTemperaturaDiariaItem {
+  fecha: string;
+  temperatura_minima: number;
+  temperatura_maxima: number;
+}
+
+
 export interface EstacionDashboardResponse {
   estado_actual: EstadoActual | null;
+  resumen: ResumenEstacion | null;
   serie: SerieTemporal[];
+  rosa_vientos: RosaVientoItem[];
+  precipitacion_diaria: PrecipitacionDiariaItem[];
+  extremos_temperatura_diaria: ExtremoTemperaturaDiariaItem[];
 }
 
 export type RangoEstacion =

@@ -44,8 +44,24 @@ import {
 } from './models/estacion-dashboard.model';
 
 import {
+  DashboardResumenPeriodoComponent,
+} from './components/dashboard-resumen-periodo/dashboard-resumen-periodo';
+
+import {
   EstacionDashboardService,
 } from './services/estacion-dashboard.service';
+
+import {
+  ChartRosaVientosComponent,
+} from './components/chart-rosa-vientos/chart-rosa-vientos';
+
+import {
+  ChartPrecipitacionAcumuladaComponent,
+} from './components/chart-precipitacion-acumulada/chart-precipitacion-acumulada';
+
+import {
+  ChartExtremosTemperaturaComponent,
+} from './components/chart-extremos-temperatura/chart-extremos-temperatura';
 
 @Component({
   selector: 'app-estacion-meteorologica',
@@ -61,6 +77,10 @@ import {
     ChartVientoComponent,
     ChartIndiceUvComponent,
     ChartNubosidadComponent,
+    DashboardResumenPeriodoComponent,
+    ChartRosaVientosComponent,
+    ChartPrecipitacionAcumuladaComponent,
+    ChartExtremosTemperaturaComponent,
   ],
 
   templateUrl:
@@ -163,9 +183,11 @@ export class EstacionMeteorologica
             'sta-001',
             this.rango(),
           );
-        console.log('RANGO:', this.rango());
-        console.log('SERIE RECIBIDA:', data.serie);
-        console.log('CANTIDAD:', data.serie.length);  
+
+      console.log(
+        'RESUMEN PERIODO:',
+        data.resumen,
+      );
 
       this.dashboard.set(data);
 

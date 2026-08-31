@@ -55,6 +55,13 @@
       Resumen
     </button>
 
+    <button 
+      type="button" 
+      (click)="scrollToSection('estadisticas')" 
+    > 
+      Estadísticas 
+    </button> 
+
     <button
       type="button"
       (click)="scrollToSection('tendencias')"
@@ -62,17 +69,37 @@
       Tendencias
     </button>
 
+    <button
+      type="button"
+      (click)="scrollToSection('analisis')"
+    >
+      Análisis
+    </button>
+
   </nav>
 
-  <section
-    id="resumen"
-    class="dashboard-section"
-  >
+  <section 
+    id="resumen" 
+    class="dashboard-section" 
+  > 
 
-    <app-estacion-kpis
-      [estadoActual]="estadoActual()"
+    <app-estacion-kpis 
+      [estadoActual]="estadoActual()" 
+    > 
+    </app-estacion-kpis> 
+
+  </section>
+
+
+  <section 
+    id="estadisticas" 
+    class="dashboard-section" 
+  > 
+
+    <app-dashboard-resumen-periodo
+      [resumen]="dashboard()?.resumen ?? null"
     >
-    </app-estacion-kpis>
+    </app-dashboard-resumen-periodo>
 
   </section>
 
@@ -137,6 +164,61 @@
         [rango]="rango()"
       >
       </app-chart-nubosidad>
+
+    </div>
+
+  </section>
+
+  <section
+    id="analisis"
+    class="dashboard-section"
+  >
+
+    <header class="dashboard-section-header">
+
+      <div>
+
+        <span class="section-eyebrow">
+          Análisis meteorológico
+        </span>
+
+        <h2>
+          Comportamiento de las condiciones meteorológicas
+        </h2>
+
+        <p>
+          Análisis de la dirección del viento, la precipitación acumulada
+          y los extremos de temperatura durante el rango seleccionado.
+        </p>
+
+      </div>
+
+    </header>
+
+    <div class="analysis-grid">
+
+      <div class="analysis-main">
+
+        <app-chart-rosa-vientos
+          [datos]="dashboard()?.rosa_vientos ?? []"
+        >
+        </app-chart-rosa-vientos>
+
+      </div>
+
+      <div class="analysis-side">
+
+        <app-chart-precipitacion-acumulada
+          [datos]="dashboard()?.precipitacion_diaria ?? []"
+        >
+        </app-chart-precipitacion-acumulada>
+
+        <app-chart-extremos-temperatura
+          [datos]="dashboard()?.extremos_temperatura_diaria ?? []"
+        >
+        </app-chart-extremos-temperatura>
+
+      </div>
 
     </div>
 

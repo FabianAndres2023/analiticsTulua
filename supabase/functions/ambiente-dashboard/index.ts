@@ -1,6 +1,10 @@
 import {
   getEstadoActual,
+  getResumenEstacion,
   getSerieTemporal,
+  getRosaVientos,
+  getPrecipitacionDiaria,
+  getExtremosTemperaturaDiaria,
 } from "./repository.ts";
 
 import type {
@@ -105,10 +109,20 @@ Deno.serve(async (req) => {
 
     const [
       estadoActual,
+      resumen,
       serie,
+      rosaVientos,
+      precipitacionDiaria,
+      extremosTemperaturaDiaria,
     ] = await Promise.all([
       getEstadoActual(
         deviceId,
+      ),
+
+      getResumenEstacion(
+        deviceId,
+        desde.toISOString(),
+        hasta.toISOString(),
       ),
 
       getSerieTemporal(
@@ -117,6 +131,24 @@ Deno.serve(async (req) => {
         hasta.toISOString(),
         intervaloMinutos,
       ),
+      getRosaVientos(
+        deviceId,
+        desde.toISOString(),
+        hasta.toISOString(),
+      ),
+
+      getPrecipitacionDiaria(
+        deviceId,
+        desde.toISOString(),
+        hasta.toISOString(),
+      ),
+
+      getExtremosTemperaturaDiaria(
+        deviceId,
+        desde.toISOString(),
+        hasta.toISOString(),
+      ),      
+    
     ]);
 
 
@@ -126,8 +158,19 @@ Deno.serve(async (req) => {
         estado_actual:
           estadoActual,
 
+        resumen:
+          resumen,
+
         serie:
           serie,
+
+        rosa_vientos:
+          rosaVientos,
+          
+        precipitacion_diaria:
+          precipitacionDiaria,
+
+        extremos_temperatura_diaria: extremosTemperaturaDiaria,
       };
 
 
