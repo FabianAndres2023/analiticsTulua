@@ -1,6 +1,12 @@
 :host {
   display: block;
-  font-family: 'Segoe UI', Arial, sans-serif;
+
+  width: 100%;
+
+  font-family:
+    'Segoe UI',
+    Arial,
+    sans-serif;
 }
 
 
@@ -20,6 +26,7 @@ $text: #667085;
 
 .dashboard-content {
   width: 100%;
+  min-width: 0;
 }
 
 
@@ -28,11 +35,19 @@ $text: #667085;
 ========================================================= */
 
 .welcome-card {
-  padding: 34px 40px;
+  width: 100%;
 
-  background: #ffffff;
+  padding:
+    34px
+    40px;
 
-  border-radius: 26px;
+  box-sizing: border-box;
+
+  background:
+    #ffffff;
+
+  border-radius:
+    26px;
 
   box-shadow:
     0 18px 45px
@@ -58,6 +73,12 @@ $text: #667085;
 
     font-weight:
       750;
+
+    line-height:
+      1.15;
+
+    letter-spacing:
+      -0.025em;
   }
 
 
@@ -69,7 +90,22 @@ $text: #667085;
 
     font-size:
       15px;
+
+    line-height:
+      1.5;
   }
+}
+
+
+.welcome-prefix,
+.welcome-name {
+  display: inline;
+}
+
+
+.welcome-prefix {
+  margin-right:
+    6px;
 }
 
 
@@ -78,11 +114,17 @@ $text: #667085;
 ========================================================= */
 
 .section-title {
-  margin-top: 28px;
+  width: 100%;
+
+  margin-top:
+    28px;
 
   padding:
     22px
     32px;
+
+  box-sizing:
+    border-box;
 
   background:
     #ffffff;
@@ -111,6 +153,12 @@ $text: #667085;
 
     font-weight:
       750;
+
+    line-height:
+      1.2;
+
+    letter-spacing:
+      -0.02em;
   }
 
 
@@ -125,6 +173,9 @@ $text: #667085;
 
     font-size:
       14px;
+
+    line-height:
+      1.45;
   }
 }
 
@@ -134,12 +185,17 @@ $text: #667085;
 ========================================================= */
 
 .indicator-error {
+  width: 100%;
+
   margin-top:
     18px;
 
   padding:
     14px
     18px;
+
+  box-sizing:
+    border-box;
 
   display:
     flex;
@@ -173,6 +229,9 @@ $text: #667085;
   span {
     font-size:
       13px;
+
+    line-height:
+      1.45;
   }
 }
 
@@ -182,6 +241,8 @@ $text: #667085;
 ========================================================= */
 
 .indicators-grid {
+  width: 100%;
+
   margin-top:
     28px;
 
@@ -207,6 +268,9 @@ $text: #667085;
 ========================================================= */
 
 .indicator-card {
+  width: 100%;
+  min-width: 0;
+
   position:
     relative;
 
@@ -215,6 +279,9 @@ $text: #667085;
 
   padding:
     24px;
+
+  box-sizing:
+    border-box;
 
   display:
     flex;
@@ -282,9 +349,17 @@ $text: #667085;
         $primary-light
       );
   }
+}
 
 
-  &:hover {
+/*
+ * El efecto hover solamente se aplica
+ * en dispositivos que realmente tienen puntero.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+
+  .indicator-card:hover {
     transform:
       translateY(
         -5px
@@ -302,6 +377,7 @@ $text: #667085;
         0.14
       );
   }
+
 }
 
 
@@ -310,6 +386,8 @@ $text: #667085;
 ========================================================= */
 
 .indicator-header {
+  min-width: 0;
+
   display:
     flex;
 
@@ -365,6 +443,8 @@ $text: #667085;
 
 
 .indicator-heading {
+  min-width: 0;
+
 
   > span {
     display:
@@ -384,6 +464,9 @@ $text: #667085;
 
     letter-spacing:
       0.08em;
+
+    line-height:
+      1.3;
 
     text-transform:
       uppercase;
@@ -405,6 +488,9 @@ $text: #667085;
 
     line-height:
       1.35;
+
+    overflow-wrap:
+      anywhere;
   }
 }
 
@@ -416,6 +502,9 @@ $text: #667085;
 .indicator-value {
   min-height:
     104px;
+
+  min-width:
+    0;
 
   display:
     flex;
@@ -461,6 +550,9 @@ $text: #667085;
 
   font-weight:
     700;
+
+  white-space:
+    nowrap;
 }
 
 
@@ -542,7 +634,7 @@ $text: #667085;
 
 
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE - PORTÁTILES / TABLETS GRANDES
 ========================================================= */
 
 @media (
@@ -564,27 +656,350 @@ $text: #667085;
 }
 
 
+/* =========================================================
+   RESPONSIVE - TABLET / MÓVIL
+========================================================= */
+
 @media (
   max-width:
-    700px
+    760px
 ) {
+
+  /*
+   * BIENVENIDA
+   */
 
   .welcome-card {
     padding:
+      24px
       26px;
+
+    border-radius:
+      22px;
+
+
+    h2 {
+      margin-bottom:
+        10px;
+
+      font-size:
+        27px;
+
+      line-height:
+        1.08;
+    }
+
+
+    p {
+      font-size:
+        14px;
+
+      line-height:
+        1.45;
+    }
+  }
+
+
+  /*
+   * En móvil dejamos el saludo y el nombre
+   * como dos líneas intencionales.
+   */
+
+  .welcome-prefix,
+  .welcome-name {
+    display:
+      block;
+  }
+
+
+  .welcome-prefix {
+    margin-right:
+      0;
+  }
+
+
+  .welcome-name {
+    margin-top:
+      1px;
+  }
+
+
+  /*
+   * TÍTULO
+   */
+
+  .section-title {
+    margin-top:
+      18px;
+
+    padding:
+      19px
+      24px;
+
+    border-radius:
+      20px;
 
 
     h2 {
       font-size:
-        27px;
+        24px;
+    }
+
+
+    p {
+      margin-top:
+        4px;
+
+      font-size:
+        13px;
+    }
+  }
+
+
+  /*
+   * ERROR
+   */
+
+  .indicator-error {
+    margin-top:
+      16px;
+
+    padding:
+      13px
+      15px;
+
+    border-radius:
+      13px;
+  }
+
+
+  /*
+   * GRID
+   */
+
+  .indicators-grid {
+    margin-top:
+      18px;
+
+    grid-template-columns:
+      1fr;
+
+    gap:
+      16px;
+  }
+
+
+  /*
+   * TARJETA
+   */
+
+  .indicator-card {
+    min-height:
+      190px;
+
+    padding:
+      20px;
+
+    border-radius:
+      21px;
+
+    box-shadow:
+      0 12px 30px
+      rgba(
+        15,
+        76,
+        129,
+        0.075
+      );
+
+
+    &::before {
+      height:
+        4px;
+    }
+  }
+
+
+  /*
+   * ENCABEZADO DEL INDICADOR
+   */
+
+  .indicator-header {
+    gap:
+      11px;
+  }
+
+
+  .indicator-icon {
+    width:
+      40px;
+
+    height:
+      40px;
+
+    border-radius:
+      12px;
+
+
+    svg {
+      width:
+        21px;
+
+      height:
+        21px;
+    }
+  }
+
+
+  .indicator-heading {
+
+    > span {
+      font-size:
+        9.5px;
+    }
+
+
+    h3 {
+      font-size:
+        15px;
+    }
+  }
+
+
+  /*
+   * VALOR
+   */
+
+  .indicator-value {
+    min-height:
+      82px;
+
+
+    strong {
+      font-size:
+        39px;
+
+      letter-spacing:
+        -1px;
+    }
+  }
+
+
+  .indicator-unit {
+    margin-top:
+      11px;
+
+    font-size:
+      14px;
+  }
+
+
+  .records-unit {
+    font-size:
+      12px;
+  }
+
+
+  /*
+   * FOOTER
+   */
+
+  .indicator-footer {
+    padding-top:
+      12px;
+
+
+    span {
+      font-size:
+        11.5px;
+    }
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MÓVIL
+========================================================= */
+
+@media (
+  max-width:
+    520px
+) {
+
+  .welcome-card {
+    padding:
+      21px
+      22px;
+
+
+    h2 {
+      font-size:
+        25px;
+    }
+
+
+    p {
+      font-size:
+        13px;
     }
   }
 
 
   .section-title {
     padding:
-      20px
-      24px;
+      17px
+      21px;
+
+
+    h2 {
+      font-size:
+        22px;
+    }
+
+
+    p {
+      font-size:
+        12.5px;
+    }
+  }
+
+
+  .indicator-card {
+    min-height:
+      184px;
+
+    padding:
+      18px;
+  }
+
+
+  .indicator-value {
+    min-height:
+      78px;
+
+
+    strong {
+      font-size:
+        38px;
+    }
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MÓVIL PEQUEÑO
+========================================================= */
+
+@media (
+  max-width:
+    390px
+) {
+
+  .welcome-card {
+    padding:
+      20px;
 
 
     h2 {
@@ -594,26 +1009,39 @@ $text: #667085;
   }
 
 
-  .indicators-grid {
-    grid-template-columns:
-      1fr;
+  .section-title {
+    padding:
+      16px
+      19px;
+
+
+    h2 {
+      font-size:
+        21px;
+    }
   }
 
 
   .indicator-card {
-    min-height:
-      205px;
+    padding:
+      17px;
+  }
+
+
+  .indicator-heading {
+
+    h3 {
+      font-size:
+        14px;
+    }
   }
 
 
   .indicator-value {
-    min-height:
-      90px;
-
 
     strong {
       font-size:
-        40px;
+        36px;
     }
   }
 

@@ -28,6 +28,7 @@ import {
  * ========================================================= */
 
 interface ResumenInicio {
+
   temperatura_promedio_30d:
     number |
     null;
@@ -45,6 +46,7 @@ interface ResumenInicio {
 
   anio_actual:
     number;
+
 }
 
 
@@ -53,17 +55,28 @@ interface ResumenInicio {
  * ========================================================= */
 
 @Component({
-  selector: 'app-dashboard',
+
+  selector:
+    'app-dashboard',
 
   imports: [
+
     LucideCloudSun,
+
     LucideDroplets,
+
     LucideCar,
+
     LucideTriangleAlert
+
   ],
 
-  templateUrl: './dashboard.html',
-  styleUrl: './dashboard.scss'
+  templateUrl:
+    './dashboard.html',
+
+  styleUrl:
+    './dashboard.scss'
+
 })
 export class Dashboard
   implements OnInit, OnDestroy {
@@ -77,6 +90,7 @@ export class Dashboard
     inject(
       AuthService
     );
+
 
   private readonly supabaseService =
     inject(
@@ -92,9 +106,11 @@ export class Dashboard
     this.authService
       .currentProfile;
 
+
   readonly currentUser =
     this.authService
       .currentUser;
+
 
   readonly loadingUser =
     this.authService
@@ -108,11 +124,13 @@ export class Dashboard
         const profile =
           this.profile();
 
+
         const user =
           this.currentUser();
 
 
         return (
+
           profile
             ?.full_name
             ?.trim() ||
@@ -138,6 +156,7 @@ export class Dashboard
             )[0] ||
 
           'Usuario'
+
         );
 
       }
@@ -190,7 +209,9 @@ export class Dashboard
           value === null ||
           value === undefined
         ) {
+
           return '--';
+
         }
 
 
@@ -219,7 +240,9 @@ export class Dashboard
           value === null ||
           value === undefined
         ) {
+
           return '--';
+
         }
 
 
@@ -248,7 +271,9 @@ export class Dashboard
           value === null ||
           value === undefined
         ) {
+
           return '--';
+
         }
 
 
@@ -277,7 +302,9 @@ export class Dashboard
           value === null ||
           value === undefined
         ) {
+
           return '--';
+
         }
 
 
@@ -297,12 +324,14 @@ export class Dashboard
       () => {
 
         return (
+
           this
             .resumen()
             ?.anio_actual ??
 
           new Date()
             .getFullYear()
+
         );
 
       }
@@ -397,13 +426,6 @@ export class Dashboard
   ):
     Promise<void> {
 
-    /*
-     * Solo mostramos el estado de carga grande
-     * durante la primera consulta.
-     *
-     * Las actualizaciones posteriores son silenciosas
-     * para evitar que las tarjetas parpadeen cada minuto.
-     */
 
     if (
       !actualizacionSilenciosa
@@ -466,14 +488,6 @@ export class Dashboard
       }
 
 
-      /*
-       * Solo reemplazamos los valores cuando la consulta
-       * fue correcta.
-       *
-       * Si una actualización automática falla,
-       * conservamos los últimos datos válidos.
-       */
-
       this
         .resumen
         .set(
@@ -497,14 +511,6 @@ export class Dashboard
         error
       );
 
-
-      /*
-       * En la primera carga mostramos el error.
-       *
-       * Durante una actualización silenciosa mantenemos
-       * los datos anteriores y evitamos molestar al usuario
-       * por una falla temporal.
-       */
 
       if (
         !actualizacionSilenciosa
