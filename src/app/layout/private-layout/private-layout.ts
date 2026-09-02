@@ -2,7 +2,8 @@ import {
   Component,
   OnInit,
   computed,
-  inject
+  inject,
+  signal
 } from '@angular/core';
 
 import {
@@ -16,137 +17,333 @@ import {
   LucideHouse,
   LucideLeaf,
   LucideLogOut,
+  LucideMenu,
   LucideSettings,
-  LucideTrees
+  LucideTrees,
+  LucideX
 } from '@lucide/angular';
 
-import { AuthService } from '../../core/services/auth.service';
+import {
+  AuthService
+} from '../../core/services/auth.service';
+
 
 @Component({
-  selector: 'app-private-layout',
+
+  selector:
+    'app-private-layout',
+
+  standalone:
+    true,
+
   imports: [
+
     RouterOutlet,
+
     RouterLink,
+
     RouterLinkActive,
+
     LucideHouse,
+
     LucideLeaf,
+
     LucideCar,
+
     LucideTrees,
+
     LucideSettings,
-    LucideLogOut
+
+    LucideLogOut,
+
+    LucideMenu,
+
+    LucideX
+
   ],
-  templateUrl: './private-layout.html',
-  styleUrl: './private-layout.scss'
+
+  templateUrl:
+    './private-layout.html',
+
+  styleUrl:
+    './private-layout.scss'
+
 })
 export class PrivateLayout implements OnInit {
-  readonly authService = inject(AuthService);
+
+
+  /* =======================================================
+   * SERVICIOS
+   * ======================================================= */
+
+  readonly authService =
+    inject(
+      AuthService
+    );
+
+
+  /* =======================================================
+   * MENÚ MÓVIL
+   * ======================================================= */
+
+  readonly mobileMenuOpen =
+    signal(
+      false
+    );
+
+
+  /* =======================================================
+   * USUARIO
+   * ======================================================= */
 
   readonly profile =
     this.authService.currentProfile;
 
+
   readonly currentUser =
     this.authService.currentUser;
+
 
   readonly loadingUser =
     this.authService.loadingProfile;
 
+
   readonly loadingPermissions =
     this.authService.loadingPermissions;
 
-  readonly puedeVerDashboard = computed(() =>
-    this.authService.hasPermission(
-      'dashboard.ver'
-    )
-  );
 
-  readonly puedeVerAmbiente = computed(() =>
-    this.authService.hasPermission(
-      'ambiente.ver'
-    )
-  );
+  /* =======================================================
+   * PERMISOS
+   * ======================================================= */
 
-  readonly puedeVerMovilidad = computed(() =>
-    this.authService.hasPermission(
-      'movilidad.ver'
-    )
-  );
-
-  readonly puedeVerTurismo = computed(() =>
-    this.authService.hasPermission(
-      'turismo.ver'
-    )
-  );
-
-  readonly puedeVerConfiguracion = computed(() =>
-    this.authService.hasAnyPermission([
-      'usuarios.ver',
-      'roles.ver',
-      'dependencias.ver',
-      'carga_masiva.ver'
-    ])
-  );
-
-  readonly userName = computed(() => {
-    const profile = this.profile();
-    const user = this.currentUser();
-
-    return (
-      profile?.full_name?.trim() ||
-      user?.user_metadata?.['full_name']?.trim() ||
-      user?.user_metadata?.['name']?.trim() ||
-      user?.email?.split('@')[0] ||
-      'Usuario'
+  readonly puedeVerDashboard =
+    computed(
+      () =>
+        this.authService.hasPermission(
+          'dashboard.ver'
+        )
     );
-  });
 
-  readonly userEmail = computed(() => {
-    return (
-      this.profile()?.email ||
-      this.currentUser()?.email ||
-      ''
+
+  readonly puedeVerAmbiente =
+    computed(
+      () =>
+        this.authService.hasPermission(
+          'ambiente.ver'
+        )
     );
-  });
 
-  readonly initials = computed(() => {
-    return this.createInitials(
-      this.userName()
+
+  readonly puedeVerMovilidad =
+    computed(
+      () =>
+        this.authService.hasPermission(
+          'movilidad.ver'
+        )
     );
-  });
 
-  async ngOnInit(): Promise<void> {
+
+  readonly puedeVerTurismo =
+    computed(
+      () =>
+        this.authService.hasPermission(
+          'turismo.ver'
+        )
+    );
+
+
+  readonly puedeVerConfiguracion =
+    computed(
+      () =>
+        this.authService.hasAnyPermission(
+          [
+            'usuarios.ver',
+            'roles.ver',
+            'dependencias.ver',
+            'carga_masiva.ver'
+          ]
+        )
+    );
+
+
+  /* =======================================================
+   * DATOS DEL USUARIO
+   * ======================================================= */
+
+  readonly userName =
+    computed(
+      () => {
+
+        const profile =
+          this.profile();
+
+
+        const user =
+          this.currentUser();
+
+
+        return (
+
+          profile?.full_name?.trim() ||
+
+          user?.user_metadata?.['full_name']?.trim() ||
+
+          user?.user_metadata?.['name']?.trim() ||
+
+          user?.email?.split('@')[0] ||
+
+          'Usuario'
+
+        );
+      }
+    );
+
+
+  readonly userEmail =
+    computed(
+      () => {
+
+        return (
+
+          this.profile()?.email ||
+
+          this.currentUser()?.email ||
+
+          ''
+
+        );
+      }
+    );
+
+
+  readonly initials =
+    computed(
+      () => {
+
+        return this.createInitials(
+          this.userName()
+        );
+      }
+    );
+
+
+  /* =======================================================
+   * INICIALIZACIÓN
+   * ======================================================= */
+
+  async ngOnInit():
+    Promise<void> {
+
     /*
      * Carga sesión, perfil y permisos.
-     * Esto también funciona cuando el navegador
-     * se recarga directamente sobre una ruta privada.
+     *
+     * También permite que la aplicación funcione
+     * correctamente cuando el navegador se recarga
+     * directamente sobre una ruta privada.
      */
-    await this.authService.initializeSession();
+
+    await this.authService
+      .initializeSession();
   }
 
-  private createInitials(
-    name: string
-  ): string {
-    const words = name
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
 
-    if (words.length === 0) {
+  /* =======================================================
+   * MENÚ MÓVIL
+   * ======================================================= */
+
+  openMobileMenu():
+    void {
+
+    this.mobileMenuOpen.set(
+      true
+    );
+  }
+
+
+  closeMobileMenu():
+    void {
+
+    this.mobileMenuOpen.set(
+      false
+    );
+  }
+
+
+  toggleMobileMenu():
+    void {
+
+    this.mobileMenuOpen.update(
+      current =>
+        !current
+    );
+  }
+
+
+  /* =======================================================
+   * INICIALES
+   * ======================================================= */
+
+  private createInitials(
+    name:
+      string
+  ): string {
+
+    const words =
+      name
+        .trim()
+        .split(/\s+/)
+        .filter(
+          Boolean
+        );
+
+
+    if (
+      words.length ===
+      0
+    ) {
+
       return 'US';
     }
 
-    if (words.length === 1) {
+
+    if (
+      words.length ===
+      1
+    ) {
+
       return words[0]
-        .substring(0, 2)
+        .substring(
+          0,
+          2
+        )
         .toUpperCase();
     }
 
+
     return (
+
       words[0][0] +
-      words[words.length - 1][0]
+
+      words[
+        words.length - 1
+      ][0]
+
     ).toUpperCase();
   }
 
-  async logout(): Promise<void> {
-    await this.authService.logout();
+
+  /* =======================================================
+   * CERRAR SESIÓN
+   * ======================================================= */
+
+  async logout():
+    Promise<void> {
+
+    this.closeMobileMenu();
+
+
+    await this.authService
+      .logout();
   }
+
 }

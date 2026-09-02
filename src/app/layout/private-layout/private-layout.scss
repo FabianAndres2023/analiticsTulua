@@ -1,9 +1,12 @@
 :host {
   display: block;
+
   width: 100%;
   height: 100vh;
+
   overflow: hidden;
 }
+
 
 /* =================================
    LAYOUT GENERAL
@@ -25,6 +28,7 @@
     sans-serif;
 }
 
+
 /* =================================
    SIDEBAR
 ================================= */
@@ -33,24 +37,21 @@
   width: 300px;
   height: 100vh;
 
-  padding: 22px 18px;
+  padding:
+    22px
+    18px;
 
   flex-shrink: 0;
 
-  /*
-   * Si en el futuro aparecen más módulos
-   * de los que caben verticalmente,
-   * solamente el propio sidebar podrá
-   * desplazarse internamente.
-   */
   overflow-x: hidden;
   overflow-y: auto;
 
-  background: linear-gradient(
-    180deg,
-    #003b66 0%,
-    #005b8f 100%
-  );
+  background:
+    linear-gradient(
+      180deg,
+      #003b66 0%,
+      #005b8f 100%
+    );
 
   color: white;
 
@@ -58,24 +59,22 @@
     4px 0 22px
     rgba(8, 52, 92, 0.16);
 
-  /*
-   * Firefox
-   */
   scrollbar-width: thin;
+
   scrollbar-color:
     rgba(255, 255, 255, 0.3)
     transparent;
 
-  /*
-   * Chrome / Edge
-   */
+
   &::-webkit-scrollbar {
     width: 6px;
   }
 
+
   &::-webkit-scrollbar-track {
     background: transparent;
   }
+
 
   &::-webkit-scrollbar-thumb {
     background:
@@ -84,11 +83,25 @@
     border-radius: 999px;
   }
 
+
   &::-webkit-scrollbar-thumb:hover {
     background:
       rgba(255, 255, 255, 0.42);
   }
 }
+
+
+/* =================================
+   ELEMENTOS MÓVILES
+================================= */
+
+.sidebar-mobile-header,
+.sidebar-mobile-user,
+.mobile-header,
+.mobile-sidebar-backdrop {
+  display: none;
+}
+
 
 /* =================================
    LOGO
@@ -109,13 +122,17 @@
     0 15px 35px
     rgba(0, 0, 0, 0.12);
 
+
   img {
     width: 100%;
+    height: auto;
+
     display: block;
 
     object-fit: contain;
   }
 }
+
 
 /* =================================
    MENÚ
@@ -127,6 +144,7 @@
 
   gap: 12px;
 
+
   a {
     display: flex;
     align-items: center;
@@ -135,7 +153,9 @@
 
     min-height: 54px;
 
-    padding: 14px 18px;
+    padding:
+      14px
+      18px;
 
     color: white;
 
@@ -154,6 +174,7 @@
       border-color 0.2s ease,
       transform 0.2s ease;
 
+
     svg {
       width: 23px;
       height: 23px;
@@ -163,10 +184,12 @@
       stroke-width: 2.2;
     }
 
+
     span {
       flex: 1;
     }
   }
+
 
   a:hover {
     background:
@@ -175,6 +198,7 @@
     transform:
       translateX(3px);
   }
+
 
   a.active {
     background:
@@ -187,6 +211,7 @@
       translateX(3px);
   }
 }
+
 
 /* =================================
    CONTENIDO PRINCIPAL
@@ -201,12 +226,9 @@
   display: flex;
   flex-direction: column;
 
-  /*
-   * Impide que el contenido haga crecer
-   * toda la página y desplace el sidebar.
-   */
   overflow: hidden;
 }
+
 
 /* =================================
    TOPBAR
@@ -234,11 +256,12 @@
 
   color: white;
 
-  background: linear-gradient(
-    90deg,
-    #064775 0%,
-    #00588b 100%
-  );
+  background:
+    linear-gradient(
+      90deg,
+      #064775 0%,
+      #00588b 100%
+    );
 
   border-radius:
     0
@@ -251,7 +274,14 @@
     rgba(0, 73, 122, 0.2);
 }
 
+
+/* =================================
+   TÍTULO
+================================= */
+
 .topbar-title {
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
 
@@ -259,8 +289,11 @@
 
   gap: 9px;
 
+
   h1 {
     margin: 0;
+
+    color: white;
 
     font-size: 38px;
     font-weight: 750;
@@ -271,8 +304,11 @@
       -0.5px;
   }
 
+
   p {
     margin: 0;
+
+    color: white;
 
     font-size: 18px;
     font-weight: 400;
@@ -282,6 +318,7 @@
     opacity: 0.9;
   }
 }
+
 
 /* =================================
    USUARIO
@@ -294,12 +331,14 @@
   gap: 20px;
 }
 
+
 .user-box {
   display: flex;
   align-items: center;
 
   gap: 15px;
 }
+
 
 .avatar {
   width: 54px;
@@ -326,11 +365,15 @@
     rgba(0, 0, 0, 0.12);
 }
 
+
 .user-information {
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
 
   gap: 4px;
+
 
   strong {
     max-width: 240px;
@@ -343,22 +386,32 @@
     font-weight: 750;
 
     text-overflow: ellipsis;
+
     white-space: nowrap;
   }
+
 
   span {
     max-width: 240px;
 
     overflow: hidden;
 
+    color: white;
+
     font-size: 13px;
 
     opacity: 0.78;
 
     text-overflow: ellipsis;
+
     white-space: nowrap;
   }
 }
+
+
+/* =================================
+   CERRAR SESIÓN
+================================= */
 
 .logout-button {
   width: 44px;
@@ -384,12 +437,14 @@
     background-color 0.2s ease,
     transform 0.2s ease;
 
+
   svg {
     width: 21px;
     height: 21px;
 
     stroke-width: 2.2;
   }
+
 
   &:hover {
     background:
@@ -400,17 +455,12 @@
   }
 }
 
+
 /* =================================
    CONTENIDO DE LAS PÁGINAS
 ================================= */
 
 .page-content {
-  /*
-   * MUY IMPORTANTE:
-   *
-   * Permite que esta zona utilice solamente
-   * el espacio restante debajo del topbar.
-   */
   min-width: 0;
   min-height: 0;
 
@@ -421,34 +471,27 @@
     36px
     36px;
 
-  /*
-   * Aquí ocurre ahora el scroll principal
-   * de todos los módulos privados.
-   */
   overflow-x: hidden;
   overflow-y: auto;
 
   scroll-behavior: smooth;
 
-  /*
-   * Firefox
-   */
   scrollbar-width: thin;
 
   scrollbar-color:
     #9bb3c8
     transparent;
 
-  /*
-   * Chrome / Edge
-   */
+
   &::-webkit-scrollbar {
     width: 9px;
   }
 
+
   &::-webkit-scrollbar-track {
     background: transparent;
   }
+
 
   &::-webkit-scrollbar-thumb {
     background: #b9cad9;
@@ -459,10 +502,12 @@
     border-radius: 999px;
   }
 
+
   &::-webkit-scrollbar-thumb:hover {
     background: #8faabe;
   }
 }
+
 
 /* =================================
    RESPONSIVE - TABLET
@@ -478,11 +523,13 @@
       12px;
   }
 
+
   .brand-card {
     padding: 8px;
 
     border-radius: 16px;
   }
+
 
   .menu {
 
@@ -491,17 +538,25 @@
 
       padding: 15px;
 
+
       span {
         display: none;
       }
     }
   }
 
+
   .topbar {
-    padding:
+    margin:
       24px
-      30px;
+      24px
+      26px;
+
+    padding:
+      22px
+      28px;
   }
+
 
   .topbar-title {
 
@@ -509,15 +564,27 @@
       font-size: 31px;
     }
 
+
     p {
       font-size: 16px;
     }
   }
 
+
   .user-information {
     display: none;
   }
+
+
+  .page-content {
+    padding:
+      0
+      24px
+      28px;
+  }
+
 }
+
 
 /* =================================
    RESPONSIVE - MÓVIL
@@ -525,128 +592,665 @@
 
 @media (max-width: 760px) {
 
-  /*
-   * En móvil regresamos al desplazamiento
-   * convencional de toda la página.
-   *
-   * Evita problemas con teclados virtuales,
-   * barras del navegador y pantallas pequeñas.
-   */
-
   :host {
+    width: 100%;
+
     height: auto;
+    min-height: 100dvh;
 
     overflow: visible;
   }
+
 
   .private-layout {
-    min-height: 100vh;
+    width: 100%;
+
+    min-height: 100dvh;
     height: auto;
 
-    flex-direction: column;
+    display: block;
 
     overflow: visible;
   }
+
+
+  /* ===============================
+     SIDEBAR MÓVIL
+  =============================== */
 
   .sidebar {
-    width: 100%;
-    height: auto;
-    min-height: auto;
-
-    overflow: visible;
-  }
-
-  .brand-card {
-    max-width: 220px;
-
-    margin-right: auto;
-    margin-left: auto;
-  }
-
-  .menu {
-    display: grid;
-
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
+    width:
+      min(
+        320px,
+        86vw
       );
 
+    height: 100dvh;
+
+    padding:
+      18px
+      18px
+      22px;
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    z-index: 1001;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    transform:
+      translateX(-105%);
+
+    transition:
+      transform 0.28s ease;
+
+    box-shadow:
+      12px 0 35px
+      rgba(0, 30, 55, 0.24);
+  }
+
+
+  .sidebar.mobile-open {
+    transform:
+      translateX(0);
+  }
+
+
+  /* ===============================
+     FONDO DEL MENÚ
+  =============================== */
+
+  .mobile-sidebar-backdrop {
+    width: 100%;
+    height: 100%;
+
+    padding: 0;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: block;
+
+    background:
+      rgba(4, 21, 35, 0.48);
+
+    border: 0;
+
+    backdrop-filter:
+      blur(2px);
+
+    cursor: pointer;
+  }
+
+
+  /* ===============================
+     ENCABEZADO DEL SIDEBAR
+  =============================== */
+
+  .sidebar-mobile-header {
+    margin-bottom: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    color:
+      rgba(255, 255, 255, 0.88);
+
+    font-size: 12px;
+    font-weight: 750;
+
+    text-transform: uppercase;
+
+    letter-spacing:
+      0.08em;
+  }
+
+
+  .sidebar-close-button {
+    width: 40px;
+    height: 40px;
+
+    display: grid;
+    place-items: center;
+
+    color: white;
+
+    background:
+      rgba(255, 255, 255, 0.1);
+
+    border:
+      1px solid
+      rgba(255, 255, 255, 0.16);
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+
+    svg {
+      width: 21px;
+      height: 21px;
+    }
+  }
+
+
+  /* ===============================
+     LOGO DEL MENÚ MÓVIL
+  =============================== */
+
+  .brand-card {
+    width: 100%;
+
+    max-width: none;
+
+    margin:
+      0
+      0
+      22px;
+
+    padding: 12px;
+
+    background: white;
+
+    border-radius: 18px;
+
+
+    img {
+      width: 100%;
+      height: auto;
+
+      max-height: 125px;
+
+      object-fit: contain;
+    }
+  }
+
+
+  /* ===============================
+     NAVEGACIÓN MÓVIL
+  =============================== */
+
+  .menu {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+
     a {
+      width: 100%;
+
+      min-height: 50px;
+
       justify-content:
         flex-start;
+
+      gap: 13px;
+
+      padding:
+        12px
+        15px;
+
+      font-size: 15px;
+
+      border-radius: 14px;
+
+      transform: none;
+
 
       span {
         display: inline;
       }
+
+
+      svg {
+        width: 21px;
+        height: 21px;
+      }
+    }
+
+
+    a:hover,
+    a.active {
+      transform: none;
     }
   }
 
+
+  /* ===============================
+     USUARIO EN MENÚ MÓVIL
+  =============================== */
+
+  .sidebar-mobile-user {
+    margin-top: auto;
+
+    padding-top: 22px;
+
+    display: block;
+  }
+
+
+  .sidebar-mobile-user-profile {
+    padding:
+      13px
+      12px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    background:
+      rgba(255, 255, 255, 0.09);
+
+    border:
+      1px solid
+      rgba(255, 255, 255, 0.12);
+
+    border-radius: 16px;
+
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+
+      font-size: 14px;
+    }
+
+
+    .user-information {
+      min-width: 0;
+
+      display: flex;
+
+
+      strong {
+        max-width: 190px;
+
+        color: white;
+
+        font-size: 14px;
+      }
+
+
+      span {
+        max-width: 190px;
+
+        color: white;
+
+        font-size: 11px;
+      }
+    }
+  }
+
+
+  .sidebar-mobile-logout {
+    width: 100%;
+
+    min-height: 46px;
+
+    margin-top: 10px;
+
+    padding:
+      10px
+      14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    color: white;
+
+    background:
+      rgba(255, 255, 255, 0.08);
+
+    border:
+      1px solid
+      rgba(255, 255, 255, 0.13);
+
+    border-radius: 14px;
+
+    font: inherit;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+
+  /* ===============================
+     CONTENIDO PRINCIPAL
+  =============================== */
+
   .main-content {
+    width: 100%;
+
+    min-width: 0;
+    min-height: 100dvh;
     height: auto;
-    min-height: 0;
+
+    display: block;
 
     overflow: visible;
   }
+
+
+  /* ===============================
+     BARRA SUPERIOR MÓVIL
+  =============================== */
+
+  .mobile-header {
+    width: 100%;
+    height: 72px;
+
+    padding:
+      10px
+      16px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 900;
+
+    display: grid;
+
+    grid-template-columns:
+      44px
+      minmax(0, 1fr)
+      44px;
+
+    align-items: center;
+
+    gap: 10px;
+
+    background:
+      rgba(255, 255, 255, 0.97);
+
+    border-bottom:
+      1px solid #dce6ee;
+
+    box-shadow:
+      0 5px 18px
+      rgba(0, 55, 90, 0.08);
+
+    backdrop-filter:
+      blur(12px);
+  }
+
+
+  .mobile-menu-button {
+    width: 42px;
+    height: 42px;
+
+    display: grid;
+    place-items: center;
+
+    color: #00588b;
+
+    background: #eef6fb;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+
+    svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+
+  .mobile-brand {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+    img {
+      width: auto;
+      height: 50px;
+
+      max-width: 190px;
+
+      display: block;
+
+      object-fit: contain;
+    }
+  }
+
+
+  .mobile-avatar {
+    width: 42px;
+    height: 42px;
+
+    display: grid;
+    place-items: center;
+
+    color: #003b66;
+
+    background: #ffd000;
+
+    border-radius: 50%;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    text-transform: uppercase;
+  }
+
+
+  /* ===============================
+     TOPBAR MÓVIL
+  =============================== */
 
   .topbar {
     min-height: auto;
 
-    margin: 18px;
+    margin:
+      14px
+      14px
+      18px;
 
-    padding: 24px;
+    padding:
+      20px;
 
-    flex-direction: column;
+    display: block;
 
-    align-items: flex-start;
+    border-radius: 20px;
+
+    box-shadow:
+      0 10px 25px
+      rgba(0, 73, 122, 0.14);
   }
 
+
   .topbar-title {
+    gap: 7px;
+
 
     h1 {
-      font-size: 29px;
+      font-size: 24px;
+
+      line-height: 1.15;
+
+      letter-spacing:
+        -0.3px;
+    }
+
+
+    p {
+      font-size: 13px;
+
+      line-height: 1.45;
     }
   }
 
-  .user-information {
-    display: flex;
+
+  /*
+   * En móvil los datos del usuario están
+   * disponibles dentro del menú lateral.
+   */
+
+  .topbar .user-area {
+    display: none;
   }
 
+
+  /* ===============================
+     CONTENIDO
+  =============================== */
+
   .page-content {
+    width: 100%;
+
+    min-width: 0;
     min-height: 0;
 
     padding:
       0
-      18px
+      14px
       24px;
 
     overflow: visible;
   }
+
 }
 
+
 /* =================================
-   RESPONSIVE - MÓVIL PEQUEÑO
+   MÓVIL PEQUEÑO
 ================================= */
 
 @media (max-width: 520px) {
 
-  .menu {
-    grid-template-columns:
-      1fr;
+  .mobile-header {
+    height: 68px;
+
+    padding:
+      8px
+      12px;
   }
 
-  .user-area {
-    width: 100%;
 
-    justify-content:
-      space-between;
-  }
+  .mobile-brand {
 
-  .user-information {
+    img {
+      height: 46px;
 
-    strong,
-    span {
-      max-width: 170px;
+      max-width: 165px;
     }
   }
+
+
+  .topbar {
+    margin:
+      12px
+      12px
+      16px;
+
+    padding: 18px;
+  }
+
+
+  .topbar-title {
+
+    h1 {
+      font-size: 22px;
+    }
+
+
+    p {
+      font-size: 12px;
+    }
+  }
+
+
+  .page-content {
+    padding:
+      0
+      12px
+      20px;
+  }
+
+}
+
+
+/* =================================
+   MÓVIL MUY PEQUEÑO
+================================= */
+
+@media (max-width: 390px) {
+
+  .sidebar {
+    width: 90vw;
+  }
+
+
+  .mobile-brand {
+
+    img {
+      height: 42px;
+
+      max-width: 145px;
+    }
+  }
+
+
+  .topbar {
+    padding: 16px;
+  }
+
+
+  .topbar-title {
+
+    h1 {
+      font-size: 21px;
+    }
+
+
+    p {
+      font-size: 11.5px;
+    }
+  }
+
+
+  .sidebar-mobile-user-profile {
+
+    .user-information {
+
+      strong,
+      span {
+        max-width: 155px;
+      }
+    }
+  }
+
 }

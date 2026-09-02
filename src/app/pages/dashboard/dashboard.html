@@ -1,5 +1,6 @@
 <section class="dashboard-content">
 
+
   <!-- ================================================
        BIENVENIDA
        ================================================ -->
@@ -7,12 +8,19 @@
   <section class="welcome-card">
 
     <h2>
-      Bienvenido,
-      {{
-        loadingUser()
-          ? 'Cargando...'
-          : userName()
-      }}
+
+      <span class="welcome-prefix">
+        Bienvenido,
+      </span>
+
+      <span class="welcome-name">
+        {{
+          loadingUser()
+            ? 'Cargando...'
+            : userName()
+        }}
+      </span>
+
     </h2>
 
     <p>
@@ -29,11 +37,11 @@
   <section class="section-title">
 
     <h2>
-      Indicadores Clave del Territorio
+      Monitor Territorial
     </h2>
 
     <p>
-      Información consolidada de Ambiente y Movilidad.
+      Información consolidada
     </p>
 
   </section>
@@ -43,7 +51,9 @@
        ERROR
        ================================================ -->
 
-  @if (indicatorsError()) {
+  @if (
+    indicatorsError()
+  ) {
 
     <section
       class="indicator-error"
@@ -79,8 +89,11 @@
       <div class="indicator-header">
 
         <div class="indicator-icon">
+
           <svg lucideCloudSun></svg>
+
         </div>
+
 
         <div class="indicator-heading">
 
@@ -142,8 +155,11 @@
       <div class="indicator-header">
 
         <div class="indicator-icon">
+
           <svg lucideDroplets></svg>
+
         </div>
+
 
         <div class="indicator-heading">
 
@@ -205,8 +221,11 @@
       <div class="indicator-header">
 
         <div class="indicator-icon">
+
           <svg lucideCar></svg>
+
         </div>
+
 
         <div class="indicator-heading">
 
@@ -268,8 +287,11 @@
       <div class="indicator-header">
 
         <div class="indicator-icon">
+
           <svg lucideTriangleAlert></svg>
+
         </div>
+
 
         <div class="indicator-heading">
 

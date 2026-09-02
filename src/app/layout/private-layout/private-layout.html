@@ -1,24 +1,89 @@
 <div class="private-layout">
 
-  <!-- SIDEBAR -->
 
-  <aside class="sidebar">
+  <!-- =====================================================
+       FONDO DEL MENÚ MÓVIL
+       ===================================================== -->
 
-    <div class="brand-card">
-      <img
-        src="/logo.png"
-        alt="Analytics Tuluá"
-      />
+  @if (
+    mobileMenuOpen()
+  ) {
+
+    <button
+      type="button"
+      class="mobile-sidebar-backdrop"
+      aria-label="Cerrar menú"
+      (click)="closeMobileMenu()"
+    ></button>
+
+  }
+
+
+  <!-- =====================================================
+       SIDEBAR
+       ===================================================== -->
+
+  <aside
+    class="sidebar"
+    [class.mobile-open]="mobileMenuOpen()"
+  >
+
+
+    <!-- ===================================================
+         ENCABEZADO MÓVIL DEL SIDEBAR
+         =================================================== -->
+
+    <div class="sidebar-mobile-header">
+
+      <span>
+        Menú principal
+      </span>
+
+
+      <button
+        type="button"
+        class="sidebar-close-button"
+        aria-label="Cerrar menú"
+        title="Cerrar menú"
+        (click)="closeMobileMenu()"
+      >
+
+        <svg lucideX></svg>
+
+      </button>
+
     </div>
 
+
+    <!-- ===================================================
+         LOGO
+         =================================================== -->
+
+    <div class="brand-card">
+
+      <img
+        src="/logo.png"
+        alt="Ciudad Digital Tuluá"
+      />
+
+    </div>
+
+
+    <!-- ===================================================
+         MENÚ
+         =================================================== -->
+
     <nav class="menu">
+
 
       @if (
         loadingPermissions() ||
         puedeVerDashboard()
       ) {
 
-        @if (puedeVerDashboard()) {
+        @if (
+          puedeVerDashboard()
+        ) {
 
           <a
             routerLink="/dashboard"
@@ -26,94 +91,222 @@
             [routerLinkActiveOptions]="{
               exact: true
             }"
+            (click)="closeMobileMenu()"
           >
+
             <svg lucideHouse></svg>
 
             <span>
               Inicio
             </span>
+
           </a>
 
         }
 
       }
 
-      @if (puedeVerAmbiente()) {
+
+      @if (
+        puedeVerAmbiente()
+      ) {
 
         <a
           routerLink="/ambiente"
           routerLinkActive="active"
+          (click)="closeMobileMenu()"
         >
+
           <svg lucideLeaf></svg>
 
           <span>
             Ambiente
           </span>
+
         </a>
 
       }
 
-      @if (puedeVerMovilidad()) {
+
+      @if (
+        puedeVerMovilidad()
+      ) {
 
         <a
           routerLink="/movilidad"
           routerLinkActive="active"
+          (click)="closeMobileMenu()"
         >
+
           <svg lucideCar></svg>
 
           <span>
             Movilidad
           </span>
+
         </a>
 
       }
 
-      @if (puedeVerTurismo()) {
+
+      @if (
+        puedeVerTurismo()
+      ) {
 
         <a
           routerLink="/ocio-turismo"
           routerLinkActive="active"
+          (click)="closeMobileMenu()"
         >
+
           <svg lucideTrees></svg>
 
           <span>
             Ocio y Turismo
           </span>
+
         </a>
 
       }
 
-      @if (puedeVerConfiguracion()) {
+
+      @if (
+        puedeVerConfiguracion()
+      ) {
 
         <a
           routerLink="/configuracion"
           routerLinkActive="active"
+          (click)="closeMobileMenu()"
         >
+
           <svg lucideSettings></svg>
 
           <span>
             Configuración
           </span>
+
         </a>
 
       }
 
     </nav>
 
+
+    <!-- ===================================================
+         USUARIO — SOLO MÓVIL
+         =================================================== -->
+
+    <div class="sidebar-mobile-user">
+
+
+      <div class="sidebar-mobile-user-profile">
+
+        <div class="avatar">
+          {{ initials() }}
+        </div>
+
+
+        <div class="user-information">
+
+          <strong>
+            {{
+              loadingUser()
+                ? 'Cargando...'
+                : userName()
+            }}
+          </strong>
+
+          <span>
+            {{
+              loadingUser()
+                ? 'Consultando perfil'
+                : userEmail()
+            }}
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="sidebar-mobile-logout"
+        (click)="logout()"
+      >
+
+        <svg lucideLogOut></svg>
+
+        <span>
+          Cerrar sesión
+        </span>
+
+      </button>
+
+    </div>
+
   </aside>
 
-  <!-- CONTENIDO PRINCIPAL -->
+
+  <!-- =====================================================
+       CONTENIDO PRINCIPAL
+       ===================================================== -->
 
   <main class="main-content">
 
-    <!-- TOPBAR -->
+
+    <!-- ===================================================
+         HEADER MÓVIL
+         =================================================== -->
+
+    <header class="mobile-header">
+
+
+      <button
+        type="button"
+        class="mobile-menu-button"
+        aria-label="Abrir menú"
+        title="Abrir menú"
+        (click)="openMobileMenu()"
+      >
+
+        <svg lucideMenu></svg>
+
+      </button>
+
+
+      <div class="mobile-brand">
+
+        <img
+          src="/logo.png"
+          alt="Ciudad Digital Tuluá"
+        />
+
+      </div>
+
+
+      <div
+        class="mobile-avatar"
+        [attr.title]="userName()"
+      >
+        {{ initials() }}
+      </div>
+
+    </header>
+
+
+    <!-- ===================================================
+         TOPBAR
+         =================================================== -->
 
     <header class="topbar">
+
 
       <div class="topbar-title">
 
         <h1>
-          Analytics Tuluá
+          Ciudad Digital Tuluá
         </h1>
 
         <p>
@@ -122,13 +315,20 @@
 
       </div>
 
+
+      <!-- =================================================
+           USUARIO EN ESCRITORIO
+           ================================================= -->
+
       <div class="user-area">
 
         <div class="user-box">
 
+
           <div class="avatar">
             {{ initials() }}
           </div>
+
 
           <div class="user-information">
 
@@ -152,6 +352,7 @@
 
         </div>
 
+
         <button
           type="button"
           class="logout-button"
@@ -159,23 +360,24 @@
           aria-label="Cerrar sesión"
           (click)="logout()"
         >
+
           <svg lucideLogOut></svg>
+
         </button>
 
       </div>
 
     </header>
 
-    <!--
-      ÚNICA ZONA CON SCROLL EN ESCRITORIO.
 
-      Cuando el usuario baje por Waze,
-      Siniestros, Semafórica, etc.,
-      el sidebar y el topbar seguirán visibles.
-    -->
+    <!-- ===================================================
+         CONTENIDO DE LAS PÁGINAS
+         =================================================== -->
 
     <section class="page-content">
+
       <router-outlet></router-outlet>
+
     </section>
 
   </main>
