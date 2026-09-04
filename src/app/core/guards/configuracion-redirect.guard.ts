@@ -1,114 +1,191 @@
-import { inject } from '@angular/core';
+import {
+  inject
+} from '@angular/core';
 
 import {
   CanActivateFn,
   Router
 } from '@angular/router';
 
-import { AuthService } from '../services/auth.service';
+import {
+  AuthService
+} from '../services/auth.service';
 
-export const configuracionRedirectGuard: CanActivateFn =
+
+export const configuracionRedirectGuard:
+  CanActivateFn =
   async (_route, state) => {
+
     const authService =
       inject(AuthService);
 
     const router =
       inject(Router);
 
-    /*
-     * El guard también se ejecuta cuando se visita
-     * una ruta hija de Configuración.
-     *
-     * En ese caso no debe redirigir, porque cada ruta
-     * hija tiene su propio permissionGuard.
-     */
-    const urlSinParametros =
-      state.url.split('?')[0].replace(/\/+$/, '');
 
-    if (
-      urlSinParametros !== '/configuracion'
-    ) {
-      return true;
-    }
+    /* =====================================================
+     * VALIDAR SESIÓN
+     * ===================================================== */
 
     const session =
-      await authService.getSession();
+      await authService
+        .getSession();
+
 
     if (!session) {
+
       return router.createUrlTree(
-        ['/login'],
+        [
+          '/login'
+        ],
         {
           queryParams: {
-            returnUrl: state.url
+            returnUrl:
+              state.url
           }
         }
       );
+
     }
+
+
+    /* =====================================================
+     * VALIDAR PERFIL
+     * ===================================================== */
 
     const profile =
-      await authService.getCurrentProfile();
+      await authService
+        .getCurrentProfile();
 
-    if (!profile || !profile.active) {
+
+    if (
+      !profile ||
+      !profile.active
+    ) {
+
       return router.createUrlTree(
-        ['/acceso-denegado'],
+        [
+          '/acceso-denegado'
+        ],
         {
           queryParams: {
-            reason: 'inactive'
+            reason:
+              'inactive'
           }
         }
       );
+
     }
 
-    await authService.getCurrentPermissions();
 
-    /*
-     * El administrador entra inicialmente
-     * al módulo de Usuarios.
-     */
-    if (authService.isAdministrator()) {
-      return router.createUrlTree([
-        '/configuracion/usuarios'
-      ]);
+    /* =====================================================
+     * CARGAR PERMISOS
+     * ===================================================== */
+
+    await authService
+      .getCurrentPermissions();
+
+
+    /* =====================================================
+     * ADMINISTRADOR
+     * ===================================================== */
+
+    if (
+      authService
+        .isAdministrator()
+    ) {
+
+      return router.createUrlTree(
+        [
+          '/configuracion/usuarios'
+        ]
+      );
+
     }
+
+
+    /* =====================================================
+     * PRIMER MÓDULO PERMITIDO
+     * ===================================================== */
 
     const rutasPermitidas = [
+
       {
-        permiso: 'usuarios.ver',
-        ruta: '/configuracion/usuarios'
+        permiso:
+          'usuarios.ver',
+
+        ruta:
+          '/configuracion/usuarios'
       },
+
       {
-        permiso: 'roles.ver',
-        ruta: '/configuracion/roles'
+        permiso:
+          'roles.ver',
+
+        ruta:
+          '/configuracion/roles'
       },
+
       {
-        permiso: 'dependencias.ver',
-        ruta: '/configuracion/dependencias'
+        permiso:
+          'dependencias.ver',
+
+        ruta:
+          '/configuracion/dependencias'
       },
+
       {
-        permiso: 'carga_masiva.ver',
-        ruta: '/configuracion/carga-masiva'
+        permiso:
+          'carga_masiva.ver',
+
+        ruta:
+          '/configuracion/carga-masiva'
       }
+
     ];
 
-    for (const item of rutasPermitidas) {
-      const tienePermiso =
-        authService.hasAnyPermission([
-          item.permiso
-        ]);
 
-      if (tienePermiso) {
-        return router.createUrlTree([
-          item.ruta
-        ]);
+    for (
+      const item
+      of rutasPermitidas
+    ) {
+
+      const tienePermiso =
+        authService
+          .hasAnyPermission([
+            item.permiso
+          ]);
+
+
+      if (
+        tienePermiso
+      ) {
+
+        return router.createUrlTree(
+          [
+            item.ruta
+          ]
+        );
+
       }
+
     }
 
+
+    /* =====================================================
+     * SIN PERMISOS
+     * ===================================================== */
+
     return router.createUrlTree(
-      ['/acceso-denegado'],
+      [
+        '/acceso-denegado'
+      ],
       {
         queryParams: {
-          returnUrl: state.url
+          returnUrl:
+            state.url
         }
       }
     );
+
   };

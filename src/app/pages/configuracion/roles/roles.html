@@ -1,4 +1,5 @@
 <section class="roles-page">
+
   <header class="page-header">
     <div>
       <span class="eyebrow">
@@ -15,15 +16,18 @@
       </p>
     </div>
 
-    <button
-      type="button"
-      class="btn-primary"
-      (click)="nuevoRol()"
-    >
-      <span class="plus-icon">+</span>
-      Nuevo rol
-    </button>
+    @if (puedeCrear()) {
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="nuevoRol()"
+      >
+        <span class="plus-icon">+</span>
+        Nuevo rol
+      </button>
+    }
   </header>
+
 
   @if (errorMessage()) {
     <div
@@ -32,7 +36,9 @@
     >
       <div>
         <strong>Ocurrió un error</strong>
-        <p>{{ errorMessage() }}</p>
+        <p>
+          {{ errorMessage() }}
+        </p>
       </div>
 
       <button
@@ -45,14 +51,20 @@
     </div>
   }
 
+
   @if (successMessage()) {
     <div
       class="alert-success"
       role="status"
     >
       <div>
-        <strong>Operación completada</strong>
-        <p>{{ successMessage() }}</p>
+        <strong>
+          Operación completada
+        </strong>
+
+        <p>
+          {{ successMessage() }}
+        </p>
       </div>
 
       <button
@@ -65,7 +77,9 @@
     </div>
   }
 
+
   <section class="filters-card">
+
     <div class="search-field">
       <span class="search-icon">
         ⌕
@@ -78,6 +92,7 @@
         (ngModelChange)="busqueda.set($event)"
       />
     </div>
+
 
     <div class="filter-field">
       <label for="filtro-estado-rol">
@@ -103,6 +118,7 @@
       </select>
     </div>
 
+
     <button
       type="button"
       class="btn-secondary"
@@ -110,11 +126,14 @@
     >
       Limpiar filtros
     </button>
+
   </section>
+
 
   <section class="roles-permissions-layout">
 
     <aside class="roles-panel">
+
       <header class="panel-header">
         <div>
           <h3>
@@ -143,7 +162,9 @@
         </button>
       </header>
 
+
       @if (cargando()) {
+
         <div class="loading-state compact">
           <div class="spinner"></div>
 
@@ -155,12 +176,16 @@
             Consultando información en Supabase...
           </p>
         </div>
+
       } @else {
+
         <div class="roles-list">
+
           @for (
             rol of rolesFiltrados();
             track rol.id
           ) {
+
             <article
               class="role-item"
               [class.selected]="
@@ -169,7 +194,9 @@
               [class.inactive]="!rol.active"
               (click)="seleccionarRolPermisos(rol)"
             >
+
               <div class="role-item-main">
+
                 <div
                   class="role-icon"
                   [class.admin]="rol.id === 1"
@@ -181,8 +208,11 @@
                   }}
                 </div>
 
+
                 <div class="role-data">
+
                   <div class="role-name-line">
+
                     <strong>
                       {{ rol.name }}
                     </strong>
@@ -192,7 +222,9 @@
                         Protegido
                       </span>
                     }
+
                   </div>
+
 
                   <span>
                     {{
@@ -201,19 +233,24 @@
                     }}
                   </span>
 
+
                   <small>
                     {{ rol.users_count ?? 0 }}
                     usuario(s) asignado(s)
                   </small>
+
                 </div>
               </div>
 
+
               <div class="role-item-status">
+
                 <span
                   class="status-badge"
                   [class.active]="rol.active"
                   [class.inactive]="!rol.active"
                 >
+
                   <span class="status-dot"></span>
 
                   {{
@@ -221,67 +258,102 @@
                       ? 'Activo'
                       : 'Inactivo'
                   }}
+
                 </span>
               </div>
 
-              <div
-                class="role-actions"
-                (click)="$event.stopPropagation()"
-              >
-                <button
-                  type="button"
-                  class="btn-edit"
-                  (click)="editarRol(rol)"
-                >
-                  Editar
-                </button>
 
-                <button
-                  type="button"
-                  class="btn-status"
-                  [class.deactivate]="rol.active"
-                  [class.activate]="!rol.active"
-                  [disabled]="
-                    rol.id === 1 ||
-                    cambiandoEstadoId() === rol.id
-                  "
-                  (click)="cambiarEstado(rol)"
+              @if (
+                puedeEditar() ||
+                puedeCambiarEstado() ||
+                puedeEliminar()
+              ) {
+
+                <div
+                  class="role-actions"
+                  (click)="$event.stopPropagation()"
                 >
-                  @if (
-                    cambiandoEstadoId() === rol.id
-                  ) {
-                    Guardando...
-                  } @else {
-                    {{
-                      rol.active
-                        ? 'Desactivar'
-                        : 'Activar'
-                    }}
+
+                  @if (puedeEditar()) {
+
+                    <button
+                      type="button"
+                      class="btn-edit"
+                      (click)="editarRol(rol)"
+                    >
+                      Editar
+                    </button>
+
                   }
-                </button>
 
-                <button
-                  type="button"
-                  class="btn-delete"
-                  [disabled]="
-                    rol.id === 1 ||
-                    (rol.users_count ?? 0) > 0
-                  "
-                  [title]="
-                    rol.id === 1
-                      ? 'El rol Administrador está protegido'
-                      : (rol.users_count ?? 0) > 0
-                        ? 'El rol tiene usuarios asignados'
-                        : 'Eliminar rol'
-                  "
-                  (click)="abrirEliminarRol(rol)"
-                >
-                  Eliminar
-                </button>
-              </div>
+
+                  @if (puedeCambiarEstado()) {
+
+                    <button
+                      type="button"
+                      class="btn-status"
+                      [class.deactivate]="rol.active"
+                      [class.activate]="!rol.active"
+                      [disabled]="
+                        rol.id === 1 ||
+                        cambiandoEstadoId() === rol.id
+                      "
+                      (click)="cambiarEstado(rol)"
+                    >
+
+                      @if (
+                        cambiandoEstadoId() === rol.id
+                      ) {
+
+                        Guardando...
+
+                      } @else {
+
+                        {{
+                          rol.active
+                            ? 'Desactivar'
+                            : 'Activar'
+                        }}
+
+                      }
+
+                    </button>
+
+                  }
+
+
+                  @if (puedeEliminar()) {
+
+                    <button
+                      type="button"
+                      class="btn-delete"
+                      [disabled]="
+                        rol.id === 1 ||
+                        (rol.users_count ?? 0) > 0
+                      "
+                      [title]="
+                        rol.id === 1
+                          ? 'El rol Administrador está protegido'
+                          : (rol.users_count ?? 0) > 0
+                            ? 'El rol tiene usuarios asignados'
+                            : 'Eliminar rol'
+                      "
+                      (click)="abrirEliminarRol(rol)"
+                    >
+                      Eliminar
+                    </button>
+
+                  }
+
+                </div>
+              }
+
             </article>
+
           } @empty {
+
             <div class="empty-state compact">
+
               <div class="empty-icon">
                 ⌕
               </div>
@@ -302,14 +374,21 @@
               >
                 Limpiar filtros
               </button>
+
             </div>
+
           }
+
         </div>
       }
+
     </aside>
 
+
     <section class="permissions-panel">
+
       <header class="permissions-header">
+
         <div>
           <span class="panel-eyebrow">
             Permisos del rol
@@ -323,20 +402,28 @@
           </h3>
 
           <p>
+
             @if (rolPermisosSeleccionado()) {
+
               {{
                 cantidadPermisosSeleccionados()
               }}
               de
               {{ permisos().length }}
               permiso(s) asignado(s)
+
             } @else {
-              Selecciona un rol para administrar sus permisos.
+
+              Selecciona un rol para consultar sus permisos.
+
             }
+
           </p>
         </div>
 
+
         @if (rolPermisosSeleccionado()) {
+
           <span
             class="selected-role-badge"
             [class.admin]="
@@ -346,14 +433,21 @@
             {{
               rolPermisosSeleccionado()?.id === 1
                 ? 'Acceso total'
-                : 'Personalizable'
+                : puedeAsignarPermisos()
+                  ? 'Personalizable'
+                  : 'Solo lectura'
             }}
           </span>
+
         }
+
       </header>
 
+
       @if (!rolPermisosSeleccionado()) {
+
         <div class="permission-empty-state">
+
           <div class="permission-empty-icon">
             ✓
           </div>
@@ -363,12 +457,16 @@
           </strong>
 
           <p>
-            Haz clic en un rol de la lista para consultar
-            o modificar sus permisos.
+            Haz clic en un rol de la lista
+            para consultar sus permisos.
           </p>
+
         </div>
+
       } @else if (cargandoPermisos()) {
+
         <div class="loading-state">
+
           <div class="spinner"></div>
 
           <strong>
@@ -378,9 +476,13 @@
           <p>
             Consultando los permisos asignados al rol...
           </p>
+
         </div>
+
       } @else {
+
         <div class="permissions-toolbar">
+
           <div>
             <strong>
               Permisos disponibles
@@ -391,35 +493,45 @@
             </span>
           </div>
 
-          <div class="permissions-toolbar-actions">
-            <button
-              type="button"
-              class="btn-secondary btn-small"
-              [disabled]="
-                rolPermisosSeleccionado()?.id === 1
-              "
-              (click)="seleccionarTodosLosPermisos()"
-            >
-              Seleccionar todos
-            </button>
 
-            <button
-              type="button"
-              class="btn-secondary btn-small"
-              [disabled]="
-                rolPermisosSeleccionado()?.id === 1
-              "
-              (click)="limpiarTodosLosPermisos()"
-            >
-              Limpiar
-            </button>
-          </div>
+          @if (
+            puedeAsignarPermisos() &&
+            rolPermisosSeleccionado()?.id !== 1
+          ) {
+
+            <div class="permissions-toolbar-actions">
+
+              <button
+                type="button"
+                class="btn-secondary btn-small"
+                [disabled]="guardandoPermisos()"
+                (click)="seleccionarTodosLosPermisos()"
+              >
+                Seleccionar todos
+              </button>
+
+              <button
+                type="button"
+                class="btn-secondary btn-small"
+                [disabled]="guardandoPermisos()"
+                (click)="limpiarTodosLosPermisos()"
+              >
+                Limpiar
+              </button>
+
+            </div>
+
+          }
+
         </div>
+
 
         @if (
           rolPermisosSeleccionado()?.id === 1
         ) {
+
           <div class="admin-info">
+
             <strong>
               Rol Administrador
             </strong>
@@ -428,16 +540,23 @@
               Este rol conserva todos los permisos del sistema
               y no puede personalizarse.
             </p>
+
           </div>
+
         }
 
+
         <div class="permission-groups">
+
           @for (
             grupo of gruposPermisos();
             track grupo.module
           ) {
+
             <article class="permission-group">
+
               <header class="permission-group-header">
+
                 <div>
                   <h4>
                     {{ grupo.module }}
@@ -449,16 +568,20 @@
                   </span>
                 </div>
 
+
                 <label
                   class="module-toggle"
                   [class.disabled]="
+                    !puedeAsignarPermisos() ||
                     rolPermisosSeleccionado()?.id === 1
                   "
                 >
+
                   <input
                     type="checkbox"
                     [checked]="moduloCompleto(grupo)"
                     [disabled]="
+                      !puedeAsignarPermisos() ||
                       rolPermisosSeleccionado()?.id === 1
                     "
                     (change)="alternarModulo(grupo)"
@@ -467,29 +590,37 @@
                   <span>
                     Seleccionar módulo
                   </span>
+
                 </label>
+
               </header>
 
+
               <div class="permission-options">
+
                 @for (
                   permiso of grupo.permissions;
                   track permiso.id
                 ) {
+
                   <label
                     class="permission-option"
                     [class.checked]="
                       tienePermiso(permiso.id)
                     "
                     [class.disabled]="
+                      !puedeAsignarPermisos() ||
                       rolPermisosSeleccionado()?.id === 1
                     "
                   >
+
                     <input
                       type="checkbox"
                       [checked]="
                         tienePermiso(permiso.id)
                       "
                       [disabled]="
+                        !puedeAsignarPermisos() ||
                         rolPermisosSeleccionado()?.id === 1
                       "
                       (change)="
@@ -497,11 +628,14 @@
                       "
                     />
 
+
                     <span class="permission-check">
                       ✓
                     </span>
 
+
                     <span class="permission-info">
+
                       <strong>
                         {{ permiso.action }}
                       </strong>
@@ -513,13 +647,21 @@
                       <small>
                         {{ permiso.code }}
                       </small>
+
                     </span>
+
                   </label>
+
                 }
+
               </div>
+
             </article>
+
           } @empty {
+
             <div class="permission-empty-state">
+
               <strong>
                 No hay permisos disponibles
               </strong>
@@ -528,12 +670,18 @@
                 Verifica que existan permisos activos
                 en la tabla permissions.
               </p>
+
             </div>
+
           }
+
         </div>
 
+
         <footer class="permissions-footer">
+
           <div>
+
             <strong>
               {{
                 cantidadPermisosSeleccionados()
@@ -542,37 +690,64 @@
             </strong>
 
             <span>
-              Los cambios se aplicarán a todos los usuarios
-              que tengan este rol.
+
+              @if (
+                puedeAsignarPermisos() &&
+                rolPermisosSeleccionado()?.id !== 1
+              ) {
+
+                Los cambios se aplicarán a todos los usuarios
+                que tengan este rol.
+
+              } @else {
+
+                Consulta de permisos en modo solo lectura.
+
+              }
+
             </span>
+
           </div>
 
-          <button
-            type="button"
-            class="btn-save"
-            [disabled]="
-              guardandoPermisos() ||
-              rolPermisosSeleccionado()?.id === 1
-            "
-            (click)="guardarPermisosRol()"
-          >
-            {{
-              guardandoPermisos()
-                ? 'Guardando permisos...'
-                : 'Guardar permisos'
-            }}
-          </button>
+
+          @if (
+            puedeAsignarPermisos() &&
+            rolPermisosSeleccionado()?.id !== 1
+          ) {
+
+            <button
+              type="button"
+              class="btn-save"
+              [disabled]="guardandoPermisos()"
+              (click)="guardarPermisosRol()"
+            >
+              {{
+                guardandoPermisos()
+                  ? 'Guardando permisos...'
+                  : 'Guardar permisos'
+              }}
+            </button>
+
+          }
+
         </footer>
+
       }
+
     </section>
+
   </section>
+
 </section>
 
+
 @if (modalFormularioAbierto()) {
+
   <div
     class="modal-backdrop"
     (click)="cerrarModalFormulario()"
   >
+
     <section
       class="modal-card"
       role="dialog"
@@ -580,8 +755,11 @@
       aria-labelledby="titulo-formulario-rol"
       (click)="$event.stopPropagation()"
     >
+
       <header class="modal-header">
+
         <div>
+
           <span class="modal-eyebrow">
             Administración
           </span>
@@ -597,11 +775,13 @@
           <p>
             {{
               esModoEdicion()
-                ? 'Actualiza la información y el estado del rol.'
+                ? 'Actualiza la información del rol.'
                 : 'Registra un nuevo rol para la plataforma.'
             }}
           </p>
+
         </div>
+
 
         <button
           type="button"
@@ -612,13 +792,17 @@
         >
           ×
         </button>
+
       </header>
+
 
       <form
         class="modal-form"
         (ngSubmit)="guardarRol()"
       >
+
         <div class="form-group full-width">
+
           <label for="role-name">
             Nombre del rol
           </label>
@@ -635,15 +819,23 @@
             [(ngModel)]="formulario.name"
           />
 
-          @if (rolSeleccionado()?.id === 1) {
+
+          @if (
+            rolSeleccionado()?.id === 1
+          ) {
+
             <small>
               El nombre del rol Administrador
               no puede modificarse.
             </small>
+
           }
+
         </div>
 
+
         <div class="form-group full-width">
+
           <label for="role-description">
             Descripción
           </label>
@@ -660,38 +852,53 @@
           <small>
             Máximo 300 caracteres.
           </small>
+
         </div>
 
-        <label
-          class="status-control"
-          [class.disabled]="
-            rolSeleccionado()?.id === 1
-          "
-        >
-          <input
-            type="checkbox"
-            name="role_active"
-            [disabled]="
+
+        @if (
+          !esModoEdicion() ||
+          puedeCambiarEstado()
+        ) {
+
+          <label
+            class="status-control"
+            [class.disabled]="
               rolSeleccionado()?.id === 1
             "
-            [(ngModel)]="formulario.active"
-          />
+          >
 
-          <span class="status-switch"></span>
+            <input
+              type="checkbox"
+              name="role_active"
+              [disabled]="
+                rolSeleccionado()?.id === 1
+              "
+              [(ngModel)]="formulario.active"
+            />
 
-          <span>
-            <strong>
-              Rol activo
-            </strong>
+            <span class="status-switch"></span>
 
-            <small>
-              Los roles inactivos no deben asignarse
-              a nuevos usuarios.
-            </small>
-          </span>
-        </label>
+            <span>
+
+              <strong>
+                Rol activo
+              </strong>
+
+              <small>
+                Los roles inactivos no deben asignarse
+                a nuevos usuarios.
+              </small>
+
+            </span>
+
+          </label>
+
+        }
+
 
         <footer class="modal-actions">
+
           <button
             type="button"
             class="btn-cancel"
@@ -714,17 +921,25 @@
                   : 'Crear rol'
             }}
           </button>
+
         </footer>
+
       </form>
+
     </section>
+
   </div>
+
 }
 
+
 @if (modalEliminarAbierto()) {
+
   <div
     class="modal-backdrop"
     (click)="cerrarModalEliminar()"
   >
+
     <section
       class="modal-card modal-card-small"
       role="alertdialog"
@@ -732,8 +947,11 @@
       aria-labelledby="titulo-eliminar-rol"
       (click)="$event.stopPropagation()"
     >
+
       <header class="modal-header danger-header">
+
         <div>
+
           <span class="modal-eyebrow danger-text">
             Zona peligrosa
           </span>
@@ -746,7 +964,9 @@
             Esta acción eliminará definitivamente
             el rol seleccionado.
           </p>
+
         </div>
+
 
         <button
           type="button"
@@ -757,17 +977,23 @@
         >
           ×
         </button>
+
       </header>
 
+
       <div class="delete-content">
+
         <p>
           ¿Confirmas que deseas eliminar el rol
+
           <strong>
             {{ rolSeleccionado()?.name }}
           </strong>?
         </p>
 
+
         <div class="delete-role-summary">
+
           <span>
             {{
               rolSeleccionado()?.description ||
@@ -778,18 +1004,24 @@
           <span>
             Usuarios asignados:
             {{
-              rolSeleccionado()?.users_count ?? 0
+              rolSeleccionado()?.users_count ??
+              0
             }}
           </span>
+
         </div>
+
 
         <p class="delete-warning">
           Para conservar trazabilidad, puedes
           desactivar el rol en lugar de eliminarlo.
         </p>
+
       </div>
 
+
       <footer class="modal-actions delete-actions">
+
         <button
           type="button"
           class="btn-cancel"
@@ -798,6 +1030,7 @@
         >
           Cancelar
         </button>
+
 
         <button
           type="button"
@@ -811,7 +1044,11 @@
               : 'Eliminar definitivamente'
           }}
         </button>
+
       </footer>
+
     </section>
+
   </div>
+
 }
