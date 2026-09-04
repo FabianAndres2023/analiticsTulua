@@ -55,12 +55,17 @@ import {
 
 
 /* =========================================================
- * ACCESO DENEGADO
+ * AMBIENTE
  * ========================================================= */
 
 import {
   EstacionMeteorologica
 } from './pages/ambiente/estacion-meteorologica/estacion-meteorologica';
+
+
+/* =========================================================
+ * ACCESO DENEGADO
+ * ========================================================= */
 
 import {
   AccesoDenegado
@@ -133,14 +138,6 @@ export const routes:
   /* =======================================================
    * RUTA PÚBLICA EMBED
    * ======================================================= */
-
-  /*
-   * Ruta pública para insertar el dashboard
-   * en otros portales mediante iframe.
-   *
-   * Se encuentra fuera de PrivateLayout,
-   * por lo que no muestra menú lateral.
-   */
 
   {
     path:
@@ -257,19 +254,34 @@ export const routes:
         ],
 
         children: [
+
           {
-            path: '',
-            redirectTo: 'estacion-meteorologica',
-            pathMatch: 'full'
+            path:
+              '',
+
+            redirectTo:
+              'estacion-meteorologica',
+
+            pathMatch:
+              'full'
           },
 
           {
-            path: 'estacion-meteorologica',
-            component: EstacionMeteorologica
+            path:
+              'estacion-meteorologica',
+
+            component:
+              EstacionMeteorologica
           }
+
         ]
       },
-      
+
+
+      /* ===================================================
+       * MOVILIDAD
+       * =================================================== */
+
       {
         path:
           'movilidad',
@@ -286,15 +298,9 @@ export const routes:
         children: [
 
 
-          /*
-           * Cuando se entra a:
-           *
-           * /movilidad
-           *
-           * redirige automáticamente a:
-           *
-           * /movilidad/centro-datos-waze
-           */
+          /* ===============================================
+           * REDIRECCIÓN INICIAL
+           * =============================================== */
 
           {
             path:
@@ -370,15 +376,9 @@ export const routes:
         children: [
 
 
-          /*
-           * Cuando se entra a:
-           *
-           * /ocio-turismo
-           *
-           * redirige automáticamente a:
-           *
-           * /ocio-turismo/activos-turismo
-           */
+          /* ===============================================
+           * REDIRECCIÓN INICIAL
+           * =============================================== */
 
           {
             path:
@@ -393,7 +393,7 @@ export const routes:
 
 
           /* ===============================================
-           * ACTIVOS DE TURISMO
+           * ACTIVOS TURÍSTICOS
            * =============================================== */
 
           {
@@ -421,8 +421,6 @@ export const routes:
 
         canActivate: [
 
-          configuracionRedirectGuard,
-
           permissionGuard(
             [
               'usuarios.ver',
@@ -432,9 +430,29 @@ export const routes:
             ],
             'any'
           )
+
         ],
 
         children: [
+
+
+          /* ===============================================
+           * REDIRECCIÓN AUTOMÁTICA
+           * =============================================== */
+
+          {
+            path:
+              '',
+
+            pathMatch:
+              'full',
+
+            canActivate: [
+              configuracionRedirectGuard
+            ],
+
+            children: []
+          },
 
 
           /* ===============================================
@@ -457,7 +475,7 @@ export const routes:
 
 
           /* ===============================================
-           * ROLES
+           * ROLES Y PERMISOS
            * =============================================== */
 
           {

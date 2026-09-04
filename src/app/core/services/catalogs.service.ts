@@ -1,5 +1,11 @@
-import { Injectable } from '@angular/core';
-import { SupabaseService } from './supabase.service';
+import {
+  Injectable
+} from '@angular/core';
+
+import {
+  SupabaseService
+} from './supabase.service';
+
 
 export interface Role {
   id: number;
@@ -7,55 +13,194 @@ export interface Role {
   description: string | null;
 }
 
+
 export interface Dependency {
   id: number;
   name: string;
   description: string | null;
 }
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class CatalogsService {
+
   constructor(
-    private readonly supabaseService: SupabaseService
+    private readonly supabaseService:
+      SupabaseService
   ) {}
 
-  async getRoles(): Promise<Role[]> {
-    const { data, error } = await this.supabaseService.client
-      .from('roles')
-      .select(`
-        id,
-        name,
-        description
-      `)
-      .order('name', {
-        ascending: true
-      });
+
+  /* =======================================================
+   * ROLES
+   * ======================================================= */
+
+  async getRoles():
+    Promise<Role[]> {
+
+    const {
+      data,
+      error
+    } =
+      await this.supabaseService
+        .client
+        .from('roles')
+        .select(`
+          id,
+          name,
+          description
+        `)
+        .order(
+          'name',
+          {
+            ascending: true
+          }
+        );
+
 
     if (error) {
-      throw new Error(error.message);
+      throw new Error(
+        error.message
+      );
     }
 
-    return (data ?? []) as Role[];
+
+    return (
+      data ?? []
+    ) as Role[];
+
   }
 
-  async getDependencies(): Promise<Dependency[]> {
-    const { data, error } = await this.supabaseService.client
-      .from('dependencies')
-      .select(`
-        id,
-        name,
-        description
-      `)
-      .order('name', {
-        ascending: true
-      });
+
+  /* =======================================================
+   * ROLES ACTIVOS
+   * ======================================================= */
+
+  async getActiveRoles():
+    Promise<Role[]> {
+
+    const {
+      data,
+      error
+    } =
+      await this.supabaseService
+        .client
+        .from('roles')
+        .select(`
+          id,
+          name,
+          description
+        `)
+        .eq(
+          'active',
+          true
+        )
+        .order(
+          'name',
+          {
+            ascending: true
+          }
+        );
+
 
     if (error) {
-      throw new Error(error.message);
+      throw new Error(
+        error.message
+      );
     }
 
-    return (data ?? []) as Dependency[];
+
+    return (
+      data ?? []
+    ) as Role[];
+
   }
+
+
+  /* =======================================================
+   * DEPENDENCIAS
+   * ======================================================= */
+
+  async getDependencies():
+    Promise<Dependency[]> {
+
+    const {
+      data,
+      error
+    } =
+      await this.supabaseService
+        .client
+        .from('dependencies')
+        .select(`
+          id,
+          name,
+          description
+        `)
+        .order(
+          'name',
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+      throw new Error(
+        error.message
+      );
+    }
+
+
+    return (
+      data ?? []
+    ) as Dependency[];
+
+  }
+
+
+  /* =======================================================
+   * DEPENDENCIAS ACTIVAS
+   * ======================================================= */
+
+  async getActiveDependencies():
+    Promise<Dependency[]> {
+
+    const {
+      data,
+      error
+    } =
+      await this.supabaseService
+        .client
+        .from('dependencies')
+        .select(`
+          id,
+          name,
+          description
+        `)
+        .eq(
+          'active',
+          true
+        )
+        .order(
+          'name',
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+      throw new Error(
+        error.message
+      );
+    }
+
+
+    return (
+      data ?? []
+    ) as Dependency[];
+
+  }
+
 }
